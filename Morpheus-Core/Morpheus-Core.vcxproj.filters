@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Morpheus">
+      <UniqueIdentifier>{183E12FE-040B-6D09-2D24-5BB11950A297}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Morpheus\Core">
+      <UniqueIdentifier>{70F19D74-DCB1-19AB-A5EC-6228116C5E87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Morpheus\Mathematics">
+      <UniqueIdentifier>{376E14E7-23FD-9DB0-CC1B-B2ABB889AE56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\GLFW">
+      <UniqueIdentifier>{A98C9061-154D-0C98-DE87-55154A075174}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Source\Morpheus.h" />
+    <ClInclude Include="Source\Morpheus\Core\Application.h">
+      <Filter>Morpheus\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Core\Common.h">
+      <Filter>Morpheus\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Core\Window.h">
+      <Filter>Morpheus\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morppch.h" />
+    <ClInclude Include="Source\Platform\GLFW\GLFWWindow.h">
+      <Filter>Platform\GLFW</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Core\Log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\Morpheus\Core\Application.cpp">
+      <Filter>Morpheus\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Core\Window.cpp">
+      <Filter>Morpheus\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morppch.cpp" />
+    <ClCompile Include="Source\Platform\GLFW\GLFWWindow.cpp">
+      <Filter>Platform\GLFW</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Core\Log.cpp" />
+  </ItemGroup>
+</Project>
