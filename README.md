@@ -2,4 +2,4 @@
 C++ Multithreaded Vulkan Engine
 
 Graphics API - Vulkan,
-Window API - SDL
+Window API - GLFW TO START THEN SDL
