@@ -4,6 +4,7 @@
 #include <string>
 #include <memory>
 #include <cstddef>
+#include <functional>
 
 #ifdef MORP_PLATFORM_WINDOWS
 #endif
@@ -26,7 +27,14 @@ namespace Morpheus {
 	{ return std::make_shared<T>(std::forward<Args>(args)...); }
 
 	template<typename T>
+	using Function = std::function<T>;
+
+	template<typename T>
+	using List = std::list<T>;
+
+	template<typename T>
 	using Vector = std::vector<T>;
+
 	using String = std::string;
 
 	typedef std::uint64_t UINT64;

@@ -138,20 +138,21 @@
     <ClInclude Include="Source\Morpheus.h" />
     <ClInclude Include="Source\Morpheus\Core\Application.h" />
     <ClInclude Include="Source\Morpheus\Core\Common.h" />
-    <ClInclude Include="Source\Morpheus\Core\Log.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h" />
     <ClInclude Include="Source\Morpheus\Core\Window.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h" />
     <ClInclude Include="Source\Morppch.h" />
-    <ClInclude Include="Source\Platform\GLFW\GLFWWindow.h" />
+    <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
-    <ClCompile Include="Source\Morpheus\Core\Log.cpp" />
     <ClCompile Include="Source\Morpheus\Core\Window.cpp" />
+    <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
     <ClCompile Include="Source\Morppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Platform\GLFW\GLFWWindow.cpp" />
+    <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">

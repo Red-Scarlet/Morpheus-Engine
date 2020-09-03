@@ -2,9 +2,11 @@
 
 // --- Core -----------------------------------
 #include "Morpheus/Core/Application.h"
+#include "Morpheus/Utilities/MorpheusLogger.h"
 // --------------------------------------------
 
 // --- Entry Point ----------------------------
+#define ENTRYPOINT
 #ifdef ENTRYPOINT
 
 #ifdef MORP_PLATFORM_WINDOWS
@@ -13,17 +15,17 @@ extern Morpheus::Application* CreateApplication();
 
 int main(int argc, char** argv)
 {
-	//Revealing::Log::Init();
-	//RC_CORE_WARN("Initialized Log!");
-	//RC_CORE_WARN("Entrypoint Initialized!");
-	//RC_CORE_INFO("Engine Version: 1.0.0 Aquamarine - Early Development (OPEN SOURCE)");
+	Morpheus::MorpheusLogger::Init();
+	MORP_CORE_SPECIAL("Initialized Log!");
+	MORP_CORE_SPECIAL("Entrypoint Initialized!");
+	MORP_CORE_INFO("Engine Version: Aquamarine - Early Development");
 
 	auto app = CreateApplication();
 
 	app->Run();
 	app->Stop();
 
-	//Morpheus::Log::Shutdown();
+	Morpheus::MorpheusLogger::Shutdown();
 	delete app;
 }
 

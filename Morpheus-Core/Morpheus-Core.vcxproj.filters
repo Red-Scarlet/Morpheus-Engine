@@ -32,10 +32,11 @@
       <Filter>Morpheus\Mathematics</Filter>
     </ClInclude>
     <ClInclude Include="Source\Morppch.h" />
-    <ClInclude Include="Source\Platform\GLFW\GLFWWindow.h">
+    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
+    <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h">
       <Filter>Platform\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Morpheus\Core\Log.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp">
@@ -45,9 +46,9 @@
       <Filter>Morpheus\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Morppch.cpp" />
-    <ClCompile Include="Source\Platform\GLFW\GLFWWindow.cpp">
+    <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
+    <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp">
       <Filter>Platform\GLFW</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Morpheus\Core\Log.cpp" />
   </ItemGroup>
 </Project>
