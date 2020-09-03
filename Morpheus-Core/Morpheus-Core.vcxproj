@@ -77,7 +77,7 @@
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;MORP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -96,7 +96,7 @@
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;MORP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -118,7 +118,7 @@
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;MORP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -138,25 +138,34 @@
     <ClInclude Include="Source\Morpheus.h" />
     <ClInclude Include="Source\Morpheus\Core\Application.h" />
     <ClInclude Include="Source\Morpheus\Core\Common.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h" />
     <ClInclude Include="Source\Morpheus\Core\Window.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererAPI.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererInstance.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h" />
     <ClInclude Include="Source\Morppch.h" />
     <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
     <ClCompile Include="Source\Morpheus\Core\Window.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererAPI.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererInstance.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
     <ClCompile Include="Source\Morppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanInstance.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
       <Project>{154B857C-0182-860D-AA6E-6C109684020F}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vendor\VULKAN\VULKAN.vcxproj">
+      <Project>{36C2A7D6-2264-D2AC-0B1F-E600F75F59FD}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

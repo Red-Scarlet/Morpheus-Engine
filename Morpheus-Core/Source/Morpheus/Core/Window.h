@@ -17,6 +17,9 @@ namespace Morpheus {
 		virtual void OnUpdate() = 0;
 		virtual const WindowStruct GetStruct() const = 0;
 
+		virtual const UINT32& GetExtensionsCount() const = 0;
+		virtual const FLOAT8** GetExtensionsData() const = 0;
+
 	public:
 		static Scope<Window> Create(const WindowStruct& _Struct);
 	};

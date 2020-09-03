@@ -1,2 +1,6 @@
-﻿  GLFWAPIWindow.cpp
+﻿  Application.cpp
+  RendererAPI.cpp
+  RendererInstance.cpp
+  VulkanInstance.cpp
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Renderer\RendererInstance.cpp(16): warning C4715: 'Morpheus::RendererInstance::Create': not all control paths return a value
   Morpheus-Core.vcxproj -> B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\..\bin\Debug-windows-x86_64\Morpheus-Core\Morpheus-Core.lib

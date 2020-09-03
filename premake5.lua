@@ -19,9 +19,11 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["GLFW"] = "Morpheus-Core/Vendor/GLFW/include"
+IncludeDir["VULKAN"] = "Morpheus-Core/Vendor/VULKAN/Include"
 
 group "Dependencies"
 	include "Morpheus-Core/Vendor/GLFW"
+	include "Morpheus-Core/Vendor/VULKAN"
 
 group ""
 
@@ -53,11 +55,13 @@ project "Morpheus-Core"
 	{ 
 		"%{prj.name}/Source",
 		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.VULKAN}"
 	}
 
 	links
 	{
-		"GLFW"
+		"GLFW",
+		"VULKAN"
 	}
 
 	filter "system:windows"

@@ -3,6 +3,8 @@
 #include "Common.h"
 #include "Window.h"
 
+#include "Morpheus/Renderer/RendererInstance.h"
+
 int main(int argc, char** argv);
 
 namespace Morpheus {
@@ -21,6 +23,8 @@ namespace Morpheus {
 
 	private:
 		Scope<Window> m_Window;
+		RendererInstance* m_RenderInstance;
+
 		bool m_Running = true;
 		bool m_Minimized = false;
 

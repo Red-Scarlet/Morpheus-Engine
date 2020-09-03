@@ -10,6 +10,9 @@
     <Filter Include="Morpheus\Mathematics">
       <UniqueIdentifier>{376E14E7-23FD-9DB0-CC1B-B2ABB889AE56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Morpheus\Utilities">
+      <UniqueIdentifier>{83E07C40-6FC4-3D96-D824-38E9C4272818}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
     </Filter>
@@ -31,12 +34,19 @@
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h">
       <Filter>Morpheus\Mathematics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Morppch.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
     <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h">
       <Filter>Platform\GLFW</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanInstance.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererAPI.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp">
@@ -45,10 +55,15 @@
     <ClCompile Include="Source\Morpheus\Core\Window.cpp">
       <Filter>Morpheus\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Morppch.cpp" />
-    <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
     <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp">
       <Filter>Platform\GLFW</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Morpheus\Renderer\RendererInstance.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanInstance.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererAPI.cpp" />
   </ItemGroup>
 </Project>

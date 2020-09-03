@@ -12,6 +12,8 @@ namespace Morpheus {
 
 		WindowStruct WindowProperties;
 		m_Window = Window::Create(WindowProperties);
+
+		m_RenderInstance = RendererInstance::Create();
 	}
 
 	void Application::Run()

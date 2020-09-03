@@ -9,6 +9,8 @@
 #ifdef MORP_PLATFORM_WINDOWS
 #endif
 
+#define MORP_CORE_ASSERT(x, ...) { if(!(x)) { MORP_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+
 #define BIT(x) (1 << x)
 #define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
