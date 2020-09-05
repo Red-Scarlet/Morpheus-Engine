@@ -138,22 +138,41 @@
     <ClInclude Include="Source\Morpheus.h" />
     <ClInclude Include="Source\Morpheus\Core\Application.h" />
     <ClInclude Include="Source\Morpheus\Core\Common.h" />
+    <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h" />
+    <ClInclude Include="Source\Morpheus\Core\LayerSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\Window.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h" />
+    <ClInclude Include="Source\Morpheus\Mathematics\Matrix4.h" />
+    <ClInclude Include="Source\Morpheus\Mathematics\Quaternion.h" />
+    <ClInclude Include="Source\Morpheus\Mathematics\Vector2.h" />
+    <ClInclude Include="Source\Morpheus\Mathematics\Vector3.h" />
+    <ClInclude Include="Source\Morpheus\Mathematics\Vector4.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererAPI.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererInstance.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\SystemLogger.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\MorpheusIOS.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\ThreadPool.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\TimerClass.h" />
     <ClInclude Include="Source\Morppch.h" />
     <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanInstance.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
+    <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp" />
+    <ClCompile Include="Source\Morpheus\Core\LayerSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\Window.cpp" />
+    <ClCompile Include="Source\Morpheus\Mathematics\Matrix4.cpp" />
+    <ClCompile Include="Source\Morpheus\Mathematics\Quaternion.cpp" />
+    <ClCompile Include="Source\Morpheus\Mathematics\Vector2.cpp" />
+    <ClCompile Include="Source\Morpheus\Mathematics\Vector3.cpp" />
+    <ClCompile Include="Source\Morpheus\Mathematics\Vector4.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererAPI.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererInstance.cpp" />
+    <ClCompile Include="Source\Morpheus\Utilities\MorpheusIOS.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
+    <ClCompile Include="Source\Morpheus\Utilities\TimerClass.cpp" />
     <ClCompile Include="Source\Morppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

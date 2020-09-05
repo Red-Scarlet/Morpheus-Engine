@@ -135,7 +135,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Morpheus-SandboxApp.cpp" />
+    <ClCompile Include="MorpheusApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Morpheus-Core\Morpheus-Core.vcxproj">

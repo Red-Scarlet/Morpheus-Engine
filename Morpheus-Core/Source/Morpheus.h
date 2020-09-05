@@ -2,7 +2,12 @@
 
 // --- Core -----------------------------------
 #include "Morpheus/Core/Application.h"
+#include "Morpheus/Core/LayerSystem.h"
 #include "Morpheus/Utilities/MorpheusLogger.h"
+// --------------------------------------------
+
+// --- Math -----------------------------------
+#include "Morpheus/Mathematics/Mathematics.h"
 // --------------------------------------------
 
 // --- Entry Point ----------------------------
@@ -18,7 +23,7 @@ int main(int argc, char** argv)
 	Morpheus::MorpheusLogger::Init();
 	MORP_CORE_SPECIAL("Initialized Log!");
 	MORP_CORE_SPECIAL("Entrypoint Initialized!");
-	MORP_CORE_INFO("Engine Version: Aquamarine - Early Development");
+	MORP_CORE_SPECIAL_2("Engine Version: Aquamarine - Early Development");
 
 	auto app = CreateApplication();
 

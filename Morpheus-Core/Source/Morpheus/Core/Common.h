@@ -6,14 +6,6 @@
 #include <cstddef>
 #include <functional>
 
-#ifdef MORP_PLATFORM_WINDOWS
-#endif
-
-#define MORP_CORE_ASSERT(x, ...) { if(!(x)) { MORP_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
-
-#define BIT(x) (1 << x)
-#define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-
 namespace Morpheus {
 
 	template<typename T>
@@ -55,5 +47,20 @@ namespace Morpheus {
 	typedef char FLOAT8;
 
 	typedef std::nullptr_t NULLPTR;
-
+	typedef void* VOIDPTR;
+	
 }
+
+#ifdef MORP_PLATFORM_WINDOWS
+#endif
+
+#define MORP_CORE_ASSERT(x, ...) { if(!(x)) { MORP_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+
+#define BIT(x) (1 << x)
+#define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
+#ifdef MORP_FLOAT_X64
+using FLOAT = Morpheus::FLOAT64;
+#else
+using FLOAT = Morpheus::FLOAT32;
+#endif

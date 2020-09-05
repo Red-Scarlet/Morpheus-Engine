@@ -99,7 +99,58 @@ project "Morpheus-Sandbox"
 
 	files
 	{
-		"%{prj.name}/%{prj.name}App.cpp",
+		"%{prj.name}/MorpheusApp.cpp",
+		"%{prj.name}/Source/**.h",
+		"%{prj.name}/Source/**.cpp"
+	}
+
+	includedirs
+	{ 
+		"Morpheus-Core/Source",
+		"Morpheus-Core/Vendor"
+	}
+
+	links
+	{
+		"Morpheus-Core"
+	}
+
+	filter "system:windows"
+		systemversion "latest"
+
+		defines 
+		{
+			"MORP_PLATFORM_WINDOWS"
+		}
+
+	filter "configurations:Debug"
+		defines "MORP_DEBUG"
+		runtime "Debug"
+		symbols "on"
+
+	filter "configurations:Release"
+		defines "MORP_RELEASE"
+		runtime "Release"
+		optimize "on"
+
+	filter "configurations:Dist"
+		defines "MORP_DIST"
+		runtime "Release"
+		optimize "on"
+
+project "Morpheus-Editor"
+	location "Morpheus-Editor"
+	kind "ConsoleApp"
+	language "C++"
+	cppdialect "C++17"
+	staticruntime "on"
+
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+
+	files
+	{
+		"%{prj.name}/MorpheusApp.cpp",
 		"%{prj.name}/Source/**.h",
 		"%{prj.name}/Source/**.cpp"
 	}

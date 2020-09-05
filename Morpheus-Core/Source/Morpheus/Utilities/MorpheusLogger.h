@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "SystemLogger.h"
+#include "MorpheusIOS.h"
 
 namespace Morpheus {
 
@@ -61,6 +61,11 @@ namespace Morpheus {
 			(*s_SystemLogger) << "§13" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
+		static void LogSpecialOverride(const String& _Message)
+		{
+			(*s_SystemLogger) << "§02" << "[MORPHEUS] " << _Message << std::endl;
+		}
+
 		static void LogNormal(const String& _Message)
 		{
 			(*s_SystemLogger) << "§07" << "[MORPHEUS] " << _Message << std::endl;
@@ -77,3 +82,4 @@ namespace Morpheus {
 #define MORP_CORE_WARN(...)			::Morpheus::MorpheusLogger::LogWarn(__VA_ARGS__)
 #define MORP_CORE_ERROR(...)		::Morpheus::MorpheusLogger::LogError(__VA_ARGS__)
 #define MORP_CORE_SPECIAL(...)		::Morpheus::MorpheusLogger::LogSpecial(__VA_ARGS__)
+#define MORP_CORE_SPECIAL_2(...)	::Morpheus::MorpheusLogger::LogSpecialOverride(__VA_ARGS__)

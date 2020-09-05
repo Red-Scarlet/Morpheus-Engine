@@ -14,6 +14,8 @@ namespace Morpheus {
 
 		vkEnumerateInstanceExtensionProperties(nullptr, &m_ExtensionsCount, nullptr);
 		m_ExtensionsData = glfwGetRequiredInstanceExtensions(&m_ExtensionsCount);
+
+		
 	}
 
 	GLFWAPIWindow::~GLFWAPIWindow()
