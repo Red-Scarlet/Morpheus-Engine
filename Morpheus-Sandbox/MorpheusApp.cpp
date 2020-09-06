@@ -21,7 +21,7 @@ public:
 	{
 	}
 
-	virtual void OnUpdate() override 
+	virtual void OnUpdate(const Morpheus::DeltaTime& _Delta) override
 	{
 	}
 

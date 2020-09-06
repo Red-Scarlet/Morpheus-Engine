@@ -12,6 +12,7 @@
 #include <list>
 
 #include <conio.h>
+#define NOMINMAX
 #include <Windows.h>
 
 namespace Morpheus {

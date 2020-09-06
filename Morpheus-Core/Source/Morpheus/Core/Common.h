@@ -49,12 +49,19 @@ namespace Morpheus {
 	typedef std::nullptr_t NULLPTR;
 	typedef void* VOIDPTR;
 	
+	using FVector8 = Vector<const FLOAT8*>;
 }
 
 #ifdef MORP_PLATFORM_WINDOWS
 #endif
 
-#define MORP_CORE_ASSERT(x, ...) { if(!(x)) { MORP_CORE_ERROR("Assertion Failed: {0}", __VA_ARGS__); __debugbreak(); } }
+#define MORP_CORE_ASSERTS
+
+#ifdef MORP_CORE_ASSERTS
+#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); } }
+#else
+#define MORP_CORE_ASSERT(x, ...)
+#endif
 
 #define BIT(x) (1 << x)
 #define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)

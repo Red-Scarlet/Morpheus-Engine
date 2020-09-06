@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Common.h"
+#include "Morpheus/Utilities/DeltaTime.h"
 
 namespace Morpheus {
 
@@ -12,7 +13,7 @@ namespace Morpheus {
 
 		virtual void OnAttach() = 0;
 		virtual void OnDetach() = 0;
-		virtual void OnUpdate() = 0;
+		virtual void OnUpdate(const DeltaTime& _Delta) = 0;
 		virtual void OnRender() = 0;
 
 		inline const String& GetName() const { return m_DebugName; }

@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+*.db
+*.ipch
+*.db
+.vs/Morpheus-Engine/v16/Solution.VC.db
+.vs/Morpheus-Engine/v16/Browse.VC.db
+.vs/Morpheus-Engine/v16/.suo

@@ -36,9 +36,10 @@ namespace Morpheus {
 			delete s_SystemLogger;
 		}
 
-		static void LogError(const String& _Message)
+		static bool LogError(const String& _Message)
 		{
 			(*s_SystemLogger) << "§12" << "[MORPHEUS] " << _Message  << std::endl;
+			return true;
 		}
 
 		static void LogWarn(const String& _Message)

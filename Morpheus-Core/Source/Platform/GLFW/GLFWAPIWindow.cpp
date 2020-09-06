@@ -14,8 +14,6 @@ namespace Morpheus {
 
 		vkEnumerateInstanceExtensionProperties(nullptr, &m_ExtensionsCount, nullptr);
 		m_ExtensionsData = glfwGetRequiredInstanceExtensions(&m_ExtensionsCount);
-
-		
 	}
 
 	GLFWAPIWindow::~GLFWAPIWindow()
@@ -31,6 +29,12 @@ namespace Morpheus {
 
 	const WindowStruct GLFWAPIWindow::GetStruct() const
 	{ return m_WindowStruct; }
+
+	void GLFWAPIWindow::SetUpdateStructTitle(const String& Title)
+	{
+		m_WindowStruct.Title = Title;
+		glfwSetWindowTitle(m_Instance, Title.c_str());
+	}
 
 	const UINT32& GLFWAPIWindow::GetExtensionsCount() const
 	{

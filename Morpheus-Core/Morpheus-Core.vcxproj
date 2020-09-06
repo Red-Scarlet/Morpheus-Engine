@@ -148,7 +148,7 @@
     <ClInclude Include="Source\Morpheus\Mathematics\Vector3.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Vector4.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererAPI.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererInstance.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\GraphicsContext.h" />
     <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusIOS.h" />
@@ -156,7 +156,17 @@
     <ClInclude Include="Source\Morpheus\Utilities\TimerClass.h" />
     <ClInclude Include="Source\Morppch.h" />
     <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommandBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommandPool.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanContext.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanDevice.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanFramebuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphicsPipeline.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanImageview.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanInstance.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanRenderpass.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanSurface.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanSwapchain.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
@@ -169,7 +179,7 @@
     <ClCompile Include="Source\Morpheus\Mathematics\Vector3.cpp" />
     <ClCompile Include="Source\Morpheus\Mathematics\Vector4.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererInstance.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\GraphicsContext.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusIOS.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\TimerClass.cpp" />
@@ -177,7 +187,17 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCommandPool.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanContext.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanDevice.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanFramebuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphicsPipeline.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanImageview.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanInstance.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanRenderpass.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanSurface.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanSwapchain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">

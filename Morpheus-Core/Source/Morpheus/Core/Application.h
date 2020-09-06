@@ -3,12 +3,13 @@
 #include "Common.h"
 #include "Window.h"
 
-#include "Morpheus/Renderer/RendererInstance.h"
+#include "Morpheus/Renderer/GraphicsContext.h"
 #include "Morpheus/Core/LayerSystem.h"
 #include "Morpheus/Core/FunctionSystem.h"
 
 #include "Morpheus/Utilities/ThreadPool.h"
 #include "Morpheus/Utilities/TimerClass.h"
+#include "Morpheus/Utilities/DeltaTime.h"
 
 int main(int argc, char** argv);
 
@@ -30,8 +31,12 @@ namespace Morpheus {
 		inline static Application& Get() { return *s_Instance; }
 
 	private:
+		void Render();
+		void Update(const DeltaTime& _Delta);
+
+	private:
 		Scope<Window> m_Window;
-		RendererInstance* m_RenderInstance;
+		GraphicsContext* m_GraphicsContext;
 		LayerContainer m_LayerContainer;
 		FunctionSystem m_FunctionSystem;
 		ThreadPool* m_ThreadPool;
@@ -39,6 +44,7 @@ namespace Morpheus {
 
 		bool m_Running = true;
 		bool m_Minimized = false;
+		bool m_FirstTime = true;
 		FLOAT64 m_LastFrameTime = 0.00f;
 
 	private:

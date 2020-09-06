@@ -1,3 +1,12 @@
 ﻿  Application.cpp
+  GraphicsContext.cpp
+  GLFWAPIWindow.cpp
+  VulkanContext.cpp
   VulkanInstance.cpp
+  VulkanSurface.cpp
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Platform\Vulkan\VulkanInstance.h(25,30): warning C4267: 'return': conversion from 'size_t' to 'Morpheus::UINT32', possible loss of data (compiling source file Source\Morpheus\Renderer\GraphicsContext.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Platform\Vulkan\VulkanInstance.h(25,30): warning C4267: 'return': conversion from 'size_t' to 'Morpheus::UINT32', possible loss of data (compiling source file Source\Platform\Vulkan\VulkanInstance.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Platform\Vulkan\VulkanInstance.h(25,30): warning C4267: 'return': conversion from 'size_t' to 'Morpheus::UINT32', possible loss of data (compiling source file Source\Platform\Vulkan\VulkanSurface.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Platform\Vulkan\VulkanInstance.h(25,30): warning C4267: 'return': conversion from 'size_t' to 'Morpheus::UINT32', possible loss of data (compiling source file Source\Platform\Vulkan\VulkanContext.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Renderer\GraphicsContext.cpp(16): warning C4715: 'Morpheus::GraphicsContext::Create': not all control paths return a value
   Morpheus-Core.vcxproj -> B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\..\bin\Debug-windows-x86_64\Morpheus-Core\Morpheus-Core.lib
