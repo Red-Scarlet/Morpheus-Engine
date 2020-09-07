@@ -11,3 +11,9 @@ C++ Multithreaded Vulkan Engine
 * Add ImGui for Level Editor
 * Add Entity Component System
 * Add Lights, Shadows and Better Pipeline.
+
+### Libraries Used
+* GLFW 3.3.2
+* VULKAN 1.2.148.1
+* ASSIMP 4.1.0
+* STB_IMAGE 
