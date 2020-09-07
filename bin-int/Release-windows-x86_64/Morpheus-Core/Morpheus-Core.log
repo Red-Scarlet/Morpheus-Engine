@@ -1,5 +1,0 @@
-﻿  Application.cpp
-  TimerClass.cpp
-  VulkanInstance.cpp
-B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Utilities\TimerClass.cpp(44): warning C4172: returning address of local variable or temporary
-  Morpheus-Core.vcxproj -> B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\..\bin\Release-windows-x86_64\Morpheus-Core\Morpheus-Core.lib
