@@ -5,6 +5,18 @@
 
 namespace Morpheus {
 
+	//TODO LIST: 
+	/*
+		Ref<Shader>
+		Ref<Renderpass>
+		Ref<GraphicsPipeline>
+		Ref<Framebuffer>
+
+		RendererAPI --> CMD
+
+		Cleanup and maybe adopt Ref<T> instead of *
+	*/
+
 	void VulkanRendererAPI::Init()
 	{
 		m_VulkanInstance = VulkanInstance::GetInstance();
@@ -18,19 +30,30 @@ namespace Morpheus {
 		m_VulkanGraphicsPipeline = new VulkanGraphicsPipeline(m_VulkanDevice, m_VulkanPresentation, m_VulkanRenderpass);
 		m_VulkanFramebuffer = new VulkanFramebuffer(m_VulkanDevice, m_VulkanPresentation, m_VulkanRenderpass);
 		
-		// WRAP INTO COMMAND SYSTEM
-		m_VulkanCommandPool = new VulkanCommandPool(m_VulkanDevice);
-		m_VulkanCommandBuffer = new VulkanCommandBuffer(m_VulkanDevice, m_VulkanPresentation, m_VulkanFramebuffer, m_VulkanCommandPool,
-			m_VulkanRenderpass, m_VulkanGraphicsPipeline);
+		m_VulkanCommandSystem = new VulkanCommandSystem();
+
+		m_CommandBuffer = new VulkanCommandBuffer();
 
 		m_VulkanSynchronization = new VulkanSynchronization(m_VulkanDevice, m_VulkanPresentation);
+
+		m_CommandBuffer->cbSetRenderpass(m_VulkanRenderpass);
+		m_CommandBuffer->cbSetPipeline(m_VulkanGraphicsPipeline);
+		m_CommandBuffer->cbSetFramebuffer(m_VulkanFramebuffer);
+		m_CommandBuffer->cbSetClearcolor({0.4, 0.4, 0.6, 1.0f});
+
+		m_VulkanCommandSystem->AllocateBuffer(m_CommandBuffer);
+
+		m_CommandBuffer->BeginRecord();
+		m_CommandBuffer->cbDraw();
+		m_CommandBuffer->EndRecord();
+
+		m_VulkanCommandSystem->ComputeBuffer(m_CommandBuffer);
 	}
 
 	void VulkanRendererAPI::Shutdown()
 	{		
 		delete m_VulkanSynchronization;
-		delete m_VulkanCommandBuffer;
-		delete m_VulkanCommandPool;
+		delete m_VulkanCommandSystem;
 		delete m_VulkanFramebuffer;
 		delete m_VulkanGraphicsPipeline;
 		delete m_VulkanRenderpass;
@@ -41,7 +64,7 @@ namespace Morpheus {
 
 	void VulkanRendererAPI::Begin()
 	{
-		m_VulkanSynchronization->Begin(m_VulkanCommandBuffer);
+		m_VulkanSynchronization->Begin(m_VulkanCommandSystem);
 	}
 
 	void VulkanRendererAPI::End()

@@ -3,7 +3,7 @@
 #include "Morpheus/Core/Common.h"
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanCommandBuffer.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanCommandSystem.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
 #include <vulkan/vulkan.h>
 
@@ -18,7 +18,7 @@ namespace Morpheus {
 		VkSemaphore* GetWait(const uint32& _Index);
 		VkSemaphore* GetSignal(const uint32& _Index);
 
-		void Begin(VulkanCommandBuffer* _CommandBuffer);
+		void Begin(VulkanCommandSystem* _CommandSystem);
 		void End(VulkanRenderpass* _Renderpass);
 		void Flush();
 

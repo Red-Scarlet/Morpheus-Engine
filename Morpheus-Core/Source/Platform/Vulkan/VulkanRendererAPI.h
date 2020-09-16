@@ -10,9 +10,8 @@
 #include "Platform/Vulkan/VulkanGraphics/VulkanGraphicsPipeline.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanFramebuffer.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanCommandPool.h"
 
-#include "Platform/Vulkan/VulkanGraphics/VulkanCommandBuffer.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanCommandSystem.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanSynchronization.h"
 
 namespace Morpheus {
@@ -34,8 +33,6 @@ namespace Morpheus {
 		VulkanPresentation* m_VulkanPresentation;
 		VulkanLogicalDevice* m_VulkanDevice;
 
-
-
 		// MAKE REAL OBJECTS INSIDE ENGINE SIDE.
 		// GRAB THE SHADERS.
 		VulkanRenderpass* m_VulkanRenderpass;
@@ -43,10 +40,9 @@ namespace Morpheus {
 		VulkanFramebuffer* m_VulkanFramebuffer;
 		
 		// COMBINE INTO COMMAND SYSTEM
-		VulkanCommandPool* m_VulkanCommandPool;
-		VulkanCommandBuffer* m_VulkanCommandBuffer;
-		
-		// 
+		VulkanCommandSystem* m_VulkanCommandSystem;
+		VulkanCommandBuffer* m_CommandBuffer;
+
 		VulkanSynchronization* m_VulkanSynchronization;
 	};
 

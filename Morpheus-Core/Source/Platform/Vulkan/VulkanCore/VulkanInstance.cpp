@@ -21,9 +21,10 @@ namespace Morpheus {
 
 	VulkanPresentation* VulkanInstance::GetPresentation()
 	{
-		if (m_VulkanObject.Presentation == nullptr)
+		if (m_VulkanObject.Presentation == nullptr) {
 			m_VulkanObject.Presentation = new VulkanPresentation();
-		m_VulkanObject.Presentation->SetupSurface();
+			m_VulkanObject.Presentation->SetupSurface();
+		}
 		return m_VulkanObject.Presentation;
 	}
 

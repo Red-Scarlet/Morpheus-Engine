@@ -161,8 +161,7 @@
     <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanPresentation.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandPool.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandSystem.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanFramebuffer.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanGraphicsPipeline.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanInstance.h" />
@@ -192,8 +191,7 @@
     <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanPresentation.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandPool.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandSystem.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanFramebuffer.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanGraphicsPipeline.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanInstance.cpp" />

@@ -113,16 +113,11 @@
     <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanFramebuffer.h">
       <Filter>Platform\Vulkan\VulkanCore</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandPool.h">
-      <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandBuffer.h">
-      <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanPresentation.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.h" />
     <ClInclude Include="Source\Morpheus\Renderer\Mesh.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanSynchronization.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandSystem.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp">
@@ -189,14 +184,9 @@
     <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanFramebuffer.cpp">
       <Filter>Platform\Vulkan\VulkanCore</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandPool.cpp">
-      <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandBuffer.cpp">
-      <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanPresentation.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanSynchronization.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandSystem.cpp" />
   </ItemGroup>
 </Project>

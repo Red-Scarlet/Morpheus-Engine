@@ -29,7 +29,7 @@ namespace Morpheus {
 		return &m_VulkanObject.RenderSemaphores[_Index];
 	}
 
-	void VulkanSynchronization::Begin(VulkanCommandBuffer* _CommandBuffer)
+	void VulkanSynchronization::Begin(VulkanCommandSystem* _CommandSystem)
 	{
 		vkWaitForFences(m_VulkanCore.lDevice->GetDevice(), 1, &m_VulkanObject.InFlightFences[m_VulkanObject.CurrentFrame], 
 			VK_TRUE, UINT64_MAX);
@@ -55,7 +55,7 @@ namespace Morpheus {
 			SubmitInfo.signalSemaphoreCount = 1;
 			SubmitInfo.pSignalSemaphores = SignalSemaphores;
 			SubmitInfo.commandBufferCount = 1;
-			SubmitInfo.pCommandBuffers = &_CommandBuffer->GetCommandBuffer(m_VulkanObject.ImageIndex);
+			SubmitInfo.pCommandBuffers = &_CommandSystem->GetCommandBuffer(m_VulkanObject.ImageIndex);
 		}
 
 		vkResetFences(m_VulkanCore.lDevice->GetDevice(), 1, &m_VulkanObject.InFlightFences[m_VulkanObject.CurrentFrame]);

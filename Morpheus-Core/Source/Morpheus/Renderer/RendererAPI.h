@@ -19,6 +19,14 @@ namespace Morpheus {
 
 		virtual void Reset() = 0;
 
+		/*
+		virtual void SetViewport() = 0;
+		virtual void SetClearColor(const Vector4& _Color) = 0;
+		virtual void SetRenderpass() = 0;
+		virtual void SetPipeline() = 0;
+		virtual void DrawGeomerty() = 0;
+		*/
+
 		inline static void SetAPI(const API& _API) { s_RenderAPI = _API; }
 		inline static API GetAPI() { return s_RenderAPI; }
 
