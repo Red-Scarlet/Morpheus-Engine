@@ -5,6 +5,8 @@
 #include "Morpheus/Utilities/DeltaTime.h"
 #include <GLFW/glfw3.h>
 
+#include "Morpheus/Renderer/Renderer.h"
+
 namespace Morpheus {
 
 	#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -17,7 +19,7 @@ namespace Morpheus {
 
 		WindowStruct WindowProperties;
 		m_Window = Window::Create(WindowProperties);
-		m_GraphicsContext = GraphicsContext::Create();
+		Renderer::Init();
 		//RESOURCE MANAGER
 		//RENDERER -> 3DRENDERER
 
@@ -29,7 +31,7 @@ namespace Morpheus {
 	{
 		while (m_Running)
 		{
-			FLOAT64 time = (FLOAT64)m_TimerClass->GetDeltaTime();
+			float64 time = (float64)m_TimerClass->GetDeltaTime();
 			DeltaTime Delta = time - m_LastFrameTime;
 			m_LastFrameTime = time;
 
@@ -42,13 +44,11 @@ namespace Morpheus {
 
 			m_Window->SetUpdateStructTitle("Morpheus Engine FPS: " + std::to_string(1.00f / Delta));
 		}
-
-		m_GraphicsContext->Stop();
-
 	}
 
 	void Application::Stop()
 	{
+		Renderer::Shutdown();
 		m_Running = false;
 	}
 
@@ -71,7 +71,8 @@ namespace Morpheus {
 
 	void Application::Render()
 	{
-		m_GraphicsContext->Draw();
+		for (Layer* layer : m_LayerContainer)
+			layer->OnRender();
 	}
 
 	void Application::Update(const DeltaTime& _Delta)

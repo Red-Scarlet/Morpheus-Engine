@@ -27,6 +27,9 @@ public:
 
 	virtual void OnRender() override 
 	{
+		Morpheus::Renderer::BeginScene();
+		Morpheus::Renderer::DrawVertexBuffer();
+		Morpheus::Renderer::EndScene();
 	}
 
 };

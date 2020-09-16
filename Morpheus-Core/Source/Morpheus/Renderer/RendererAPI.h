@@ -1,17 +1,32 @@
 #pragma once
 
-namespace Morpheus {
+#include "Morpheus/Core/Common.h"
+#include "Morpheus/Mathematics/Mathematics.h"
 
-	enum class RendererAPIs { None = 0, Vulkan };
+namespace Morpheus {
 
 	class RendererAPI
 	{
 	public:
-		static RendererAPIs GetAPI() { return s_RenderAPI; }
+		enum class API { None = 0, Vulkan = 1 };
+	
+		virtual void Init() = 0;
+		virtual void Shutdown() = 0;
+
+		virtual void Begin() = 0;
+		virtual void End() = 0;
+		virtual void Flush() = 0;
+
+		virtual void Reset() = 0;
+
+		inline static void SetAPI(const API& _API) { s_RenderAPI = _API; }
+		inline static API GetAPI() { return s_RenderAPI; }
 
 	private:
-		static RendererAPIs s_RenderAPI;
+		static API s_RenderAPI;
 
+	public:
+		static Scope<RendererAPI> Create();
 	};
 
 }

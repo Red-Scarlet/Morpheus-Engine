@@ -41,7 +41,7 @@ namespace Morpheus {
 		return m_ExtensionsCount;
 	}
 
-	const FLOAT8** GLFWAPIWindow::GetExtensionsData() const
+	const float8** GLFWAPIWindow::GetExtensionsData() const
 	{
 		return m_ExtensionsData;
 	}

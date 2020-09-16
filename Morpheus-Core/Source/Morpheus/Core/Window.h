@@ -7,7 +7,7 @@ namespace Morpheus {
 	struct WindowStruct
 	{
 		String Title = "Morphues Engine";
-		UINT32 Width = 1280, Height = 720;
+		uint32 Width = 1280, Height = 720;
 	};
 
 	class Window 
@@ -18,8 +18,8 @@ namespace Morpheus {
 		virtual const WindowStruct GetStruct() const = 0;
 		virtual void SetUpdateStructTitle(const String& Title) = 0;
 
-		virtual const UINT32& GetExtensionsCount() const = 0;
-		virtual const FLOAT8** GetExtensionsData() const = 0;
+		virtual const uint32& GetExtensionsCount() const = 0;
+		virtual const float8** GetExtensionsData() const = 0;
 
 		virtual void* GetWindowCore() = 0;
 

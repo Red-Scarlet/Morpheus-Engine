@@ -19,14 +19,14 @@ namespace Morpheus {
 		virtual void SetUpdateStructTitle(const String& Title) override;
 
 		virtual const UINT32& GetExtensionsCount() const override;
-		virtual const FLOAT8** GetExtensionsData() const override;
+		virtual const float8** GetExtensionsData() const override;
 		virtual void* GetWindowCore() override { return m_Instance; }
 
 	private:
 		GLFWwindow* m_Instance;
 		WindowStruct m_WindowStruct;
 		UINT32 m_ExtensionsCount;
-		const FLOAT8** m_ExtensionsData;
+		const float8** m_ExtensionsData;
 	};
 
 }

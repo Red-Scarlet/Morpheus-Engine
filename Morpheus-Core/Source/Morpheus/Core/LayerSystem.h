@@ -41,7 +41,7 @@ namespace Morpheus {
 
 	private:
 		Vector<Layer*> m_Layers;
-		UINT32 m_LayerInsertIndex = 0;
+		uint32 m_LayerInsertIndex = 0;
 	};
 
 }

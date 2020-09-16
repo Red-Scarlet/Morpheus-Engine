@@ -9,7 +9,7 @@ namespace Morpheus {
 	{
 		Reset();
 		m_TimeScale = 1.00f;
-		m_DeltaTime = std::chrono::duration<FLOAT64>(0.00f);
+		m_DeltaTime = std::chrono::duration<float64>(0.00f);
 	}
 
 	TimerClass::~TimerClass()
@@ -34,13 +34,13 @@ namespace Morpheus {
 		m_DeltaTime = std::chrono::system_clock::now() - m_StartTime;
 	}
 
-	void TimerClass::SetTimeScale(const FLOAT64& _Scale)
+	void TimerClass::SetTimeScale(const float64& _Scale)
 	{ m_TimeScale = _Scale; }
 
-	const FLOAT64& TimerClass::GetTimeScale()
+	const float64& TimerClass::GetTimeScale()
 	{ return m_TimeScale; }
 
-	const FLOAT64& TimerClass::GetDeltaTime()
+	const float64& TimerClass::GetDeltaTime()
 	{ return m_DeltaTime.count(); }
 
 }

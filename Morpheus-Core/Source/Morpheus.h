@@ -10,6 +10,11 @@
 #include "Morpheus/Mathematics/Mathematics.h"
 // --------------------------------------------
 
+// --- Renderer -------------------------------
+#include "Morpheus/Renderer/Renderer.h"
+// --------------------------------------------
+
+
 // --- Entry Point ----------------------------
 #define ENTRYPOINT
 #ifdef ENTRYPOINT

@@ -3,7 +3,6 @@
 #include "Common.h"
 #include "Window.h"
 
-#include "Morpheus/Renderer/GraphicsContext.h"
 #include "Morpheus/Core/LayerSystem.h"
 #include "Morpheus/Core/FunctionSystem.h"
 
@@ -36,7 +35,6 @@ namespace Morpheus {
 
 	private:
 		Scope<Window> m_Window;
-		GraphicsContext* m_GraphicsContext;
 		LayerContainer m_LayerContainer;
 		FunctionSystem m_FunctionSystem;
 		ThreadPool* m_ThreadPool;
@@ -45,7 +43,7 @@ namespace Morpheus {
 		bool m_Running = true;
 		bool m_Minimized = false;
 		bool m_FirstTime = true;
-		FLOAT64 m_LastFrameTime = 0.00f;
+		float64 m_LastFrameTime = 0.00f;
 
 	private:
 		static Application* s_Instance;

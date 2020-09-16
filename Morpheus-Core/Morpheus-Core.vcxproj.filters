@@ -10,6 +10,9 @@
     <Filter Include="Morpheus\Mathematics">
       <UniqueIdentifier>{376E14E7-23FD-9DB0-CC1B-B2ABB889AE56}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Morpheus\Renderer">
+      <UniqueIdentifier>{BEDC0059-2AF3-FEEE-736A-8A10DFBFCF76}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Morpheus\Utilities">
       <UniqueIdentifier>{83E07C40-6FC4-3D96-D824-38E9C4272818}</UniqueIdentifier>
     </Filter>
@@ -18,6 +21,12 @@
     </Filter>
     <Filter Include="Platform\GLFW">
       <UniqueIdentifier>{A98C9061-154D-0C98-DE87-55154A075174}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Vulkan">
+      <UniqueIdentifier>{6AE1DE2D-D66C-4CF2-DF7D-CFE64B88A8F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Platform\Vulkan\VulkanCore">
+      <UniqueIdentifier>{535DF507-3F6D-A1D8-A826-06F794559071}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -28,81 +37,166 @@
     <ClInclude Include="Source\Morpheus\Core\Common.h">
       <Filter>Morpheus\Core</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h">
+      <Filter>Morpheus\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Core\LayerSystem.h">
+      <Filter>Morpheus\Core</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Morpheus\Core\Window.h">
       <Filter>Morpheus\Core</Filter>
     </ClInclude>
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h">
       <Filter>Morpheus\Mathematics</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Morpheus\Mathematics\Matrix4.h">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Mathematics\Quaternion.h">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Mathematics\Vector2.h">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Mathematics\Vector3.h">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Mathematics\Vector4.h">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Renderer\RenderCommand.h">
+      <Filter>Morpheus\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Renderer\Renderer.h">
+      <Filter>Morpheus\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Renderer\RendererAPI.h">
+      <Filter>Morpheus\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\FileLoader.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\MorpheusIOS.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\ThreadPool.h">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\Utilities\TimerClass.h">
       <Filter>Morpheus\Utilities</Filter>
     </ClInclude>
     <ClInclude Include="Source\Morppch.h" />
     <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h">
       <Filter>Platform\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanInstance.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererAPI.h" />
-    <ClInclude Include="Source\Morpheus\Mathematics\Vector2.h" />
-    <ClInclude Include="Source\Morpheus\Mathematics\Vector3.h" />
-    <ClInclude Include="Source\Morpheus\Mathematics\Vector4.h" />
-    <ClInclude Include="Source\Morpheus\Mathematics\Quaternion.h" />
-    <ClInclude Include="Source\Morpheus\Mathematics\Matrix4.h" />
-    <ClInclude Include="Source\Morpheus\Core\LayerSystem.h" />
-    <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\ThreadPool.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\TimerClass.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\MorpheusIOS.h">
-      <Filter>Morpheus\Utilities</Filter>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanInstance.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanDevice.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanContext.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\GraphicsContext.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanSurface.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanSwapchain.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanImageview.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphicsPipeline.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanRenderpass.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanFramebuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCommandPool.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCommandBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanRendererAPI.h">
+      <Filter>Platform\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanRenderpass.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanGraphicsPipeline.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanFramebuffer.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandPool.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandBuffer.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanPresentation.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\Mesh.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGraphics\VulkanSynchronization.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp">
       <Filter>Morpheus\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp">
+      <Filter>Morpheus\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Core\LayerSystem.cpp">
+      <Filter>Morpheus\Core</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Morpheus\Core\Window.cpp">
       <Filter>Morpheus\Core</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Morpheus\Mathematics\Matrix4.cpp">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Mathematics\Quaternion.cpp">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Mathematics\Vector2.cpp">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Mathematics\Vector3.cpp">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Mathematics\Vector4.cpp">
+      <Filter>Morpheus\Mathematics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Renderer\RenderCommand.cpp">
+      <Filter>Morpheus\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Renderer\RendererAPI.cpp">
+      <Filter>Morpheus\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Utilities\MorpheusIOS.cpp">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClCompile>
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp">
+      <Filter>Morpheus\Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Morpheus\Utilities\TimerClass.cpp">
       <Filter>Morpheus\Utilities</Filter>
     </ClCompile>
     <ClCompile Include="Source\Morppch.cpp" />
     <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp">
       <Filter>Platform\GLFW</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanInstance.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererAPI.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Vector3.cpp" />
-    <ClCompile Include="Source\Morpheus\Core\LayerSystem.cpp" />
-    <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Vector2.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Vector4.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Quaternion.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Matrix4.cpp" />
-    <ClCompile Include="Source\Morpheus\Utilities\TimerClass.cpp" />
-    <ClCompile Include="Source\Morpheus\Utilities\MorpheusIOS.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanDevice.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\GraphicsContext.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanContext.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanSurface.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanSwapchain.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanImageview.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphicsPipeline.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanRenderpass.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanFramebuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCommandPool.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanInstance.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanRendererAPI.cpp">
+      <Filter>Platform\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanRenderpass.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanGraphicsPipeline.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanFramebuffer.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandPool.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanCommandBuffer.cpp">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanPresentation.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGraphics\VulkanSynchronization.cpp" />
   </ItemGroup>
 </Project>
