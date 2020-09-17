@@ -8,12 +8,6 @@ namespace Morpheus {
 	//TODO LIST: 
 	/*
 		Ref<Shader>
-		Ref<Renderpass>
-		Ref<GraphicsPipeline>
-		Ref<Framebuffer>
-
-		RendererAPI --> CMD
-
 		Cleanup and maybe adopt Ref<T> instead of *
 	*/
 
@@ -26,37 +20,15 @@ namespace Morpheus {
 		m_VulkanPresentation->SetupSwapchain();
 		m_VulkanPresentation->SetupImageview();
 		
-		m_VulkanRenderpass = new VulkanRenderpass(m_VulkanDevice, m_VulkanPresentation);
-		m_VulkanGraphicsPipeline = new VulkanGraphicsPipeline(m_VulkanDevice, m_VulkanPresentation, m_VulkanRenderpass);
-		m_VulkanFramebuffer = new VulkanFramebuffer(m_VulkanDevice, m_VulkanPresentation, m_VulkanRenderpass);
-		
 		m_VulkanCommandSystem = new VulkanCommandSystem();
-
-		m_CommandBuffer = new VulkanCommandBuffer();
-
+		m_CommandBuffer = new VulkanCommandBuffer(m_VulkanDevice, m_VulkanPresentation);
 		m_VulkanSynchronization = new VulkanSynchronization(m_VulkanDevice, m_VulkanPresentation);
-
-		m_CommandBuffer->cbSetRenderpass(m_VulkanRenderpass);
-		m_CommandBuffer->cbSetPipeline(m_VulkanGraphicsPipeline);
-		m_CommandBuffer->cbSetFramebuffer(m_VulkanFramebuffer);
-		m_CommandBuffer->cbSetClearcolor({0.4, 0.4, 0.6, 1.0f});
-
-		m_VulkanCommandSystem->AllocateBuffer(m_CommandBuffer);
-
-		m_CommandBuffer->BeginRecord();
-		m_CommandBuffer->cbDraw();
-		m_CommandBuffer->EndRecord();
-
-		m_VulkanCommandSystem->ComputeBuffer(m_CommandBuffer);
 	}
 
 	void VulkanRendererAPI::Shutdown()
 	{		
 		delete m_VulkanSynchronization;
 		delete m_VulkanCommandSystem;
-		delete m_VulkanFramebuffer;
-		delete m_VulkanGraphicsPipeline;
-		delete m_VulkanRenderpass;
 		delete m_VulkanDevice;
 		delete m_VulkanPresentation;
 		m_VulkanInstance->Shutdown();
@@ -64,23 +36,58 @@ namespace Morpheus {
 
 	void VulkanRendererAPI::Begin()
 	{
-		m_VulkanSynchronization->Begin(m_VulkanCommandSystem);
+		m_VulkanCommandSystem->AllocateBuffers(m_CommandBuffer);
+
+		m_CommandBuffer->BeginRecord();
 	}
 
 	void VulkanRendererAPI::End()
-	{	
-		m_VulkanSynchronization->End(m_VulkanRenderpass);
+	{
+		m_CommandBuffer->EndRecord();
+		m_VulkanCommandSystem->ComputeBuffers(m_CommandBuffer);
 	}
 
 	void VulkanRendererAPI::Flush()
 	{
-		m_VulkanSynchronization->Flush();
-		vkDeviceWaitIdle(m_VulkanDevice->GetDevice());
+		m_VulkanSynchronization->Flush(m_VulkanCommandSystem);
+		m_VulkanDevice->Wait();
+
+		m_VulkanCommandSystem->ResetBuffers(m_CommandBuffer);
 	}
 
 	void VulkanRendererAPI::Reset()
 	{
 		m_VulkanDevice->Wait();
+	}
+
+	void VulkanRendererAPI::SetViewport()
+	{
+		m_CommandBuffer->cbSetViewport();
+	}
+
+	void VulkanRendererAPI::SetClearColor(const Vector4& _Color)
+	{
+		m_CommandBuffer->cbSetClearcolor(_Color);
+	}
+
+	void VulkanRendererAPI::SetRenderpass(const Ref<Renderpass>& _Renderpass)
+	{
+		m_CommandBuffer->cbSetRenderpass(_Renderpass);
+	}
+
+	void VulkanRendererAPI::SetPipeline(const Ref<Pipeline>& _Pipeline)
+	{
+		m_CommandBuffer->cbSetPipeline(_Pipeline);
+	}
+
+	void VulkanRendererAPI::SetFramebuffer(const Ref<Framebuffer>& _Framebuffer)
+	{
+		m_CommandBuffer->cbSetFramebuffer(_Framebuffer);
+	}
+
+	void VulkanRendererAPI::DrawGeomerty()
+	{
+		m_CommandBuffer->cbDraw();
 	}
 
 

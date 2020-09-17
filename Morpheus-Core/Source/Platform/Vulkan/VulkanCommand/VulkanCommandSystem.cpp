@@ -2,12 +2,16 @@
 #include "VulkanCommandSystem.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanInstance.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanGraphicsPipeline.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanFramebuffer.h"
 
 namespace Morpheus {
 
 	// !--------------------------------------------------------------------------------------------------->
 
-	VulkanCommandBuffer::VulkanCommandBuffer()
+	VulkanCommandBuffer::VulkanCommandBuffer(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation)
+		: m_VulkanCore({ _lDevice, _Presentation })
 	{
 		MORP_CORE_WARN("[VULKAN] CommandBuffer Was Created!");
 	}
@@ -24,18 +28,17 @@ namespace Morpheus {
 			VkRenderPassBeginInfo RenderPassInfo {};
 			{
 				RenderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-				RenderPassInfo.renderPass = Info.Renderpass->GetRenderpass();
-				RenderPassInfo.framebuffer = Info.Framebuffer->GetFramebuffers(Info.SmartIndex);
+				RenderPassInfo.renderPass = CastRef<VulkanRenderpass>(Info.Renderpass)->GetRenderpass();
+				RenderPassInfo.framebuffer = CastRef<VulkanFramebuffer>(Info.Framebuffer)->GetFramebuffers(Info.SmartIndex);
 				RenderPassInfo.renderArea.offset = { 0, 0 };
-				RenderPassInfo.renderArea.extent = VulkanInstance::GetInstance()->GetPresentation()->GetExtent();
+				RenderPassInfo.renderArea.extent = Info.Extent;
 				RenderPassInfo.clearValueCount = 1;
 				RenderPassInfo.pClearValues = &Info.ClearColor;
 			}
 
 			vkCmdBeginRenderPass(Info.Buffers[Info.SmartIndex], &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 			vkCmdBindPipeline(Info.Buffers[Info.SmartIndex], VK_PIPELINE_BIND_POINT_GRAPHICS,
-				Info.Pipeline->GetPipeline());
-
+				CastRef<VulkanGraphicsPipeline>(Info.Pipeline)->GetPipeline());
 		};
 
 		m_Commands.push_back(func);
@@ -61,7 +64,7 @@ namespace Morpheus {
 
 	void VulkanCommandBuffer::cbSetViewport()
 	{
-		//TODO
+		m_Info.Extent = m_VulkanCore.Presentation->GetExtent();
 	}
 
 	void VulkanCommandBuffer::cbSetClearcolor(const Vector4& _Color)
@@ -70,34 +73,36 @@ namespace Morpheus {
 		m_Info.ClearColor = ClearColor;
 	}
 
-	void VulkanCommandBuffer::cbSetPipeline(VulkanGraphicsPipeline* _Pipeline)
-	{
-		m_Info.Pipeline = _Pipeline;
-	}
-
-	void VulkanCommandBuffer::cbSetRenderpass(VulkanRenderpass* _Renderpass)
+	void VulkanCommandBuffer::cbSetRenderpass(const Ref<Renderpass>&  _Renderpass)
 	{
 		m_Info.Renderpass = _Renderpass;
 	}
 
-	void VulkanCommandBuffer::cbSetFramebuffer(VulkanFramebuffer* _Framebuffer)
+	void VulkanCommandBuffer::cbSetPipeline(const Ref<Pipeline>& _Pipeline)
+	{
+		m_Info.Pipeline = _Pipeline;
+	}
+
+	void VulkanCommandBuffer::cbSetFramebuffer(const Ref<Framebuffer>& _Framebuffer)
 	{
 		m_Info.Framebuffer = _Framebuffer;
 	}
 
-
 	void VulkanCommandBuffer::SetupBuffer(const VkCommandBuffer& _Buffer)
 	{
-		//PUSH BACK MULTIPLE BUFFERS
-
 		m_Info.Buffers.push_back(_Buffer);
 		m_Info.SmartIndex = 0;
 	}
 
+	void VulkanCommandBuffer::FreeBuffers(VulkanCommandPool* _Pool)
+	{
+		vkFreeCommandBuffers(m_VulkanCore.lDevice->GetDevice(), _Pool->GetPool(),
+		m_Info.Buffers.size(), m_Info.Buffers.data());
+		m_Info.Buffers.clear();
+	}
+
 	const Vector<VkCommandBuffer>& VulkanCommandBuffer::CompileBuffer()
 	{
-		//loop though every buffer --> loop throught every cmd
-
 		for (uint32 cmd = 0; cmd < m_Info.Buffers.size(); cmd++) {
 			for (uint32 i = 0; i < m_Commands.size(); i++) {
 				auto Func = m_Commands[i];
@@ -153,12 +158,12 @@ namespace Morpheus {
 		vkDestroyCommandPool(Instance->GetLogicalDevice()->GetDevice(), m_VulkanCommandPool->GetPool(), nullptr);
 	}
 
-	void VulkanCommandSystem::AllocateBuffer(VulkanCommandBuffer* _Buffer)
+	void VulkanCommandSystem::AllocateBuffers(VulkanCommandBuffer* _Buffer)
 	{
 		auto Instance = VulkanInstance::GetInstance();
 		uint32 Size = Instance->GetPresentation()->GetSize();
+		m_CommandBuffers.resize(Size);
 
-		Vector<VkCommandBuffer> CommandBuffer(Size);
 		VkCommandBufferAllocateInfo AllocInfo {};
 		{
 			AllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -166,17 +171,23 @@ namespace Morpheus {
 			AllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			AllocInfo.commandBufferCount = Size;
 		}
-		VkResult result = vkAllocateCommandBuffers(Instance->GetLogicalDevice()->GetDevice(), &AllocInfo, CommandBuffer.data());
+
+		VkResult result = vkAllocateCommandBuffers(Instance->GetLogicalDevice()->GetDevice(), &AllocInfo, m_CommandBuffers.data());
 		MORP_CORE_ASSERT(result, "Failed to allocate Command Buffers!");
 
 		for (uint32 i = 0; i < Size; i++)
-			_Buffer->SetupBuffer(CommandBuffer[i]);
-		
+			_Buffer->SetupBuffer(m_CommandBuffers[i]);
+		m_Renderpass = _Buffer->m_Info.Renderpass;
 	}
 
-	void VulkanCommandSystem::ComputeBuffer(VulkanCommandBuffer* _Buffer)
+	void VulkanCommandSystem::ComputeBuffers(VulkanCommandBuffer* _Buffer)
 	{
 		m_CommandBuffers = _Buffer->CompileBuffer();
+	}
+
+	void VulkanCommandSystem::ResetBuffers(VulkanCommandBuffer* _Buffer)
+	{
+		_Buffer->FreeBuffers(m_VulkanCommandPool);
 	}
 
 }

@@ -7,12 +7,8 @@
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
 
-#include "Platform/Vulkan/VulkanGraphics/VulkanGraphicsPipeline.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanFramebuffer.h"
-
-#include "Platform/Vulkan/VulkanGraphics/VulkanCommandSystem.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanSynchronization.h"
+#include "Platform/Vulkan/VulkanCommand/VulkanCommandSystem.h"
+#include "Platform/Vulkan/VulkanCommand/VulkanSynchronization.h"
 
 namespace Morpheus {
 
@@ -28,16 +24,17 @@ namespace Morpheus {
 
 		virtual void Reset() override;
 
+		virtual void SetViewport() override;
+		virtual void SetClearColor(const Vector4& _Color) override;
+		virtual void SetRenderpass(const Ref<Renderpass>& _Renderpass) override;
+		virtual void SetPipeline(const Ref<Pipeline>& _Pipeline) override;
+		virtual void SetFramebuffer(const Ref<Framebuffer>& _Framebuffer) override;
+		virtual void DrawGeomerty() override;
+
 	private:
 		VulkanInstance* m_VulkanInstance;
 		VulkanPresentation* m_VulkanPresentation;
 		VulkanLogicalDevice* m_VulkanDevice;
-
-		// MAKE REAL OBJECTS INSIDE ENGINE SIDE.
-		// GRAB THE SHADERS.
-		VulkanRenderpass* m_VulkanRenderpass;
-		VulkanGraphicsPipeline* m_VulkanGraphicsPipeline;
-		VulkanFramebuffer* m_VulkanFramebuffer;
 		
 		// COMBINE INTO COMMAND SYSTEM
 		VulkanCommandSystem* m_VulkanCommandSystem;

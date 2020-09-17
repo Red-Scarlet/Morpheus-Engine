@@ -2,11 +2,18 @@
 #include "Morppch.h"
 #include "VulkanRenderpass.h"
 
+#include "Platform/Vulkan/VulkanCore/VulkanInstance.h"
+
 namespace Morpheus {
 
-	VulkanRenderpass::VulkanRenderpass(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation)
-		: m_VulkanCore({ _lDevice, _Presentation })
+	//VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation
+
+	VulkanRenderpass::VulkanRenderpass()
 	{
+		auto Instance = VulkanInstance::GetInstance();
+		m_VulkanCore.lDevice = Instance->GetLogicalDevice();
+		m_VulkanCore.Presentation = Instance->GetPresentation();
+
 		CreateRenderpass();
 		MORP_CORE_WARN("[VULKAN] Renderpass Was Created!");
 	}

@@ -3,6 +3,10 @@
 #include "Morpheus/Core/Common.h"
 #include "Morpheus/Mathematics/Mathematics.h"
 
+#include "RendererCore/Renderpass.h"
+#include "RendererCore/Pipeline.h"
+#include "RendererCore/Framebuffer.h"
+
 namespace Morpheus {
 
 	class RendererAPI
@@ -18,14 +22,13 @@ namespace Morpheus {
 		virtual void Flush() = 0;
 
 		virtual void Reset() = 0;
-
-		/*
+		
 		virtual void SetViewport() = 0;
 		virtual void SetClearColor(const Vector4& _Color) = 0;
-		virtual void SetRenderpass() = 0;
-		virtual void SetPipeline() = 0;
-		virtual void DrawGeomerty() = 0;
-		*/
+		virtual void SetRenderpass(const Ref<Renderpass>& _Renderpass) = 0;
+		virtual void SetPipeline(const Ref<Pipeline>& _Pipeline) = 0;
+		virtual void SetFramebuffer(const Ref<Framebuffer>& _Framebuffer) = 0;
+		virtual void DrawGeomerty() = 0;	
 
 		inline static void SetAPI(const API& _API) { s_RenderAPI = _API; }
 		inline static API GetAPI() { return s_RenderAPI; }

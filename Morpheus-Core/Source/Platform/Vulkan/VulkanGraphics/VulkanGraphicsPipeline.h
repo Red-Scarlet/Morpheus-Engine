@@ -2,19 +2,21 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
+#include "Morpheus/Renderer/RendererCore/Renderpass.h"
+#include "Morpheus/Renderer/RendererCore/Pipeline.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
-#include "VulkanRenderpass.h"
 
 #include <vulkan/vulkan.h>
 
 namespace Morpheus {
 
-	class VulkanGraphicsPipeline	//TODO SPLIT SHADER UP INTO OWNING CLASS
+	//TODO SPLIT SHADER UP INTO OWNING CLASS
+	class VulkanGraphicsPipeline : public Pipeline
 	{
 	public:
-		VulkanGraphicsPipeline(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation, VulkanRenderpass* _Renderpass);
+		VulkanGraphicsPipeline(const Ref<Renderpass>& _Renderpass);
 		~VulkanGraphicsPipeline();
 
 		VkPipeline GetPipeline() { return m_VulkanObject.Pipeline; }
@@ -27,12 +29,12 @@ namespace Morpheus {
 		struct {
 			VulkanLogicalDevice* lDevice;
 			VulkanPresentation* Presentation;
+			Ref<Renderpass> Renderpass;
 		} m_VulkanCore;
 
 		struct {
 			VkPipelineLayout PipelineLayout;
 			VkPipeline Pipeline;			
-			VulkanRenderpass* Renderpass;
 
 		} m_VulkanObject;
 

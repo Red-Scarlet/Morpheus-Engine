@@ -39,6 +39,36 @@ namespace Morpheus {
 			s_RendererAPI->Reset();
 		}
 
+		inline static void SetViewport()
+		{
+			s_RendererAPI->SetViewport();
+		}
+
+		inline static void SetClearColor(const Vector4& _Color)
+		{
+			s_RendererAPI->SetClearColor(_Color);
+		}
+
+		inline static void SetRenderpass(const Ref<Renderpass>& _Renderpass)
+		{
+			s_RendererAPI->SetRenderpass(_Renderpass);
+		}
+
+		inline static void SetPipeline(const Ref<Pipeline>& _Pipeline)
+		{
+			s_RendererAPI->SetPipeline(_Pipeline);
+		}
+
+		inline static void SetFramebuffer(const Ref<Framebuffer>& _Framebuffer)
+		{
+			s_RendererAPI->SetFramebuffer(_Framebuffer);
+		}
+
+		inline static void DrawGeomerty()
+		{
+			s_RendererAPI->DrawGeomerty();
+		}
+
 	private:
 		static Scope<RendererAPI> s_RendererAPI;
 	};

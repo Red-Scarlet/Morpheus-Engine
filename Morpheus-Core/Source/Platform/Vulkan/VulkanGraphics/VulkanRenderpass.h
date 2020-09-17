@@ -2,6 +2,7 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
+#include "Morpheus/Renderer/RendererCore/Renderpass.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
@@ -10,11 +11,11 @@
 
 namespace Morpheus {
 
-	class VulkanRenderpass
+	class VulkanRenderpass : public Renderpass
 	{
 	public:
-		VulkanRenderpass(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation);
-		~VulkanRenderpass();
+		VulkanRenderpass();
+		virtual ~VulkanRenderpass();
 
 		VkRenderPass GetRenderpass() { return m_VulkanObject.Renderpass; }
 		VkRenderPassCreateInfo& GetInfo() { return m_VulkanObject.Info; }

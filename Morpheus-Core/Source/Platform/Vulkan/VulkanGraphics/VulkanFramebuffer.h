@@ -2,19 +2,20 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
+#include "Morpheus/Renderer/RendererCore/Renderpass.h"
+#include "Morpheus/Renderer/RendererCore/Framebuffer.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
-#include "VulkanRenderpass.h"
 
 #include <vulkan/vulkan.h>
 
 namespace Morpheus {
 
-	class VulkanFramebuffer
+	class VulkanFramebuffer : public Framebuffer
 	{
 	public:
-		VulkanFramebuffer(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation, VulkanRenderpass* _Renderpass);
+		VulkanFramebuffer(const Ref<Renderpass>& _Renderpass);
 		~VulkanFramebuffer();
 
 		const VkFramebuffer& GetFramebuffers(const uint32& _Index) { return m_VulkanObject.Framebuffers[_Index]; }
@@ -27,12 +28,11 @@ namespace Morpheus {
 		struct {
 			VulkanLogicalDevice* lDevice;
 			VulkanPresentation* Presentation;
+			Ref<Renderpass> Renderpass;
 		} m_VulkanCore;
 
 		struct {
 			Vector<VkFramebuffer> Framebuffers;
-			VulkanRenderpass* Renderpass;
-
 		} m_VulkanObject;
 
 	};

@@ -2,6 +2,9 @@
 #include "Morppch.h"
 #include "VulkanGraphicsPipeline.h"
 
+#include "Platform/Vulkan/VulkanCore/VulkanInstance.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
+
 #include <fstream>
 
 namespace Morpheus {
@@ -12,9 +15,6 @@ namespace Morpheus {
 
 		if (!file.is_open())
 			MORP_CORE_ASSERT(true, "Failed to open file!");
-
-
-
 		size_t fileSize = (size_t)file.tellg();
 		std::vector<char> buffer(fileSize);
 		file.seekg(0);
@@ -24,10 +24,13 @@ namespace Morpheus {
 		return buffer;
 	}
 
-	VulkanGraphicsPipeline::VulkanGraphicsPipeline(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation, VulkanRenderpass* _Renderpass)
-		: m_VulkanCore({ _lDevice, _Presentation })
+	VulkanGraphicsPipeline::VulkanGraphicsPipeline(const Ref<Renderpass>& _Renderpass)
 	{
-		m_VulkanObject.Renderpass = _Renderpass;
+		auto Instance = VulkanInstance::GetInstance();
+		m_VulkanCore.lDevice = Instance->GetLogicalDevice();
+		m_VulkanCore.Presentation = Instance->GetPresentation();
+		m_VulkanCore.Renderpass = _Renderpass;
+
 		CreateGraphicsPipeline();
 		MORP_CORE_WARN("[VULKAN] GraphicsPipeline Was Created!");
 	}
@@ -164,7 +167,7 @@ namespace Morpheus {
 			pipelineInfo.pMultisampleState = &multisampling;
 			pipelineInfo.pColorBlendState = &colorBlending;
 			pipelineInfo.layout = m_VulkanObject.PipelineLayout;
-			pipelineInfo.renderPass = m_VulkanObject.Renderpass->GetRenderpass();
+			pipelineInfo.renderPass = CastRef<VulkanRenderpass>(m_VulkanCore.Renderpass)->GetRenderpass();
 			pipelineInfo.subpass = 0;
 			pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		}

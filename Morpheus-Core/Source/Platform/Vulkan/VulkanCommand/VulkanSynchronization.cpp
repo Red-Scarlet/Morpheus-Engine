@@ -29,9 +29,9 @@ namespace Morpheus {
 		return &m_VulkanObject.RenderSemaphores[_Index];
 	}
 
-	void VulkanSynchronization::Begin(VulkanCommandSystem* _CommandSystem)
+	void VulkanSynchronization::Flush(VulkanCommandSystem* _CommandSystem)
 	{
-		vkWaitForFences(m_VulkanCore.lDevice->GetDevice(), 1, &m_VulkanObject.InFlightFences[m_VulkanObject.CurrentFrame], 
+		vkWaitForFences(m_VulkanCore.lDevice->GetDevice(), 1, &m_VulkanObject.InFlightFences[m_VulkanObject.CurrentFrame],
 			VK_TRUE, UINT64_MAX);
 
 		vkAcquireNextImageKHR(m_VulkanCore.lDevice->GetDevice(), m_VulkanCore.Presentation->GetSwapchain(),
@@ -46,7 +46,7 @@ namespace Morpheus {
 		VkSemaphore SignalSemaphores[] = { m_VulkanObject.RenderSemaphores[m_VulkanObject.CurrentFrame] };
 		VkPipelineStageFlags WaitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
 
-		VkSubmitInfo SubmitInfo {};
+		VkSubmitInfo SubmitInfo{};
 		{
 			SubmitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 			SubmitInfo.waitSemaphoreCount = 1;
@@ -63,10 +63,7 @@ namespace Morpheus {
 		VkResult result = vkQueueSubmit(m_VulkanCore.lDevice->GetGraphicsQueue(), 1,
 			&SubmitInfo, m_VulkanObject.InFlightFences[m_VulkanObject.CurrentFrame]);
 		MORP_CORE_ASSERT(result, "Failed to create Render Semaphore!");
-	}
 
-	void VulkanSynchronization::End(VulkanRenderpass* _Renderpass)
-	{
 		VkSubpassDependency Dependency{};
 		{
 			Dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -76,14 +73,12 @@ namespace Morpheus {
 			Dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			Dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		}
-		_Renderpass->GetInfo().dependencyCount = 1;
-		_Renderpass->GetInfo().pDependencies = &Dependency;
-	}
 
-	void VulkanSynchronization::Flush()
-	{
+		Ref<Renderpass> rp = _CommandSystem->GetRenderpass();
+		CastRef<VulkanRenderpass>(rp)->GetInfo().dependencyCount = 1;
+		CastRef<VulkanRenderpass>(rp)->GetInfo().pDependencies = &Dependency;
+
 		VkSwapchainKHR SwapChains[] = { m_VulkanCore.Presentation->GetSwapchain() };
-		VkSemaphore SignalSemaphores[] = { m_VulkanObject.RenderSemaphores[m_VulkanObject.CurrentFrame] };
 
 		VkPresentInfoKHR PresentInfo {};
 		{
@@ -96,7 +91,6 @@ namespace Morpheus {
 		}
 
 		vkQueuePresentKHR(m_VulkanCore.lDevice->GetPresentQueue(), &PresentInfo);
-		//vkQueueWaitIdle(m_VulkanCore.lDevice->GetPresentQueue());
 		m_VulkanObject.CurrentFrame = (m_VulkanObject.CurrentFrame + 1) % 2;
 	}
 

@@ -2,12 +2,20 @@
 #include "Morppch.h"
 #include "VulkanFramebuffer.h"
 
+#include "Platform/Vulkan/VulkanCore/VulkanInstance.h"
+
+#include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
+
 namespace Morpheus {
 
-	VulkanFramebuffer::VulkanFramebuffer(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation, VulkanRenderpass* _Renderpass)
-		: m_VulkanCore({ _lDevice, _Presentation })
+
+	VulkanFramebuffer::VulkanFramebuffer(const Ref<Renderpass>& _Renderpass)
 	{
-		m_VulkanObject.Renderpass = _Renderpass;
+		auto Instance = VulkanInstance::GetInstance();
+		m_VulkanCore.lDevice = Instance->GetLogicalDevice();
+		m_VulkanCore.Presentation = Instance->GetPresentation();
+		m_VulkanCore.Renderpass = _Renderpass;
+
 		CreateFramebuffer();
 		MORP_CORE_WARN("[VULKAN] Framebuffer Was Created!");
 	}
@@ -20,10 +28,10 @@ namespace Morpheus {
 
 	void VulkanFramebuffer::CreateFramebuffer()
 	{
-		VkFramebufferCreateInfo FramebufferInfo{};
+		VkFramebufferCreateInfo FramebufferInfo {};
 		{
 			FramebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-			FramebufferInfo.renderPass = m_VulkanObject.Renderpass->GetRenderpass();
+			FramebufferInfo.renderPass = CastRef<VulkanRenderpass>(m_VulkanCore.Renderpass)->GetRenderpass();
 			FramebufferInfo.attachmentCount = 1;
 			FramebufferInfo.width = m_VulkanCore.Presentation->GetExtent().width;
 			FramebufferInfo.height = m_VulkanCore.Presentation->GetExtent().height;
