@@ -49,24 +49,24 @@ namespace Morpheus {
 			s_RendererAPI->SetClearColor(_Color);
 		}
 
-		inline static void SetRenderpass(const Ref<Renderpass>& _Renderpass)
+		inline static void BindPipeline(const Ref<Pipeline>& _Pipeline)
 		{
-			s_RendererAPI->SetRenderpass(_Renderpass);
+			s_RendererAPI->BindPipeline(_Pipeline);
 		}
 
-		inline static void SetPipeline(const Ref<Pipeline>& _Pipeline)
+		inline static void BeginRenderpass(const Ref<Renderpass>& _Renderpass)
 		{
-			s_RendererAPI->SetPipeline(_Pipeline);
+			s_RendererAPI->BeginRenderpass(_Renderpass);
 		}
 
-		inline static void SetFramebuffer(const Ref<Framebuffer>& _Framebuffer)
+		inline static void EndRenderpass(const Ref<Renderpass>& _Renderpass)
 		{
-			s_RendererAPI->SetFramebuffer(_Framebuffer);
+			s_RendererAPI->EndRenderpass(_Renderpass);
 		}
 
-		inline static void DrawGeomerty()
+		inline static void DrawGeomerty(const Ref<VertexBuffer>& _VertexBuffer)
 		{
-			s_RendererAPI->DrawGeomerty();
+			s_RendererAPI->DrawGeomerty(_VertexBuffer);
 		}
 
 	private:

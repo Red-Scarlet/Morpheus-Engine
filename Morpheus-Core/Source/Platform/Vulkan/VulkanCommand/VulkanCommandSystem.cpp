@@ -4,114 +4,85 @@
 #include "Platform/Vulkan/VulkanCore/VulkanInstance.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanGraphicsPipeline.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanFramebuffer.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanVertexBuffer.h"
 
 namespace Morpheus {
 
 	// !--------------------------------------------------------------------------------------------------->
 
-	VulkanCommandBuffer::VulkanCommandBuffer(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation)
-		: m_VulkanCore({ _lDevice, _Presentation })
-	{
-		MORP_CORE_WARN("[VULKAN] CommandBuffer Was Created!");
-	}
-
 	void VulkanCommandBuffer::BeginRecord()
 	{
-		auto func = [](VulkanCommandInformation Info) {
-			VkCommandBufferBeginInfo BeginInfo {};
-			BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		VkCommandBufferBeginInfo BeginInfo {};
+		BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
-			VkResult result = vkBeginCommandBuffer(Info.Buffers[Info.SmartIndex], &BeginInfo);
-			MORP_CORE_ASSERT(result, "Failed to begin recording Command Buffer!");
-
-			VkRenderPassBeginInfo RenderPassInfo {};
-			{
-				RenderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-				RenderPassInfo.renderPass = CastRef<VulkanRenderpass>(Info.Renderpass)->GetRenderpass();
-				RenderPassInfo.framebuffer = CastRef<VulkanFramebuffer>(Info.Framebuffer)->GetFramebuffers(Info.SmartIndex);
-				RenderPassInfo.renderArea.offset = { 0, 0 };
-				RenderPassInfo.renderArea.extent = Info.Extent;
-				RenderPassInfo.clearValueCount = 1;
-				RenderPassInfo.pClearValues = &Info.ClearColor;
-			}
-
-			vkCmdBeginRenderPass(Info.Buffers[Info.SmartIndex], &RenderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-			vkCmdBindPipeline(Info.Buffers[Info.SmartIndex], VK_PIPELINE_BIND_POINT_GRAPHICS,
-				CastRef<VulkanGraphicsPipeline>(Info.Pipeline)->GetPipeline());
-		};
-
-		m_Commands.push_back(func);
+		VkResult result = vkBeginCommandBuffer(m_VulkanObject.Buffers[m_VulkanObject.Index], &BeginInfo);
+		MORP_CORE_ASSERT(result, "Failed to begin recording Command Buffer!");
 	}
 
 	void VulkanCommandBuffer::EndRecord()
 	{
-		auto func = [](VulkanCommandInformation Info) {
-			vkCmdEndRenderPass(Info.Buffers[Info.SmartIndex]);
-			VkResult result = vkEndCommandBuffer(Info.Buffers[Info.SmartIndex]);
-			MORP_CORE_ASSERT(result, "Failed to to record Command Buffer!");
-		};
-		m_Commands.push_back(func);
-	}
-
-	void VulkanCommandBuffer::cbDraw()
-	{
-		auto func = [](VulkanCommandInformation Info) {
-			vkCmdDraw(Info.Buffers[Info.SmartIndex], 3, 1, 0, 0);
-		};
-		m_Commands.push_back(func);
+		VkResult result = vkEndCommandBuffer(m_VulkanObject.Buffers[m_VulkanObject.Index]);
+		MORP_CORE_ASSERT(result, "Failed to to record Command Buffer!");
 	}
 
 	void VulkanCommandBuffer::cbSetViewport()
 	{
-		m_Info.Extent = m_VulkanCore.Presentation->GetExtent();
+		auto Instance = VulkanInstance::GetInstance();
+		m_VulkanObject.Extent = Instance->GetPresentation()->GetExtent();
+	}
+
+	void VulkanCommandBuffer::cbSetIndex(const uint32& _Index)
+	{
+		m_VulkanObject.Index = _Index;
 	}
 
 	void VulkanCommandBuffer::cbSetClearcolor(const Vector4& _Color)
 	{
 		VkClearValue ClearColor = { _Color.x, _Color.y, _Color.z, _Color.w };
-		m_Info.ClearColor = ClearColor;
+		m_VulkanObject.ClearColor = ClearColor;
 	}
 
-	void VulkanCommandBuffer::cbSetRenderpass(const Ref<Renderpass>&  _Renderpass)
+	void VulkanCommandBuffer::cbBindPipeline(const Ref<Pipeline>& _Pipeline)
 	{
-		m_Info.Renderpass = _Renderpass;
+		vkCmdBindPipeline(m_VulkanObject.Buffers[m_VulkanObject.Index], VK_PIPELINE_BIND_POINT_GRAPHICS,
+			CastRef<VulkanGraphicsPipeline>(_Pipeline)->GetPipeline());
 	}
 
-	void VulkanCommandBuffer::cbSetPipeline(const Ref<Pipeline>& _Pipeline)
+	void VulkanCommandBuffer::cbBeginRenderpass(const Ref<Renderpass>& _Renderpass)
 	{
-		m_Info.Pipeline = _Pipeline;
-	}
-
-	void VulkanCommandBuffer::cbSetFramebuffer(const Ref<Framebuffer>& _Framebuffer)
-	{
-		m_Info.Framebuffer = _Framebuffer;
-	}
-
-	void VulkanCommandBuffer::SetupBuffer(const VkCommandBuffer& _Buffer)
-	{
-		m_Info.Buffers.push_back(_Buffer);
-		m_Info.SmartIndex = 0;
-	}
-
-	void VulkanCommandBuffer::FreeBuffers(VulkanCommandPool* _Pool)
-	{
-		vkFreeCommandBuffers(m_VulkanCore.lDevice->GetDevice(), _Pool->GetPool(),
-		m_Info.Buffers.size(), m_Info.Buffers.data());
-		m_Info.Buffers.clear();
-	}
-
-	const Vector<VkCommandBuffer>& VulkanCommandBuffer::CompileBuffer()
-	{
-		for (uint32 cmd = 0; cmd < m_Info.Buffers.size(); cmd++) {
-			for (uint32 i = 0; i < m_Commands.size(); i++) {
-				auto Func = m_Commands[i];
-				Func(m_Info);
-			}
-			m_Info.SmartIndex++;
+		VkRenderPassBeginInfo BeginInfo;
+		{
+			BeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			BeginInfo.pNext = nullptr;
+			BeginInfo.renderPass = CastRef<VulkanRenderpass>(_Renderpass)->GetRenderpass();
+			BeginInfo.framebuffer = CastRef<VulkanRenderpass>(_Renderpass)->GetFramebuffer(m_VulkanObject.Index);
+			BeginInfo.renderArea.offset = { 0, 0 };
+			BeginInfo.renderArea.extent = m_VulkanObject.Extent;
+			BeginInfo.clearValueCount = 1;
+			BeginInfo.pClearValues = &m_VulkanObject.ClearColor;
 		}
-		m_Commands.clear();
-		return m_Info.Buffers;
+
+		vkCmdBeginRenderPass(m_VulkanObject.Buffers[m_VulkanObject.Index],
+			&BeginInfo, VK_SUBPASS_CONTENTS_INLINE);
+	}
+
+	void VulkanCommandBuffer::cbEndRenderpass(const Ref<Renderpass>& _Renderpass)
+	{
+		vkCmdEndRenderPass(m_VulkanObject.Buffers[m_VulkanObject.Index]);
+	}
+
+	void VulkanCommandBuffer::cbDraw(const Ref<VertexBuffer>& _VertexBuffer)
+	{
+		Ref<VulkanVertexBuffer> VertexBuffer = CastRef<VulkanVertexBuffer>(_VertexBuffer);
+		VkBuffer Buffers[] = { VertexBuffer->GetBuffer() };
+		VkDeviceSize Offsets[] = { 0 };
+		vkCmdBindVertexBuffers(m_VulkanObject.Buffers[m_VulkanObject.Index], 0, 1, Buffers, Offsets);
+		vkCmdDraw(m_VulkanObject.Buffers[m_VulkanObject.Index], VertexBuffer->GetSize(), 1, 0, 0);
+	}
+
+	void VulkanCommandBuffer::PushBuffer(const VkCommandBuffer& _Buffer)
+	{
+		m_VulkanObject.Buffers.push_back(_Buffer);
 	}
 
 	// !--------------------------------------------------------------------------------------------------->
@@ -147,47 +118,128 @@ namespace Morpheus {
 	VulkanCommandSystem::VulkanCommandSystem()
 	{
 		auto Instance = VulkanInstance::GetInstance();
-		m_VulkanCommandPool = new VulkanCommandPool(Instance->GetLogicalDevice(), Instance->GetPhysicalDevice());
+		m_VulkanObject.Pool = new VulkanCommandPool(Instance->GetLogicalDevice(), Instance->GetPhysicalDevice());
 		MORP_CORE_WARN("[VULKAN] CommandSystem Was Created!");
 
 	}
 
 	VulkanCommandSystem::~VulkanCommandSystem()
 	{
-		auto Instance = VulkanInstance::GetInstance();
-		vkDestroyCommandPool(Instance->GetLogicalDevice()->GetDevice(), m_VulkanCommandPool->GetPool(), nullptr);
+		delete m_VulkanObject.Pool;
 	}
 
-	void VulkanCommandSystem::AllocateBuffers(VulkanCommandBuffer* _Buffer)
+	void VulkanCommandSystem::AllocateBuffers()
 	{
 		auto Instance = VulkanInstance::GetInstance();
-		uint32 Size = Instance->GetPresentation()->GetSize();
-		m_CommandBuffers.resize(Size);
+		uint32 BufferSize = Instance->GetPresentation()->GetSize();
 
+		Vector<VkCommandBuffer> Buffers(BufferSize);
 		VkCommandBufferAllocateInfo AllocInfo {};
 		{
 			AllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-			AllocInfo.commandPool = m_VulkanCommandPool->GetPool();
+			AllocInfo.commandPool = m_VulkanObject.Pool->GetPool();
 			AllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-			AllocInfo.commandBufferCount = Size;
+			AllocInfo.commandBufferCount = BufferSize;
 		}
 
-		VkResult result = vkAllocateCommandBuffers(Instance->GetLogicalDevice()->GetDevice(), &AllocInfo, m_CommandBuffers.data());
+		VkResult result = vkAllocateCommandBuffers(Instance->GetLogicalDevice()->GetDevice(), 
+			&AllocInfo, Buffers.data());
 		MORP_CORE_ASSERT(result, "Failed to allocate Command Buffers!");
 
-		for (uint32 i = 0; i < Size; i++)
-			_Buffer->SetupBuffer(m_CommandBuffers[i]);
-		m_Renderpass = _Buffer->m_Info.Renderpass;
+		m_VulkanObject.Buffer = new VulkanCommandBuffer();
+
+		for(uint32 i = 0; i < BufferSize; ++i)
+			m_VulkanObject.Buffer->PushBuffer(Buffers[i]);
 	}
 
-	void VulkanCommandSystem::ComputeBuffers(VulkanCommandBuffer* _Buffer)
+	void VulkanCommandSystem::DeallocateBuffers()
 	{
-		m_CommandBuffers = _Buffer->CompileBuffer();
+		auto Instance = VulkanInstance::GetInstance();
+		for (uint32 i = 0; i < m_VulkanObject.Buffer->GetSize(); i++)
+			vkFreeCommandBuffers(Instance->GetLogicalDevice()->GetDevice(), m_VulkanObject.Pool->GetPool(), 1,
+				&m_VulkanObject.Buffer->GetBuffer(i));
 	}
 
-	void VulkanCommandSystem::ResetBuffers(VulkanCommandBuffer* _Buffer)
+	void VulkanCommandSystem::CompileBuffers()
 	{
-		_Buffer->FreeBuffers(m_VulkanCommandPool);
+		for (uint32 i = 0; i < m_VulkanObject.Buffer->GetSize(); i++)
+			for (uint32 j = 0; j < m_VulkanObject.Commands.size(); j++) {
+				m_VulkanObject.Buffer->cbSetIndex(i);
+				auto Func = m_VulkanObject.Commands[j];
+				Func(m_VulkanObject.Buffer, m_Description);
+			}
+		m_VulkanObject.Commands.clear();
+	}
+
+	const VkCommandPool& VulkanCommandSystem::GetCommandPool()
+	{
+		return m_VulkanObject.Pool->GetPool();
+	}
+
+	const VkCommandBuffer& VulkanCommandSystem::GetCommandBuffer(const uint32& _Index)
+	{
+		return m_VulkanObject.Buffer->GetBuffer(_Index);
+	}
+
+	void VulkanCommandSystem::BeginRecord()
+	{
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->BeginRecord();
+		});
+	}
+
+	void VulkanCommandSystem::EndRecord()
+	{
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->EndRecord();
+		});
+	}
+
+	void VulkanCommandSystem::SetViewport()
+	{
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->cbSetViewport();
+		});
+	}
+
+	void VulkanCommandSystem::SetClearcolor(const Vector4& _Color)
+	{
+		m_Description.Color = _Color;
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->cbSetClearcolor(CommandDesc.Color);
+		});
+	}
+
+	void VulkanCommandSystem::BindPipeline(const Ref<Pipeline>& _Pipeline)
+	{
+		m_Description.Pipeline = _Pipeline;
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->cbBindPipeline(CommandDesc.Pipeline);
+		});
+	}
+
+	void VulkanCommandSystem::BeginRenderpass(const Ref<Renderpass>& _Renderpass)
+	{
+		m_Description.Renderpass = _Renderpass;
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->cbBeginRenderpass(CommandDesc.Renderpass);
+		});
+	}
+
+	void VulkanCommandSystem::EndRenderpass(const Ref<Renderpass>& _Renderpass)
+	{
+		m_Description.Renderpass = _Renderpass;
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->cbEndRenderpass(CommandDesc.Renderpass);
+		});
+	}
+
+	void VulkanCommandSystem::DrawGeomerty(const Ref<VertexBuffer>& _VertexBuffer)
+	{
+		m_Description.VertexBuffer = _VertexBuffer;
+		m_VulkanObject.Commands.push_back([](VulkanCommandBuffer* BufferDesc, CommandDescription CommandDesc) {
+			BufferDesc->cbDraw(CommandDesc.VertexBuffer);
+		});
 	}
 
 }

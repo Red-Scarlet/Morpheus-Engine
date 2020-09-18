@@ -1,17 +1,19 @@
 #include "Morppch.h"
-#include "Framebuffer.h"
+#include "VertexBuffer.h"
 
 #include "Morpheus/Renderer/RendererAPI.h"
-#include "Platform/Vulkan/VulkanGraphics/VulkanFramebuffer.h"
+#include "Platform/Vulkan/VulkanGraphics/VulkanVertexBuffer.h"
 
 namespace Morpheus {
 
-	Ref<Framebuffer> Framebuffer::Create(const Ref<Renderpass>& _Renderpass)
+	
+
+	Ref<VertexBuffer> VertexBuffer::Create(const Vector<Vertex>& _Vertices)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    MORP_CORE_ASSERT(true, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return CreateRef<VulkanFramebuffer>(_Renderpass);
+			case RendererAPI::API::Vulkan:  return CreateRef<VulkanVertexBuffer>(_Vertices);
 		}
 
 		MORP_CORE_ASSERT(true, "Unknown RendererAPI!");

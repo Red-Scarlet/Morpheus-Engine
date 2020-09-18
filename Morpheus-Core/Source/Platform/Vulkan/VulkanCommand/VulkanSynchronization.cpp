@@ -64,20 +64,6 @@ namespace Morpheus {
 			&SubmitInfo, m_VulkanObject.InFlightFences[m_VulkanObject.CurrentFrame]);
 		MORP_CORE_ASSERT(result, "Failed to create Render Semaphore!");
 
-		VkSubpassDependency Dependency{};
-		{
-			Dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-			Dependency.dstSubpass = 0;
-			Dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			Dependency.srcAccessMask = 0;
-			Dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			Dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-		}
-
-		Ref<Renderpass> rp = _CommandSystem->GetRenderpass();
-		CastRef<VulkanRenderpass>(rp)->GetInfo().dependencyCount = 1;
-		CastRef<VulkanRenderpass>(rp)->GetInfo().pDependencies = &Dependency;
-
 		VkSwapchainKHR SwapChains[] = { m_VulkanCore.Presentation->GetSwapchain() };
 
 		VkPresentInfoKHR PresentInfo {};

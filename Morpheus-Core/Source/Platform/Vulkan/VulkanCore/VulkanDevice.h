@@ -33,6 +33,9 @@ namespace Morpheus {
 		VulkanPhysicalDevice();
 		~VulkanPhysicalDevice() = default;
 
+		const VkPhysicalDevice& GetDevice() { return m_VulkanObject.Device; }
+
+
 	private:
 		bool IsDeviceSuitable(VkPhysicalDevice _Device);
 		bool CheckDeviceExtensionSupport(VkPhysicalDevice _Device);

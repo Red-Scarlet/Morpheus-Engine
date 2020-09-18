@@ -4,7 +4,7 @@
 #include "Morpheus/Mathematics/Mathematics.h"
 #include "Morpheus/Renderer/RendererCore/Renderpass.h"
 #include "Morpheus/Renderer/RendererCore/Pipeline.h"
-#include "Morpheus/Renderer/RendererCore/Framebuffer.h"
+#include "Morpheus/Renderer/RendererCore/VertexBuffer.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
@@ -13,52 +13,38 @@
 
 namespace Morpheus {
 
-	struct VulkanCommandInformation 
-	{
-	public:
-		Vector<VkCommandBuffer> Buffers;
-		Ref<Pipeline> Pipeline;
-		Ref<Renderpass> Renderpass;
-		Ref<Framebuffer> Framebuffer;
-
-		VkClearValue ClearColor;
-		VkExtent2D Extent;
-		uint32 SmartIndex;
-	};
-
 	class VulkanCommandBuffer
 	{
 	public:
 		friend class VulkanCommandSystem;
 
 	public:
-		VulkanCommandBuffer(VulkanLogicalDevice* _lDevice, VulkanPresentation* _Presentation);
-		~VulkanCommandBuffer() = default;
+		//VulkanCommandBuffer(const VkCommandBuffer& _Buffer, const uint32& _Index);
+		VulkanCommandBuffer() = default;
 
 		void BeginRecord();
-		void EndRecord();
-		
-		void cbDraw();
-		void cbSetViewport();	//TODO
-		void cbSetClearcolor(const Vector4& _Color); //TODO
-
-		void cbSetRenderpass(const Ref<Renderpass>& _Renderpass);
-		void cbSetPipeline(const Ref<Pipeline>& _Pipeline);
-		void cbSetFramebuffer(const Ref<Framebuffer>& _Framebuffer);
-
+		void EndRecord();	
+		void cbSetViewport();
+		void cbSetIndex(const uint32& _Index);
+		void cbSetClearcolor(const Vector4& _Color);
+		void cbBindPipeline(const Ref<Pipeline>& _Pipeline);
+		void cbBeginRenderpass(const Ref<Renderpass>& _Renderpass);
+		void cbEndRenderpass(const Ref<Renderpass>& _Renderpass);
+		void cbDraw(const Ref<VertexBuffer>& _VertexBuffer);
+	
 	private:
-		void SetupBuffer(const VkCommandBuffer& _Buffer);
-		void FreeBuffers(VulkanCommandPool* _Pool);
-		const Vector<VkCommandBuffer>& CompileBuffer();
+		const uint32& GetSize() { return m_VulkanObject.Buffers.size(); }
+		const VkCommandBuffer& GetBuffer(const uint32& _Index) { return m_VulkanObject.Buffers[_Index]; }
+		void PushBuffer(const VkCommandBuffer& _Buffer);
 
 	private:
 		struct {
-			VulkanLogicalDevice* lDevice;
-			VulkanPresentation* Presentation;
-		} m_VulkanCore;
+			Vector<VkCommandBuffer> Buffers;
+			VkClearValue ClearColor;
+			VkExtent2D Extent;
+			uint32 Index;
+		} m_VulkanObject;
 
-		VulkanCommandInformation m_Info;
-		Vector<Function<void(VulkanCommandInformation)>> m_Commands;
 	};
 
 	class VulkanCommandPool
@@ -85,32 +71,50 @@ namespace Morpheus {
 			VkCommandPool CommandPool;
 		} m_VulkanObject;
 
+	};		
+	
+	struct CommandDescription {
+		Ref<VertexBuffer> VertexBuffer;
+		Ref<Pipeline> Pipeline;
+		Ref<Renderpass> Renderpass;
+		Vector4 Color;
 	};
 
 	class VulkanCommandSystem 
 	{
 	public:
 		friend class VulkanSynchronization;
+		using Command = Function<void(VulkanCommandBuffer*, CommandDescription)>;
 
 	public:
 		VulkanCommandSystem();
 		~VulkanCommandSystem();
 
-		void AllocateBuffers(VulkanCommandBuffer* _Buffer);
-		void ComputeBuffers(VulkanCommandBuffer* _Buffer);
-		void ResetBuffers(VulkanCommandBuffer* _Buffer);
+		void AllocateBuffers();
+		void DeallocateBuffers();
+		void CompileBuffers();
 
-		const VkCommandPool& GetCommandPool() { return m_VulkanCommandPool->m_VulkanObject.CommandPool; }
-		const VkCommandBuffer& GetCommandBuffer(const uint32& _Index) 
-		{ return m_CommandBuffers[_Index]; }
+		const VkCommandPool& GetCommandPool();
+		const VkCommandBuffer& GetCommandBuffer(const uint32& _Index);
 
-	private:
-		const Ref<Renderpass>& GetRenderpass() { return m_Renderpass; }
+	public:
+		void BeginRecord();
+		void EndRecord();
+		void SetViewport();
+		void SetClearcolor(const Vector4& _Color);
+		void BindPipeline(const Ref<Pipeline>& _Pipeline);
+		void BeginRenderpass(const Ref<Renderpass>& _Renderpass);
+		void EndRenderpass(const Ref<Renderpass>& _Renderpass);
+		void DrawGeomerty(const Ref<VertexBuffer>& _VertexBuffer);
 
-	private:
-		Ref<Renderpass> m_Renderpass;
-		VulkanCommandPool* m_VulkanCommandPool;
-		Vector<VkCommandBuffer> m_CommandBuffers;
+	private:	
+		struct {
+			VulkanCommandPool* Pool;
+			VulkanCommandBuffer* Buffer;
+			Vector<Command> Commands;
+		} m_VulkanObject;
+
+		CommandDescription m_Description;
 	};
 
 }

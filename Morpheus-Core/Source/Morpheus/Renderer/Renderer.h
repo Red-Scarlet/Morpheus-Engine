@@ -6,7 +6,7 @@
 
 #include "RendererCore/Renderpass.h"
 #include "RendererCore/Pipeline.h"
-#include "RendererCore/Framebuffer.h"
+#include "RendererCore/VertexBuffer.h"
 
 namespace Morpheus {
 
@@ -17,15 +17,18 @@ namespace Morpheus {
 		{
 			RenderCommand::Init();
 
-			Ref<Renderpass> rp = Renderpass::Create();
-			Ref<Pipeline> pipe = Pipeline::Create(rp);
-			Ref<Framebuffer> fb = Framebuffer::Create(rp);
+			s_Renderdata.Renderpass = Renderpass::Create();
+			s_Renderdata.Pipeline = Pipeline::Create(s_Renderdata.Renderpass);
 
-			RenderCommand::SetRenderpass(rp);
-			RenderCommand::SetPipeline(pipe);
-			RenderCommand::SetFramebuffer(fb);
-			RenderCommand::SetClearColor({ 0.7, 0.5, 0.3, 1.0 });
-			RenderCommand::SetViewport();
+			const Vector<Vertex> Vertices = {
+				{{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f}},
+				{{-0.5f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}},
+				{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}},
+				{{0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f, 0.0f}},
+				{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f, 0.0f}},
+				{{0.0f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f, 0.0f}}
+			};
+			s_Renderdata.VertexBuffer = VertexBuffer::Create(Vertices);
 		}
 
 		static void Shutdown()
@@ -36,8 +39,19 @@ namespace Morpheus {
 		static void BeginScene()
 		{
 			RenderCommand::Begin();
-			RenderCommand::DrawGeomerty();
-			RenderCommand::End();
+
+			RenderCommand::SetViewport();
+			RenderCommand::SetClearColor({ 0.7, 0.5, 0.3, 1.0 });
+
+			RenderCommand::BeginRenderpass(s_Renderdata.Renderpass);
+
+			RenderCommand::BindPipeline(s_Renderdata.Pipeline);
+
+			RenderCommand::DrawGeomerty(s_Renderdata.VertexBuffer);
+
+			RenderCommand::EndRenderpass(s_Renderdata.Renderpass);
+
+			RenderCommand::End();	
 		}
 
 		static void EndScene()
@@ -49,6 +63,14 @@ namespace Morpheus {
 		{
 		}
 
+	private:
+		struct Renderdata {
+			Ref<Renderpass> Renderpass; 
+			Ref<Pipeline> Pipeline;
+			Ref<VertexBuffer> VertexBuffer;
+		};
+		static Renderdata s_Renderdata;
+	
 	};
 
 }

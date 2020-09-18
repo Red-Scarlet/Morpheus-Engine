@@ -12,8 +12,8 @@
 #include <list>
 
 #include <conio.h>
-#define NOMINMAX
-#include <Windows.h>
+
+#include "Morppch.h"
 
 namespace Morpheus {
 
@@ -228,7 +228,6 @@ namespace Morpheus {
         {
             SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
         }
-
 
         void flush()
         {

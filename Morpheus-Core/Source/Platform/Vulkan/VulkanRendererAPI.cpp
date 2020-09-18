@@ -1,93 +1,86 @@
 #include "Morppch.h"
 #include "VulkanRendererAPI.h"
 
-#include <vulkan/vulkan.h>
-
 namespace Morpheus {
-
-	//TODO LIST: 
-	/*
-		Ref<Shader>
-		Cleanup and maybe adopt Ref<T> instead of *
-	*/
 
 	void VulkanRendererAPI::Init()
 	{
-		m_VulkanInstance = VulkanInstance::GetInstance();
-		m_VulkanPresentation = m_VulkanInstance->GetPresentation();
-		m_VulkanDevice = m_VulkanInstance->GetLogicalDevice();
+		m_Vulkan.Instance = VulkanInstance::GetInstance();
+		m_Vulkan.Presentation = m_Vulkan.Instance->GetPresentation();
+		m_Vulkan.Device = m_Vulkan.Instance->GetLogicalDevice();
 
-		m_VulkanPresentation->SetupSwapchain();
-		m_VulkanPresentation->SetupImageview();
+		m_Vulkan.Presentation->SetupSwapchain();
+		m_Vulkan.Presentation->SetupImageview();
 		
-		m_VulkanCommandSystem = new VulkanCommandSystem();
-		m_CommandBuffer = new VulkanCommandBuffer(m_VulkanDevice, m_VulkanPresentation);
-		m_VulkanSynchronization = new VulkanSynchronization(m_VulkanDevice, m_VulkanPresentation);
+		m_Command.System = new VulkanCommandSystem();
+
+		m_Command.Synchronization = new VulkanSynchronization(m_Vulkan.Device, m_Vulkan.Presentation);
 	}
 
 	void VulkanRendererAPI::Shutdown()
 	{		
-		delete m_VulkanSynchronization;
-		delete m_VulkanCommandSystem;
-		delete m_VulkanDevice;
-		delete m_VulkanPresentation;
-		m_VulkanInstance->Shutdown();
+		delete m_Command.Synchronization;
+		delete m_Command.System;
+
+		delete m_Vulkan.Device;
+		delete m_Vulkan.Presentation;
+
+		m_Vulkan.Instance->Shutdown();
 	}
 
 	void VulkanRendererAPI::Begin()
 	{
-		m_VulkanCommandSystem->AllocateBuffers(m_CommandBuffer);
-
-		m_CommandBuffer->BeginRecord();
+		m_Command.System->AllocateBuffers();
+		m_Command.System->BeginRecord();
 	}
 
 	void VulkanRendererAPI::End()
 	{
-		m_CommandBuffer->EndRecord();
-		m_VulkanCommandSystem->ComputeBuffers(m_CommandBuffer);
+		m_Command.System->EndRecord();
+		m_Command.System->CompileBuffers();
 	}
 
 	void VulkanRendererAPI::Flush()
 	{
-		m_VulkanSynchronization->Flush(m_VulkanCommandSystem);
-		m_VulkanDevice->Wait();
-
-		m_VulkanCommandSystem->ResetBuffers(m_CommandBuffer);
+		m_Command.Synchronization->Flush(m_Command.System);
+		m_Vulkan.Device->Wait();
+		m_Command.System->DeallocateBuffers();
 	}
 
 	void VulkanRendererAPI::Reset()
 	{
-		m_VulkanDevice->Wait();
+		m_Command.System->DeallocateBuffers();
+		m_Vulkan.Device->Wait();
 	}
 
 	void VulkanRendererAPI::SetViewport()
 	{
-		m_CommandBuffer->cbSetViewport();
+		m_Command.System->SetViewport();
 	}
 
 	void VulkanRendererAPI::SetClearColor(const Vector4& _Color)
 	{
-		m_CommandBuffer->cbSetClearcolor(_Color);
+		m_Command.System->SetClearcolor(_Color);
 	}
 
-	void VulkanRendererAPI::SetRenderpass(const Ref<Renderpass>& _Renderpass)
+	void VulkanRendererAPI::BindPipeline(const Ref<Pipeline>& _Pipeline)
 	{
-		m_CommandBuffer->cbSetRenderpass(_Renderpass);
+		m_Command.System->BindPipeline(_Pipeline);
 	}
 
-	void VulkanRendererAPI::SetPipeline(const Ref<Pipeline>& _Pipeline)
+	void VulkanRendererAPI::BeginRenderpass(const Ref<Renderpass>& _Renderpass)
 	{
-		m_CommandBuffer->cbSetPipeline(_Pipeline);
+		m_Command.System->BeginRenderpass(_Renderpass);
 	}
 
-	void VulkanRendererAPI::SetFramebuffer(const Ref<Framebuffer>& _Framebuffer)
+	void VulkanRendererAPI::EndRenderpass(const Ref<Renderpass>& _Renderpass)
 	{
-		m_CommandBuffer->cbSetFramebuffer(_Framebuffer);
+		m_Command.System->EndRenderpass(_Renderpass);
 	}
 
-	void VulkanRendererAPI::DrawGeomerty()
+	void VulkanRendererAPI::DrawGeomerty(const Ref<VertexBuffer>& _VertexBuffer)
 	{
-		m_CommandBuffer->cbDraw();
+		m_Command.System->DrawGeomerty(_VertexBuffer);
 	}
 
 

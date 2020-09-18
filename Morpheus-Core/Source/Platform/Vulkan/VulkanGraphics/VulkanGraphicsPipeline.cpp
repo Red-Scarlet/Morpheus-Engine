@@ -4,7 +4,10 @@
 
 #include "Platform/Vulkan/VulkanCore/VulkanInstance.h"
 #include "Platform/Vulkan/VulkanGraphics/VulkanRenderpass.h"
+#include "Morpheus/Renderer/RendererCore/VertexBuffer.h"
 
+#include <array>
+#include <cstddef>
 #include <fstream>
 
 namespace Morpheus {
@@ -70,8 +73,31 @@ namespace Morpheus {
 		VkPipelineVertexInputStateCreateInfo vertexInputInfo {};
 		{
 			vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-			vertexInputInfo.vertexBindingDescriptionCount = 0;
-			vertexInputInfo.vertexAttributeDescriptionCount = 0;
+
+			VkVertexInputBindingDescription bindingDescription{};
+			{
+				bindingDescription.binding = 0;
+				bindingDescription.stride = sizeof(Vertex);
+				bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+			}
+
+			std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+			{
+				attributeDescriptions[0].binding = 0;
+				attributeDescriptions[0].location = 0;
+				attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+				attributeDescriptions[0].offset = offsetof(Vertex, Vertex::Position);
+
+				attributeDescriptions[1].binding = 0;
+				attributeDescriptions[1].location = 1;
+				attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
+				attributeDescriptions[1].offset = offsetof(Vertex, Vertex::Color);
+			}
+
+			vertexInputInfo.vertexBindingDescriptionCount = 1;
+			vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+			vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+			vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();	
 		}
 
 		VkPipelineInputAssemblyStateCreateInfo inputAssembly {};
@@ -155,24 +181,24 @@ namespace Morpheus {
 			throw std::runtime_error("failed to create pipeline layout!");
 		}
 
-		VkGraphicsPipelineCreateInfo pipelineInfo {};
+		VkGraphicsPipelineCreateInfo PipelineInfo {};
 		{
-			pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
-			pipelineInfo.stageCount = 2;
-			pipelineInfo.pStages = shaderStages;
-			pipelineInfo.pVertexInputState = &vertexInputInfo;
-			pipelineInfo.pInputAssemblyState = &inputAssembly;
-			pipelineInfo.pViewportState = &viewportState;
-			pipelineInfo.pRasterizationState = &rasterizer;
-			pipelineInfo.pMultisampleState = &multisampling;
-			pipelineInfo.pColorBlendState = &colorBlending;
-			pipelineInfo.layout = m_VulkanObject.PipelineLayout;
-			pipelineInfo.renderPass = CastRef<VulkanRenderpass>(m_VulkanCore.Renderpass)->GetRenderpass();
-			pipelineInfo.subpass = 0;
-			pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
+			PipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
+			PipelineInfo.stageCount = 2;
+			PipelineInfo.pStages = shaderStages;
+			PipelineInfo.pVertexInputState = &vertexInputInfo;
+			PipelineInfo.pInputAssemblyState = &inputAssembly;
+			PipelineInfo.pViewportState = &viewportState;
+			PipelineInfo.pRasterizationState = &rasterizer;
+			PipelineInfo.pMultisampleState = &multisampling;
+			PipelineInfo.pColorBlendState = &colorBlending;
+			PipelineInfo.layout = m_VulkanObject.PipelineLayout;
+			PipelineInfo.renderPass = CastRef<VulkanRenderpass>(m_VulkanCore.Renderpass)->GetRenderpass();
+			PipelineInfo.subpass = 0;
+			PipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 		}
 
-		if (vkCreateGraphicsPipelines(m_VulkanCore.lDevice->GetDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &m_VulkanObject.Pipeline) != VK_SUCCESS) {
+		if (vkCreateGraphicsPipelines(m_VulkanCore.lDevice->GetDevice(), VK_NULL_HANDLE, 1, &PipelineInfo, nullptr, &m_VulkanObject.Pipeline) != VK_SUCCESS) {
 			throw std::runtime_error("failed to create graphics pipeline!");
 		}
 

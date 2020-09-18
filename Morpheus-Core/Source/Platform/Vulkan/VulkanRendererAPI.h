@@ -7,6 +7,9 @@
 #include "Platform/Vulkan/VulkanCore/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanCore/VulkanPresentation.h"
 
+#include "Morpheus/Renderer/RendererCore/Renderpass.h"
+#include "Morpheus/Renderer/RendererCore/Pipeline.h"
+
 #include "Platform/Vulkan/VulkanCommand/VulkanCommandSystem.h"
 #include "Platform/Vulkan/VulkanCommand/VulkanSynchronization.h"
 
@@ -21,26 +24,30 @@ namespace Morpheus {
 		virtual void Begin() override;
 		virtual void End() override;
 		virtual void Flush() override;
-
 		virtual void Reset() override;
 
 		virtual void SetViewport() override;
 		virtual void SetClearColor(const Vector4& _Color) override;
-		virtual void SetRenderpass(const Ref<Renderpass>& _Renderpass) override;
-		virtual void SetPipeline(const Ref<Pipeline>& _Pipeline) override;
-		virtual void SetFramebuffer(const Ref<Framebuffer>& _Framebuffer) override;
-		virtual void DrawGeomerty() override;
+
+		virtual void BindPipeline(const Ref<Pipeline>& _Pipeline) override;
+		virtual void BeginRenderpass(const Ref<Renderpass>& _Renderpass) override;
+		virtual void EndRenderpass(const Ref<Renderpass>& _Renderpass) override;
+
+		virtual void DrawGeomerty(const Ref<VertexBuffer>& _VertexBuffer) override;
 
 	private:
-		VulkanInstance* m_VulkanInstance;
-		VulkanPresentation* m_VulkanPresentation;
-		VulkanLogicalDevice* m_VulkanDevice;
-		
-		// COMBINE INTO COMMAND SYSTEM
-		VulkanCommandSystem* m_VulkanCommandSystem;
-		VulkanCommandBuffer* m_CommandBuffer;
+		struct {
+			VulkanInstance* Instance;
+			VulkanPresentation* Presentation;
+			VulkanLogicalDevice* Device;
+		} m_Vulkan;
 
-		VulkanSynchronization* m_VulkanSynchronization;
+		struct {
+			VulkanCommandSystem* System;
+			VulkanSynchronization* Synchronization;
+		} m_Command;
+		
+
 	};
 
 }

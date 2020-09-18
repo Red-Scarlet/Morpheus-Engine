@@ -17,11 +17,13 @@ namespace Morpheus {
 		VulkanRenderpass();
 		virtual ~VulkanRenderpass();
 
-		VkRenderPass GetRenderpass() { return m_VulkanObject.Renderpass; }
-		VkRenderPassCreateInfo& GetInfo() { return m_VulkanObject.Info; }
+		const VkRenderPass& GetRenderpass() { return m_VulkanObject.Renderpass; }
+		const VkFramebuffer& GetFramebuffer(const uint32& _Index);
+		const VkRenderPassBeginInfo& GetBeginInfo(const VkClearValue& _Color, const VkExtent2D& _Extent, const uint32& _Index);
 
 	private:
 		void CreateRenderpass();
+		void CreateFramebuffer();
 
 	private:
 		struct {
@@ -31,7 +33,7 @@ namespace Morpheus {
 
 		struct {
 			VkRenderPass Renderpass;
-			VkRenderPassCreateInfo Info;
+			Vector<VkFramebuffer> Framebuffers;
 		} m_VulkanObject;
 
 
