@@ -9,6 +9,7 @@
 #include "Morpheus/Utilities/ThreadPool.h"
 #include "Morpheus/Utilities/TimerClass.h"
 #include "Morpheus/Utilities/DeltaTime.h"
+#include "Morpheus/Renderer/RendererCore/GraphicsContext.h"
 
 int main(int argc, char** argv);
 
@@ -35,6 +36,8 @@ namespace Morpheus {
 
 	private:
 		Scope<Window> m_Window;
+		Scope<GraphicsContext> m_Graphics;
+
 		LayerContainer m_LayerContainer;
 		FunctionSystem m_FunctionSystem;
 		ThreadPool* m_ThreadPool;
@@ -44,6 +47,7 @@ namespace Morpheus {
 		bool m_Minimized = false;
 		bool m_FirstTime = true;
 		float64 m_LastFrameTime = 0.00f;
+		float64 m_FrameLock = 144.0f;
 
 	private:
 		static Application* s_Instance;

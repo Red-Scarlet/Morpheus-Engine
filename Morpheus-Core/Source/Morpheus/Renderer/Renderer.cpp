@@ -3,6 +3,6 @@
 
 namespace Morpheus {
 
-	Renderer::Renderdata Renderer::s_Renderdata;
+	Renderer::RenderData* Renderer::s_RenderData = nullptr;
 
 }

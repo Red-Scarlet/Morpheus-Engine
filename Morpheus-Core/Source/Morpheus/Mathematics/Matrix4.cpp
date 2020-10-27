@@ -5,13 +5,13 @@ namespace Morpheus {
 
 	Matrix4::Matrix4()
 	{
-		for (UINT32 i = 0; i < (4 * 4); i++)
+		for (UINT i = 0; i < (4 * 4); i++)
 			Elements[i] = 0.00f;
 	}
 
 	Matrix4::Matrix4(FLOAT Diagonal)
 	{
-		for (UINT32 i = 0; i < (4 * 4); i++)
+		for (uint32 i = 0; i < (4 * 4); i++)
 			Elements[i] = 0.0f;
 
 		Elements[0 + 0 * 4] = Diagonal;
@@ -20,13 +20,13 @@ namespace Morpheus {
 		Elements[3 + 3 * 4] = Diagonal;
 	}
 
-	Vector4 Matrix4::GetColumn(UINT32 Index)
+	Vector4 Matrix4::GetColumn(UINT Index)
 	{
 		Index *= 4;
 		return Vector4(Elements[Index], Elements[Index + 1], Elements[Index + 2], Elements[Index + 3]);
 	}
 
-	Matrix4 Matrix4::Orthographic(FLOAT Left, FLOAT Right, FLOAT Bottom, FLOAT Top, FLOAT Near, FLOAT Far)
+	Matrix4& Matrix4::Orthographic(FLOAT Left, FLOAT Right, FLOAT Bottom, FLOAT Top, FLOAT Near, FLOAT Far)
 	{
 		Matrix4 result(1.0f);
 
@@ -41,7 +41,7 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4 Matrix4::Perspective(FLOAT Fov, FLOAT AspectRatio, FLOAT Near, FLOAT Far)
+	Matrix4& Matrix4::Perspective(FLOAT Fov, FLOAT AspectRatio, FLOAT Near, FLOAT Far)
 	{
 		Matrix4 result(1.0f);
 
@@ -62,7 +62,7 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4 Matrix4::Translation(const Vector3& Translation)
+	Matrix4& Matrix4::Translation(const Vector3& Translation)
 	{
 		Matrix4 result(1.0f);
 
@@ -73,7 +73,7 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4 Matrix4::Rotation(FLOAT Angle, const Vector3& Axis)
+	Matrix4& Matrix4::Rotation(FLOAT Angle, const Vector3& Axis)
 	{
 		Matrix4 result(1.0f);
 
@@ -101,7 +101,7 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4 Matrix4::Scale(const Vector3& Scale)
+	Matrix4& Matrix4::Scale(const Vector3& Scale)
 	{
 		Matrix4 result(1.0f);
 
@@ -115,10 +115,10 @@ namespace Morpheus {
 	Matrix4& Matrix4::Multiply(const Matrix4& Other)
 	{
 		FLOAT data[16];
-		for (UINT32 y = 0; y < 4; y++)
-			for (UINT32 x = 0; x < 4; x++) {
+		for (UINT y = 0; y < 4; y++)
+			for (UINT x = 0; x < 4; x++) {
 				FLOAT sum = 0.0f;
-				for (UINT32 e = 0; e < 4; e++)
+				for (UINT e = 0; e < 4; e++)
 					sum += Elements[x + e * 4] * Other.Elements[e + y * 4];
 				data[x + y * 4] = sum;
 			}
@@ -130,10 +130,10 @@ namespace Morpheus {
 	Matrix4& Matrix4::Divide(const Matrix4& Other)
 	{
 		FLOAT data[16];
-		for (UINT32 y = 0; y < 4; y++)
-			for (UINT32 x = 0; x < 4; x++) {
+		for (UINT y = 0; y < 4; y++)
+			for (UINT x = 0; x < 4; x++) {
 				FLOAT sum = 0.0f;
-				for (UINT32 e = 0; e < 4; e++)
+				for (UINT e = 0; e < 4; e++)
 					sum += Elements[x + e * 4] / Other.Elements[e + y * 4];
 				data[x + y * 4] = sum;
 			}

@@ -232,12 +232,16 @@ namespace Morpheus {
         void flush()
         {
             std::string Message = mStream.getStringAndClear();
+
             if (Message.substr(0, 1) == "§") {
                 std::stringstream code(Message.substr(1, 2));
                 int x = 0; code >> x;
                 Color(x);
                 std::cout << Message.substr(3, Message.length());
-            } else std::cout << Message;          
+                Color(12);
+            }         
+            
+            else std::cout << Message;
 
             mFlushed = false;
         }

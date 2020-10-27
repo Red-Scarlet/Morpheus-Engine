@@ -19,7 +19,10 @@ namespace Morpheus {
 
 		WindowStruct WindowProperties;
 		m_Window = Window::Create(WindowProperties);
-		Renderer::Init();
+
+		m_Graphics = GraphicsContext::Create();
+		m_Graphics->Init();
+
 		//RESOURCE MANAGER
 		//RENDERER -> 3DRENDERER
 
@@ -29,26 +32,30 @@ namespace Morpheus {
 
 	void Application::Run()
 	{
+		Renderer::Init();
 		while (m_Running)
 		{
 			float64 time = (float64)m_TimerClass->GetDeltaTime();
 			DeltaTime Delta = time - m_LastFrameTime;
-			m_LastFrameTime = time;
+
+			if (Delta >= (1.00f / m_FrameLock)) {
+				m_LastFrameTime = time;
+
+				Update(Delta);
+				Render();
+
+				m_Window->OnUpdate();
+				m_Window->SetUpdateStructTitle("Morpheus Engine FPS: " + std::to_string(1.00f / Delta));	
+			}
 
 			m_TimerClass->Tick();
-
-			Update(Delta);
-			Render();
-
-			m_Window->OnUpdate();
-
-			m_Window->SetUpdateStructTitle("Morpheus Engine FPS: " + std::to_string(1.00f / Delta));
 		}
 	}
 
 	void Application::Stop()
 	{
 		Renderer::Shutdown();
+		m_Graphics->Destory();
 		m_Running = false;
 	}
 

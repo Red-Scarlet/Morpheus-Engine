@@ -36,10 +36,9 @@ namespace Morpheus {
 			delete s_SystemLogger;
 		}
 
-		static bool LogError(const String& _Message)
+		static void LogError(const String& _Message)
 		{
-			(*s_SystemLogger) << "§12" << "[MORPHEUS] " << _Message  << std::endl;
-			return true;
+			std::cout << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 		static void LogWarn(const String& _Message)
@@ -77,10 +76,3 @@ namespace Morpheus {
 	};
 
 }
-
-#define MORP_CORE_TRACE(...)		::Morpheus::MorpheusLogger::LogTrace(__VA_ARGS__)
-#define MORP_CORE_INFO(...)			::Morpheus::MorpheusLogger::LogInfo(__VA_ARGS__)
-#define MORP_CORE_WARN(...)			::Morpheus::MorpheusLogger::LogWarn(__VA_ARGS__)
-#define MORP_CORE_ERROR(...)		::Morpheus::MorpheusLogger::LogError(__VA_ARGS__)
-#define MORP_CORE_SPECIAL(...)		::Morpheus::MorpheusLogger::LogSpecial(__VA_ARGS__)
-#define MORP_CORE_SPECIAL_2(...)	::Morpheus::MorpheusLogger::LogSpecialOverride(__VA_ARGS__)

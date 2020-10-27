@@ -18,14 +18,13 @@ namespace Morpheus {
 
 		Matrix4();
 		Matrix4(FLOAT Diagonal);
-		Vector4 GetColumn(UINT32 Index);
+		Vector4 GetColumn(UINT Index);
 
-		Matrix4 Orthographic(FLOAT Left, FLOAT Right, FLOAT Bottom, FLOAT Top, FLOAT Near, FLOAT Far);
-		Matrix4 Perspective(FLOAT Fov, FLOAT AspectRatio, FLOAT Near, FLOAT Far);
-
-		Matrix4 Translation(const Vector3& Translation);
-		Matrix4 Rotation(FLOAT Angle, const Vector3& Axis);
-		Matrix4 Scale(const Vector3& Scale);
+		static Matrix4& Orthographic(FLOAT Left, FLOAT Right, FLOAT Bottom, FLOAT Top, FLOAT Near, FLOAT Far);
+		static Matrix4& Perspective(FLOAT Fov, FLOAT AspectRatio, FLOAT Near, FLOAT Far);
+		static Matrix4& Translation(const Vector3& Translation);
+		static Matrix4& Rotation(FLOAT Angle, const Vector3& Axis);
+		static Matrix4& Scale(const Vector3& Scale);
 		//Matrix4 Inverse(const Matrix4& Matrix);
 
 		Matrix4& Multiply(const Matrix4& Other);

@@ -7,19 +7,71 @@
 #include <functional>
 #include <optional>
 
+#ifdef MORP_PLATFORM_WINDOWS
+#endif
+
+#define MORP_CORE_TRACE(...)		::Morpheus::MorpheusLogger::LogTrace(__VA_ARGS__)
+#define MORP_CORE_INFO(...)			::Morpheus::MorpheusLogger::LogInfo(__VA_ARGS__)
+#define MORP_CORE_WARN(...)			::Morpheus::MorpheusLogger::LogWarn(__VA_ARGS__)
+#define MORP_CORE_ERROR(...)		::Morpheus::MorpheusLogger::LogError(__VA_ARGS__)
+#define MORP_CORE_SPECIAL(...)		::Morpheus::MorpheusLogger::LogSpecial(__VA_ARGS__)
+#define MORP_CORE_SPECIAL_2(...)	::Morpheus::MorpheusLogger::LogSpecialOverride(__VA_ARGS__)
+
+
+#define MORP_CORE_ASSERTS
+
+#define MORP_ERROR true
+#ifdef MORP_CORE_ASSERTS
+#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); }}
+#else
+#define MORP_CORE_ASSERT(x, ...)
+#endif
+
+#define BIT(x) (1 << x)
+#define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+
 namespace Morpheus {
 
+	//	unique_ptr (Scope)
 	template<typename T>
 	using Scope = std::unique_ptr<T>;
 	template<typename T, typename ... Args>
 	constexpr Scope<T> CreateScope(Args&& ... args)
 	{ return std::make_unique<T>(std::forward<Args>(args)...); }
 
+	//	shared_ptr (Ref)
 	template<typename T>
 	using Ref = std::shared_ptr<T>;
 	template<typename T, typename ... Args>
 	constexpr Ref<T> CreateRef(Args&& ... args)
 	{ return std::make_shared<T>(std::forward<Args>(args)...); }
+
+	template<typename T>
+	using Pointer = T*;
+
+	template<typename T, typename Args>
+	T GetPointer(Args args)
+	{
+		return *args;
+	}
+
+	template<typename T>
+	using Reference = T&;
+
+	//template<typename T>
+	//using Weak = std::weak_ptr<T>;
+	//template<typename T, typename ... Args>
+	//constexpr Ref<T> CreateWeak(Args&& ... args)
+	//{ return std::weak_ptr<T>(std::forward<Args>(args)...); }
+
+	//template<typename T>
+	//constexpr Ref<T> ObserveWeak(const Weak<T>& args)
+	//{
+	//	if (Ref<T> Shared = args.lock())
+	//		return Shared;
+	//	MORP_CORE_ASSERT(MORP_ERROR, "Observation Failure weak_ptr has expired");
+	//	return nullptr;
+	//}
 
 	template<typename T, typename ... Args>
 	constexpr Ref<T> CastRef(Args&& ... args)
@@ -54,6 +106,8 @@ namespace Morpheus {
 	using Optional = std::optional<T>;
 
 	using String = std::string;
+	using Ostream = std::ostream;
+
 
 	typedef std::uint64_t uint64;
 	typedef std::uint32_t uint32;
@@ -70,29 +124,13 @@ namespace Morpheus {
 	typedef short float16;
 	typedef char float8;
 
+	typedef float64** pfloat64;
+	typedef float32** pfloat32;
+	typedef float16** pfloat16;
+	typedef float8** pfloat8;
+
 	typedef std::nullptr_t NULLPTR;
 	typedef void* VOIDPTR;
 	
 	//using FVector8 = Vector<const float8*>;
 }
-
-#ifdef MORP_PLATFORM_WINDOWS
-#endif
-
-#define MORP_CORE_ASSERTS
-
-#define MORP_ERROR true
-#ifdef MORP_CORE_ASSERTS
-#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); } }
-#else
-#define MORP_CORE_ASSERT(x, ...)
-#endif
-
-#define BIT(x) (1 << x)
-#define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
-
-#ifdef MORP_FLOAT_X64
-using FLOAT = Morpheus::FLOAT64;
-#else
-using FLOAT = Morpheus::float32;
-#endif
