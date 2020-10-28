@@ -1,6 +1,5 @@
 # Morpheus-Engine
 C++ Multithreaded Vulkan Engine
-https://trello.com/b/PueFGKYf
 
 ### Engine Systems
 * Core ~ 1.0.0
