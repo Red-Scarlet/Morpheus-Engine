@@ -1,15 +1,17 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "Platform/VULKAN/VulkanCommon.h"
-#include "Morpheus/Renderer/RendererResources/GraphicsPipeline.h"
+#include "Platform/Vulkan/VulkanCommon.h"
 
-#include "Platform/VULKAN/VulkanDevice.h"
-#include "Platform/VULKAN/VulkanCommand.h"
-#include "Platform/VULKAN/VulkanSwapchain.h"
-#include "VulkanRenderpass.h"
-#include "VulkanDescriptorPool.h"
-#include "VulkanShader.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
+#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
+
+#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
+#include "Platform/Vulkan/VulkanResources/VulkanDescriptorPool.h"
+#include "Platform/Vulkan/VulkanUnknown/VulkanRenderpass.h"
+
+#include "Morpheus/Renderer/RendererResources/GraphicsPipeline.h"
 
 namespace Morpheus {
 

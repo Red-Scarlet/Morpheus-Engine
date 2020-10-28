@@ -2,7 +2,7 @@
 #include "VertexArray.h"
 
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/VULKAN/VulkanResources/VulkanVertexArray.h"
+#include "Platform/Vulkan/VulkanBindables/VulkanVertexArray.h"
 
 namespace Morpheus {
 

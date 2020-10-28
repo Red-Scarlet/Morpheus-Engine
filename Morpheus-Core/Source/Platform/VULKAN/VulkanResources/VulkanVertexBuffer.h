@@ -4,8 +4,8 @@
 #include "Platform/VULKAN/VulkanCommon.h"
 #include "Morpheus/Renderer/RendererResources/VertexBuffer.h"
 
-#include "Platform/VULKAN/VulkanDevice.h"
-#include "Platform/VULKAN/VulkanCommand.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
+#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
 
 namespace Morpheus {
 

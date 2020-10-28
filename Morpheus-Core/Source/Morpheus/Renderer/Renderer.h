@@ -4,15 +4,17 @@
 #include "RendererCore/RenderCommand.h"
 #include "Morpheus/Mathematics/Mathematics.h"
 
-#include "RendererResources/VertexArray.h"
 #include "RendererResources/VertexBuffer.h"
 #include "RendererResources/IndexBuffer.h"
 #include "RendererResources/UniformBuffer.h"
 
-#include "RendererResources/FrameBuffer.h"
-#include "RendererResources/Renderpass.h"
-#include "RendererResources/Shader.h"
 #include "RendererResources/GraphicsPipeline.h"
+
+#include "RendererUnknown/FrameBuffer.h"
+#include "RendererUnknown/Renderpass.h"
+
+#include "RendererBindables/VertexArray.h"
+#include "RendererBindables/Shader.h"
 
 namespace Morpheus {
 

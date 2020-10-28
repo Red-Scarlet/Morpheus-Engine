@@ -1,7 +1,7 @@
 #include "Morppch.h"
 #include "VulkanUniformBuffer.h"
 
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
+#include "Platform/Vulkan/VulkanResource.h"
 
 #include "Morpheus/Core/EngineMessageSystem.h"
 

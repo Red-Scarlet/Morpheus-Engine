@@ -1,7 +1,7 @@
 #include "Morppch.h"
 #include "VulkanDescriptorPool.h"
 
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
+#include "Platform/Vulkan/VulkanResource.h"
 
 #include "VulkanUniformBuffer.h"
 

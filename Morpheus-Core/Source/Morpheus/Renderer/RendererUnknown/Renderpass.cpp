@@ -2,7 +2,7 @@
 #include "Renderpass.h"
 
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/VULKAN/VulkanResources/VulkanRenderpass.h"
+#include "Platform/Vulkan/VulkanUnknown/VulkanRenderpass.h"
 
 namespace Morpheus {
 

@@ -1,7 +1,7 @@
 #include "Morppch.h"
 #include "VulkanVertexArray.h"
 
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
+#include "Platform/Vulkan/VulkanResource.h"
 
 namespace Morpheus {
 

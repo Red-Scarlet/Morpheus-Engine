@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "Platform/VULKAN/VulkanCommon.h"
+#include "Platform/Vulkan/VulkanCommon.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
+#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
 
 #include "Morpheus/Renderer/RendererResources/IndexBuffer.h"
-
-#include "Platform/VULKAN/VulkanDevice.h"
-#include "Platform/VULKAN/VulkanCommand.h"
 
 namespace Morpheus {
 

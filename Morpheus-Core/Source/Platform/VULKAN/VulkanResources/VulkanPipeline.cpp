@@ -2,7 +2,7 @@
 #include "VulkanPipeline.h"
 
 #include "VulkanVertexBuffer.h"
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
+#include "Platform/Vulkan/VulkanResource.h"
 
 namespace Morpheus {
 

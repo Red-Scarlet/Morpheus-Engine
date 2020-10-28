@@ -1,14 +1,16 @@
 #include "Morppch.h"
 #include "VulkanCommand.h"
 
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
 
-#include "VulkanSwapchain.h"
-#include "VulkanResources/VulkanDescriptorPool.h"
-#include "VulkanResources/VulkanRenderpass.h"
-#include "VulkanResources/VulkanPipeline.h"
-#include "VulkanResources/VulkanVertexBuffer.h"
-#include "VulkanResources/VulkanIndexBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanDescriptorPool.h"
+#include "Platform/Vulkan/VulkanResources/VulkanPipeline.h"
+#include "Platform/Vulkan/VulkanUnknown/VulkanRenderpass.h"
+#include "Platform/Vulkan/VulkanResources/VulkanVertexBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanIndexBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
+
+#include "Platform/Vulkan/VulkanResource.h"
 
 namespace Morpheus {
 

@@ -2,7 +2,7 @@
 #include "Shader.h"
 
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/VULKAN/VulkanResources/VulkanShader.h"
+#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
 
 namespace Morpheus {
 

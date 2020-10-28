@@ -2,9 +2,9 @@
 
 #include "Morpheus/Core/Common.h"
 
-#include "VertexBuffer.h"
-#include "IndexBuffer.h"
-#include "UniformBuffer.h"
+#include "Morpheus/Renderer/RendererResources/VertexBuffer.h"
+#include "Morpheus/Renderer/RendererResources/IndexBuffer.h"
+#include "Morpheus/Renderer/RendererResources/UniformBuffer.h"
 
 namespace Morpheus {
 

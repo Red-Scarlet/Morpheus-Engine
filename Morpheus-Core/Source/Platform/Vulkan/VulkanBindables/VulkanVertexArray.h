@@ -1,11 +1,11 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "Morpheus/Renderer/RendererResources/VertexArray.h"
+#include "Morpheus/Renderer/RendererBindables/VertexArray.h"
 
-#include "VulkanVertexBuffer.h"
-#include "VulkanIndexBuffer.h"
-#include "VulkanUniformBuffer.h"
+#include "Morpheus/Renderer/RendererResources/VertexBuffer.h"
+#include "Morpheus/Renderer/RendererResources/IndexBuffer.h"
+#include "Morpheus/Renderer/RendererResources/UniformBuffer.h"
 
 namespace Morpheus {
 

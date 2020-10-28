@@ -2,7 +2,7 @@
 
 #include "Morpheus/Core/Common.h"
 
-#include "UniformBuffer.h"
+#include "Morpheus/Renderer/RendererResources/UniformBuffer.h"
 
 namespace Morpheus {
 

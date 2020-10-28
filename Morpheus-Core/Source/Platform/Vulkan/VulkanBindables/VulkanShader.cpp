@@ -2,7 +2,7 @@
 #include "VulkanShader.h"
 
 #include <fstream>
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
+#include "Platform/Vulkan/VulkanResource.h"
 
 namespace Morpheus {
 
