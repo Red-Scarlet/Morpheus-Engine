@@ -228,32 +228,32 @@
       <Filter>Platform\Vulkan\VulkanUnknown</Filter>
     </ClInclude>
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanRenderQueue.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCommonr.h">
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.h">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.h">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.h">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.h">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.h">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.h">
+      <Filter>Platform\Vulkan\VulkanCore</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommon.h">
       <Filter>Platform\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCorer\VulkanContext.h">
-      <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCorer\VulkanRendererAPI.h">
-      <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanCommand.h">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanDescriptorPool.h">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanIndexBuffer.h">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanPipeline.h">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanUniformBuffer.h">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanVertexBuffer.h">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -376,29 +376,29 @@
       <Filter>Platform\Vulkan\VulkanUnknown</Filter>
     </ClCompile>
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanRenderQueue.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCorer\VulkanContext.cpp">
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.cpp">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.cpp">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.cpp">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.cpp">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.cpp">
+      <Filter>Platform\Vulkan\VulkanResources</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.cpp">
       <Filter>Platform\Vulkan\VulkanCore</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCorer\VulkanRendererAPI.cpp">
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.cpp">
       <Filter>Platform\Vulkan\VulkanCore</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanCommand.cpp">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanDescriptorPool.cpp">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanIndexBuffer.cpp">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanPipeline.cpp">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanUniformBuffer.cpp">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanVertexBuffer.cpp">
-      <Filter>Platform\Vulkan\VulkanResources</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
