@@ -180,9 +180,9 @@
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindable.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCommon.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommonr.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCorer\VulkanContext.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCorer\VulkanRendererAPI.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobal.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.h" />
@@ -193,12 +193,12 @@
     <ClInclude Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGuiN.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanMemoryManager.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanResource.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanCommand.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanDescriptorPool.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanIndexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanPipeline.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanUniformBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanVertexBuffer.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanUnknown\VulkanFramebuffer.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanUnknown\VulkanRenderpass.h" />
   </ItemGroup>
@@ -236,8 +236,8 @@
     <ClCompile Include="Source\Platform\GLFW\WindowsWindow.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCorer\VulkanContext.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCorer\VulkanRendererAPI.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanRenderQueue.cpp" />
@@ -246,12 +246,12 @@
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSynchronization.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGuiN.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanMemoryManager.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanCommand.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanIndexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanPipeline.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResourcesr\VulkanVertexBuffer.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanUnknown\VulkanFramebuffer.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanUnknown\VulkanRenderpass.cpp" />
   </ItemGroup>
