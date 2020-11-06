@@ -20,10 +20,12 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["GLFW"] = "Morpheus-Core/Vendor/GLFW/include"
 IncludeDir["VULKAN"] = "Morpheus-Core/Vendor/VULKAN/Include"
+IncludeDir["IMGUI"] = "Morpheus-Core/Vendor/IMGUI"
 
 group "Dependencies"
 	include "Morpheus-Core/Vendor/GLFW"
 	include "Morpheus-Core/Vendor/VULKAN"
+	include "Morpheus-Core/Vendor/IMGUI"
 
 group ""
 
@@ -54,14 +56,18 @@ project "Morpheus-Core"
 	includedirs
 	{ 
 		"%{prj.name}/Source",
+
 		"%{IncludeDir.GLFW}",
-		"%{IncludeDir.VULKAN}"
+		"%{IncludeDir.VULKAN}",
+		"%{IncludeDir.IMGUI}",
+
 	}
 
 	links
 	{
 		"GLFW",
-		"VULKAN"
+		"VULKAN",
+		"IMGUI"
 	}
 
 	filter "system:windows"
@@ -70,6 +76,8 @@ project "Morpheus-Core"
 		defines 
 		{
 			"MORP_PLATFORM_WINDOWS",
+			"GLFW_INCLUDE_NONE",
+			"GLFW_INCLUDE_VULKAN"
 		}
 
 	filter "configurations:Debug"
@@ -107,12 +115,14 @@ project "Morpheus-Sandbox"
 	includedirs
 	{ 
 		"Morpheus-Core/Source",
-		"Morpheus-Core/Vendor"
+		"Morpheus-Core/Vendor",
+		"%{IncludeDir.VULKAN}",
+		"%{IncludeDir.IMGUI}"
 	}
 
 	links
 	{
-		"Morpheus-Core"
+		"Morpheus-Core",
 	}
 
 	filter "system:windows"

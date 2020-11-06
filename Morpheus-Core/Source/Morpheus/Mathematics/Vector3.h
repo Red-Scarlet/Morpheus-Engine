@@ -8,10 +8,10 @@ namespace Morpheus {
 	struct Vector3
 	{
 	public:
-		FLOAT x, y, z;
+		floatm x, y, z;
 
 		Vector3();
-		Vector3(const FLOAT& X, const FLOAT& Y, const FLOAT& Z);
+		Vector3(const floatm& X, const floatm& Y, const floatm& Z);
 
 		Vector3& Add(const Vector3& other);
 		Vector3& Subtract(const Vector3& other);
@@ -20,8 +20,8 @@ namespace Morpheus {
 
 		Vector3& Normalize();
 		Vector3& Cross(const Vector3& Other);
-		FLOAT& Dot(const Vector3& Other);
-		FLOAT& Magnitude();
+		floatm& Dot(const Vector3& Other);
+		floatm& Magnitude();
 
 		friend Vector3& operator+(Vector3 Left, const Vector3& Right);
 		friend Vector3& operator-(Vector3 Left, const Vector3& Right);

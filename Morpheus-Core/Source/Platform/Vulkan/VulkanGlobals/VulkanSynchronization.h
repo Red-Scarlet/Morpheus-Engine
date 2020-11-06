@@ -19,7 +19,9 @@ namespace Morpheus {
 		const uint32& GetID() { return m_ID; }
 		void SetID(const uint32& _ID) { m_ID = _ID; }
 
+		bool Next();
 		bool Render();
+		void Append(const vk::CommandBuffer& _Command);
 
 	private:
 		void CreateSynchronization();
@@ -27,7 +29,8 @@ namespace Morpheus {
 	private:
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
-		Ref<VulkanCommand> m_Command;
+
+		Vector<vk::CommandBuffer> m_Commands;
 
 		vk::Semaphore m_PresentCompleteSemaphore;
 		vk::Semaphore m_RenderCompleteSemaphore;

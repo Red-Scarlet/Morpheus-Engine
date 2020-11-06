@@ -6,10 +6,15 @@
 #include "Morpheus/Core/LayerSystem.h"
 #include "Morpheus/Core/FunctionSystem.h"
 
+#include "Morpheus/Events/Event.h"
+#include "Morpheus/Events/ApplicationEvent.h"
+
 #include "Morpheus/Utilities/ThreadPool.h"
 #include "Morpheus/Utilities/TimerClass.h"
 #include "Morpheus/Utilities/DeltaTime.h"
 #include "Morpheus/Renderer/RendererCore/GraphicsContext.h"
+
+#include "Morpheus/ImGui/ImGuiLayer.h"
 
 int main(int argc, char** argv);
 
@@ -23,6 +28,8 @@ namespace Morpheus {
 
 		void Run();
 		void Stop();
+
+		void OnEvent(Event& e);
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 		void PushFunction(Function<void()> _Func);
@@ -33,6 +40,8 @@ namespace Morpheus {
 	private:
 		void Render();
 		void Update(const DeltaTime& _Delta);
+		bool OnWindowClose(WindowCloseEvent& e);
+		bool OnWindowResize(WindowResizeEvent& e);
 
 	private:
 		Scope<Window> m_Window;
@@ -41,13 +50,13 @@ namespace Morpheus {
 		LayerContainer m_LayerContainer;
 		FunctionSystem m_FunctionSystem;
 		ThreadPool* m_ThreadPool;
-		TimerClass* m_TimerClass;
+		ImGuiLayer* m_ImGuiLayer;
 
 		bool m_Running = true;
 		bool m_Minimized = false;
 		bool m_FirstTime = true;
 		float64 m_LastFrameTime = 0.00f;
-		float64 m_FrameLock = 144.0f;
+		float64 m_FrameLock = 0.00f;
 
 	private:
 		static Application* s_Instance;

@@ -2,19 +2,20 @@
 #include "VulkanSurface.h"
 
 #include "Morpheus/Core/Application.h"
+#include "Platform/Vulkan/VulkanMemoryManager.h"
+
 #include <GLFW/glfw3.h>
 
 namespace Morpheus {
 
 	VulkanSurface::VulkanSurface(const vk::Instance& _Instance, const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex)
+		: m_Instance(_Instance), m_PhysicalDevice(_Physical), m_QueueFamilyIndex(_QueueFamilyIndex)
 	{
-		m_Instance = _Instance;
-		m_PhysicalDevice = _Physical;
-		m_QueueFamilyIndex = _QueueFamilyIndex;
+		SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSurface));
 
-		if (!CreateSurface())
-			MORP_CORE_ERROR("[VULKAN] Surface cannot be Created!");
-		MORP_CORE_WARN("[VULKAN] Surface Was Created!");
+		if (CreateSurface())
+			MORP_CORE_WARN("[VULKAN] Surface Was Created!");
+		else MORP_CORE_ERROR("[VULKAN] Surface cannot be Created!");
 	}
 
 	VulkanSurface::~VulkanSurface()
@@ -53,7 +54,7 @@ namespace Morpheus {
 	{
 		VkSurfaceKHR Surface = VkSurfaceKHR(m_Struct.Surface);
 		Window& GLFW = Application::Get().GetWindow();
-		VkResult result = glfwCreateWindowSurface(m_Instance, (GLFWwindow*)GLFW.GetWindowCore(), nullptr, &Surface);
+		VkResult result = glfwCreateWindowSurface(m_Instance, (GLFWwindow*)GLFW.GetNativeWindow(), nullptr, &Surface);
 		MORP_CORE_ASSERT(result, "Failed to create Window Surface!");
 		m_Struct.Surface = vk::SurfaceKHR(Surface);
 		

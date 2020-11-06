@@ -7,6 +7,8 @@
 #include "Morpheus/Renderer/RendererResources/IndexBuffer.h"
 #include "Morpheus/Renderer/RendererResources/UniformBuffer.h"
 
+#include "Platform/Vulkan/VulkanBindable.h"
+
 namespace Morpheus {
 
 	class VulkanVertexArray : public VertexArray
@@ -26,14 +28,21 @@ namespace Morpheus {
 		virtual const Ref<UniformBuffer>& GetUniformBuffer() const override;;
 
 	public:
-		const uint32& GetID() { return m_ID; }
-		void SetID(const uint32& _ID) { m_ID = _ID; }
+		const uint32& GetID() { return m_Identifier.ID; }
+		void SetID(const uint32& _ID) { m_Identifier.ID = _ID; }
+
+		const bool& CheckBound()
+		{ return m_Identifier.Bounded; }
 
 	private:
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
 		Ref<UniformBuffer> m_UniformBuffer;
-		uint32 m_ID;
+
+		// TODO: MAKE CLEANER
+		VulkanBindableIdentifier m_Identifier;
+
+		// TODO: MAKE CLEANER
 
 	public:
 		static Ref<VulkanVertexArray> VulkanCreate();

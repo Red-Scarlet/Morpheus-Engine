@@ -1,22 +1,23 @@
 #include "Morppch.h"
 #include "VulkanPipeline.h"
-
 #include "VulkanVertexBuffer.h"
-#include "Platform/Vulkan/VulkanResource.h"
+
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
 
-	VulkanPipeline::VulkanPipeline()
+	VulkanPipeline::VulkanPipeline(const VulkanPipelineInput& _Input)
+		: m_ShaderData(_Input)
 	{
-		m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-		m_Swapchain = VulkanResourceCache::GetInstance()->Get<VulkanSwapchain>(VulkanResourceType::Swapchain);
-		m_Shader = VulkanResourceCache::GetInstance()->Get<VulkanShader>(VulkanResourceType::Shader);
-		m_DescriptorPool = VulkanResourceCache::GetInstance()->Get<VulkanDescriptorPool>(VulkanResourceType::DescriptorPool);
-		m_Renderpass = VulkanResourceCache::GetInstance()->Get<VulkanRenderpass>(VulkanResourceType::Renderpass);
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
+		m_DescriptorPool = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanDescriptorPool>(VulkanResourceTypes::VulkanDescriptor);
+		m_Renderpass = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanRenderpass>(VulkanResourceTypes::VulkanRenderpass);
 
 		VertexInputData();
 		CreatePipeline();
 
+		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanPipeline));
 		MORP_CORE_WARN("[VULKAN] Pipeline Was Created!");
 	}
 
@@ -67,12 +68,8 @@ namespace Morpheus {
 	void VulkanPipeline::CreatePipeline()
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
-		vk::ShaderModule VertexShader = m_Shader->GetVertexShader();
-		vk::ShaderModule PixelShader = m_Shader->GetPixelShader();
-
 		vk::Rect2D RenderArea = m_Swapchain->GetRenderArea();
 		vk::Viewport Viewport = m_Swapchain->GetViewport();
-
 		vk::RenderPass Renderpass = m_Renderpass->GetRenderpass();
 
 		m_PipelineCache = Device.createPipelineCache(vk::PipelineCacheCreateInfo());
@@ -90,19 +87,21 @@ namespace Morpheus {
 			)
 		);
 
+		
+
 		Vector<vk::PipelineShaderStageCreateInfo> pipelineShaderStages = {
 			vk::PipelineShaderStageCreateInfo(
 				vk::PipelineShaderStageCreateFlags(),
 				vk::ShaderStageFlagBits::eVertex,
-				VertexShader,
-				"main",
+				m_ShaderData.VertModule,
+				"main",	// Change to VertexMain
 				nullptr
 			),
 			vk::PipelineShaderStageCreateInfo(
 				vk::PipelineShaderStageCreateFlags(),
 				vk::ShaderStageFlagBits::eFragment,
-				PixelShader,
-				"main",
+				m_ShaderData.FragModule,
+				"main",	// Change to FragmentMain
 				nullptr
 			)
 		};
@@ -238,10 +237,10 @@ namespace Morpheus {
 
 	}
 
-	Ref<VulkanPipeline> VulkanPipeline::VulkanCreate()
+	Ref<VulkanPipeline> VulkanPipeline::VulkanCreate(const VulkanPipelineInput& _Input)
 	{
-		Ref<VulkanPipeline> s_VulkanPipeline = CreateRef<VulkanPipeline>();
-		VulkanResourceCache::GetInstance()->Submit<VulkanPipeline>(VulkanResourceType::Pipeline, s_VulkanPipeline);
+		Ref<VulkanPipeline> s_VulkanPipeline = CreateRef<VulkanPipeline>(_Input);
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanPipeline>(VulkanResourceTypes::VulkanPipeline, s_VulkanPipeline);
 		return s_VulkanPipeline;
 	}
 

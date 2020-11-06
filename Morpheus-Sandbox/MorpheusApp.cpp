@@ -1,6 +1,8 @@
 #define ENTRYPOINT
 #include <Morpheus.h>
 
+#include <IMGUI/imgui.h>
+
 class ExampleLayer : public Morpheus::Layer
 {
 public:
@@ -12,6 +14,7 @@ public:
 	~ExampleLayer()
 	{
 	}
+
 
 	virtual void OnAttach() override 
 	{	
@@ -28,8 +31,24 @@ public:
 
 	virtual void OnRender() override 
 	{
-		Morpheus::Renderer::BeginScene();
+		Morpheus::Renderer::BeginScene();	
 		Morpheus::Renderer::EndScene();
+
+	}
+
+	virtual void OnEvent(Morpheus::Event& _Event) override
+	{
+
+	}
+
+
+	virtual void OnImGuiRender() override
+	{
+		bool state = true;		
+
+		ImGui::ShowDemoWindow(&state);
+		//ImGui::Begin("Cunt");
+		//ImGui::End();
 	}
 
 };

@@ -1,17 +1,16 @@
 #include "Morppch.h"
 #include "VulkanVertexBuffer.h"
 
-#include "Platform/Vulkan/VulkanResource.h"
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
 
 	VulkanVertexBuffer::VulkanVertexBuffer(VertexData* _VertexData, const uint32& _Size)
 		: m_VertexData(_VertexData), m_VertexSize(_Size)
 	{
-		SetID(VulkanResourceCache::GetInstance()->GetNextResourceID(VulkanResourceType::VertexBuffer));
-
-		m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-		m_Command = VulkanResourceCache::GetInstance()->Get<VulkanCommand>(VulkanResourceType::CommandSystem);
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Command = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer);
+		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanVertexBuffer));
 
 		CreateVertexBuffer();
 		String str = "[VULKAN] VertexBuffer #" + std::to_string(m_ID) + " Was Created!";
@@ -171,7 +170,7 @@ namespace Morpheus {
 	Ref<VulkanVertexBuffer> VulkanVertexBuffer::VulkanCreate(VertexData* _VertexData, const uint32& _Size)
 	{
 		Ref<VulkanVertexBuffer> s_VulkanVertexBuffer = CreateRef<VulkanVertexBuffer>(_VertexData, _Size);
-		VulkanResourceCache::GetInstance()->Submit<VulkanVertexBuffer>(VulkanResourceType::VertexBuffer, s_VulkanVertexBuffer, s_VulkanVertexBuffer->GetID());
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanVertexBuffer>(VulkanResourceTypes::VulkanVertexBuffer, s_VulkanVertexBuffer); // s_VulkanVertexBuffer->GetID()
 		return s_VulkanVertexBuffer;
 	}
 

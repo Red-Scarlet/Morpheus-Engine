@@ -3,13 +3,15 @@
 
 namespace Morpheus {
 
+	#define MORP_PI 3.14159265358f
+
 	Matrix4::Matrix4()
 	{
-		for (UINT i = 0; i < (4 * 4); i++)
+		for (uint32 i = 0; i < (4 * 4); i++)
 			Elements[i] = 0.00f;
 	}
 
-	Matrix4::Matrix4(FLOAT Diagonal)
+	Matrix4::Matrix4(floatm Diagonal)
 	{
 		for (uint32 i = 0; i < (4 * 4); i++)
 			Elements[i] = 0.0f;
@@ -20,13 +22,13 @@ namespace Morpheus {
 		Elements[3 + 3 * 4] = Diagonal;
 	}
 
-	Vector4 Matrix4::GetColumn(UINT Index)
+	Vector4 Matrix4::GetColumn(uint32 Index)
 	{
 		Index *= 4;
 		return Vector4(Elements[Index], Elements[Index + 1], Elements[Index + 2], Elements[Index + 3]);
 	}
 
-	Matrix4& Matrix4::Orthographic(FLOAT Left, FLOAT Right, FLOAT Bottom, FLOAT Top, FLOAT Near, FLOAT Far)
+	Matrix4 Matrix4::Orthographic(floatm Left, floatm Right, floatm Bottom, floatm Top, floatm Near, floatm Far)
 	{
 		Matrix4 result(1.0f);
 
@@ -41,17 +43,17 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4& Matrix4::Perspective(FLOAT Fov, FLOAT AspectRatio, FLOAT Near, FLOAT Far)
+	Matrix4 Matrix4::Perspective(floatm Fov, floatm AspectRatio, floatm Near, floatm Far)
 	{
-		Matrix4 result(1.0f);
-
-		float y_scale = (1.0f / tan((Fov / 2) * (3.142 / 180))) * AspectRatio;
-		float x_scale = (y_scale / AspectRatio);
-		float frustum_length = (Far / Near);
-
-		float b = -((Far + Near) / frustum_length);
-		float c = -((2.0f * Near * Far) / frustum_length);
-
+		Matrix4 result(1.00f);
+		
+		floatm y_scale = (1.00f / tan((Fov / 2.00f) * (MORP_PI / 180.00f))) * AspectRatio;
+		floatm x_scale = (y_scale / AspectRatio);
+		floatm frustum_length = (Far / Near);
+		
+		floatm b = -((Far + Near) / frustum_length);
+		floatm c = -((2.0f * Near * Far) / frustum_length);
+		
 		result.Elements[0 + 0 * 4] = x_scale;
 		result.Elements[1 + 1 * 4] = y_scale;
 		result.Elements[2 + 2 * 4] = b;
@@ -62,7 +64,32 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4& Matrix4::Translation(const Vector3& Translation)
+	Matrix4 Matrix4::LookAt(const Vector3& Camera, const Vector3& Object, const Vector3& Up)
+	{
+		Matrix4 result = Matrix4(1.00f);
+		Vector3 f = (Object - Camera).Normalize();
+
+		Vector3 n = Up;
+		
+		Vector3 s = f.Cross(n.Normalize());
+		Vector3 u = s.Cross(f);
+
+		result.Elements[0 + 0 * 4] = s.x;
+		result.Elements[0 + 1 * 4] = s.y;
+		result.Elements[0 + 2 * 4] = s.z;
+
+		result.Elements[1 + 0 * 4] = u.x;
+		result.Elements[1 + 1 * 4] = u.y;
+		result.Elements[1 + 2 * 4] = u.z;
+
+		result.Elements[2 + 0 * 4] = -f.x;
+		result.Elements[2 + 1 * 4] = -f.y;
+		result.Elements[2 + 2 * 4] = -f.z;
+
+		return result * Translate(Vector3(-Camera.x, -Camera.y, -Camera.z));
+	}
+
+	Matrix4 Matrix4::Translate(const Vector3& Translation)
 	{
 		Matrix4 result(1.0f);
 
@@ -73,35 +100,36 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4& Matrix4::Rotation(FLOAT Angle, const Vector3& Axis)
+	Matrix4 Matrix4::Rotation(floatm Angle, const Vector3& Axis)
 	{
 		Matrix4 result(1.0f);
 
-		float r = (Angle * (3.142 / 180));
-		float c = cos(r);
-		float s = sin(r);
-		float omc = 1.0f - c;
-
-		float x = Axis.x;
-		float y = Axis.y;
-		float z = Axis.z;
+		floatm r = Angle * (MORP_PI / 180.00f);
+		floatm c = cos(r);
+		floatm s = sin(r);
+		floatm omc = 1.0f - c;
+			 
+		floatm x = Axis.x;
+		floatm y = Axis.y;
+		floatm z = Axis.z;
 
 		result.Elements[0 + 0 * 4] = x * x * omc + c;
 		result.Elements[0 + 1 * 4] = y * x * omc + z * s;
 		result.Elements[0 + 2 * 4] = x * z * omc - y * s;
 			   
+
 		result.Elements[1 + 0 * 4] = x * y * omc - z * s;
 		result.Elements[1 + 1 * 4] = y * y * omc + c;
-		result.Elements[1 + 2 * 4] = y * z * omc + x * s;
+		result.Elements[1 + 2 * 4] = y * z * omc + x * s;	
 			   
-		result.Elements[2 + 0 * 4] = x * z * omc + y * s;
-		result.Elements[2 + 1 * 4] = y * z * omc - x * s;
+		result.Elements[2 + 0 * 4] = x * z * omc + y * s;		
+		result.Elements[2 + 1 * 4] = y * z * omc - x * s;		
 		result.Elements[2 + 2 * 4] = z * z * omc + c;
 
 		return result;
 	}
 
-	Matrix4& Matrix4::Scale(const Vector3& Scale)
+	Matrix4 Matrix4::Scale(const Vector3& Scale)
 	{
 		Matrix4 result(1.0f);
 
@@ -112,32 +140,163 @@ namespace Morpheus {
 		return result;
 	}
 
+	Matrix4 Matrix4::Inverse(const Matrix4& Matrix)
+	{
+		Matrix4 result = Matrix;
+		return result.Invert();
+	}
+
 	Matrix4& Matrix4::Multiply(const Matrix4& Other)
 	{
-		FLOAT data[16];
-		for (UINT y = 0; y < 4; y++)
-			for (UINT x = 0; x < 4; x++) {
-				FLOAT sum = 0.0f;
-				for (UINT e = 0; e < 4; e++)
+		floatm data[16];
+		for (uint32 y = 0; y < 4; y++)
+			for (uint32 x = 0; x < 4; x++) {
+				floatm sum = 0.0f;
+				for (uint32 e = 0; e < 4; e++)
 					sum += Elements[x + e * 4] * Other.Elements[e + y * 4];
 				data[x + y * 4] = sum;
 			}
-		memcpy(Elements, data, 4 * 4 * sizeof(FLOAT));
+		memcpy(Elements, data, 4 * 4 * sizeof(floatm));
 
 		return *this;
 	}
 
 	Matrix4& Matrix4::Divide(const Matrix4& Other)
 	{
-		FLOAT data[16];
-		for (UINT y = 0; y < 4; y++)
-			for (UINT x = 0; x < 4; x++) {
-				FLOAT sum = 0.0f;
-				for (UINT e = 0; e < 4; e++)
+		floatm data[16];
+		for (uint32 y = 0; y < 4; y++)
+			for (uint32 x = 0; x < 4; x++) {
+				floatm sum = 0.0f;
+				for (uint32 e = 0; e < 4; e++)
 					sum += Elements[x + e * 4] / Other.Elements[e + y * 4];
 				data[x + y * 4] = sum;
 			}
-		memcpy(Elements, data, 4 * 4 * sizeof(FLOAT));
+		memcpy(Elements, data, 4 * 4 * sizeof(floatm));
+
+		return *this;
+	}
+
+	Matrix4& Matrix4::Invert()
+	{
+		float temp[16];
+
+		temp[0] = Elements[5] * Elements[10] * Elements[15] -
+			Elements[5] * Elements[11] * Elements[14] -
+			Elements[9] * Elements[6] * Elements[15] +
+			Elements[9] * Elements[7] * Elements[14] +
+			Elements[13] * Elements[6] * Elements[11] -
+			Elements[13] * Elements[7] * Elements[10];
+
+		temp[4] = -Elements[4] * Elements[10] * Elements[15] +
+			Elements[4] * Elements[11] * Elements[14] +
+			Elements[8] * Elements[6] * Elements[15] -
+			Elements[8] * Elements[7] * Elements[14] -
+			Elements[12] * Elements[6] * Elements[11] +
+			Elements[12] * Elements[7] * Elements[10];
+
+		temp[8] = Elements[4] * Elements[9] * Elements[15] -
+			Elements[4] * Elements[11] * Elements[13] -
+			Elements[8] * Elements[5] * Elements[15] +
+			Elements[8] * Elements[7] * Elements[13] +
+			Elements[12] * Elements[5] * Elements[11] -
+			Elements[12] * Elements[7] * Elements[9];
+
+		temp[12] = -Elements[4] * Elements[9] * Elements[14] +
+			Elements[4] * Elements[10] * Elements[13] +
+			Elements[8] * Elements[5] * Elements[14] -
+			Elements[8] * Elements[6] * Elements[13] -
+			Elements[12] * Elements[5] * Elements[10] +
+			Elements[12] * Elements[6] * Elements[9];
+
+		temp[1] = -Elements[1] * Elements[10] * Elements[15] +
+			Elements[1] * Elements[11] * Elements[14] +
+			Elements[9] * Elements[2] * Elements[15] -
+			Elements[9] * Elements[3] * Elements[14] -
+			Elements[13] * Elements[2] * Elements[11] +
+			Elements[13] * Elements[3] * Elements[10];
+
+		temp[5] = Elements[0] * Elements[10] * Elements[15] -
+			Elements[0] * Elements[11] * Elements[14] -
+			Elements[8] * Elements[2] * Elements[15] +
+			Elements[8] * Elements[3] * Elements[14] +
+			Elements[12] * Elements[2] * Elements[11] -
+			Elements[12] * Elements[3] * Elements[10];
+
+		temp[9] = -Elements[0] * Elements[9] * Elements[15] +
+			Elements[0] * Elements[11] * Elements[13] +
+			Elements[8] * Elements[1] * Elements[15] -
+			Elements[8] * Elements[3] * Elements[13] -
+			Elements[12] * Elements[1] * Elements[11] +
+			Elements[12] * Elements[3] * Elements[9];
+
+		temp[13] = Elements[0] * Elements[9] * Elements[14] -
+			Elements[0] * Elements[10] * Elements[13] -
+			Elements[8] * Elements[1] * Elements[14] +
+			Elements[8] * Elements[2] * Elements[13] +
+			Elements[12] * Elements[1] * Elements[10] -
+			Elements[12] * Elements[2] * Elements[9];
+
+		temp[2] = Elements[1] * Elements[6] * Elements[15] -
+			Elements[1] * Elements[7] * Elements[14] -
+			Elements[5] * Elements[2] * Elements[15] +
+			Elements[5] * Elements[3] * Elements[14] +
+			Elements[13] * Elements[2] * Elements[7] -
+			Elements[13] * Elements[3] * Elements[6];
+
+		temp[6] = -Elements[0] * Elements[6] * Elements[15] +
+			Elements[0] * Elements[7] * Elements[14] +
+			Elements[4] * Elements[2] * Elements[15] -
+			Elements[4] * Elements[3] * Elements[14] -
+			Elements[12] * Elements[2] * Elements[7] +
+			Elements[12] * Elements[3] * Elements[6];
+
+		temp[10] = Elements[0] * Elements[5] * Elements[15] -
+			Elements[0] * Elements[7] * Elements[13] -
+			Elements[4] * Elements[1] * Elements[15] +
+			Elements[4] * Elements[3] * Elements[13] +
+			Elements[12] * Elements[1] * Elements[7] -
+			Elements[12] * Elements[3] * Elements[5];
+
+		temp[14] = -Elements[0] * Elements[5] * Elements[14] +
+			Elements[0] * Elements[6] * Elements[13] +
+			Elements[4] * Elements[1] * Elements[14] -
+			Elements[4] * Elements[2] * Elements[13] -
+			Elements[12] * Elements[1] * Elements[6] +
+			Elements[12] * Elements[2] * Elements[5];
+
+		temp[3] = -Elements[1] * Elements[6] * Elements[11] +
+			Elements[1] * Elements[7] * Elements[10] +
+			Elements[5] * Elements[2] * Elements[11] -
+			Elements[5] * Elements[3] * Elements[10] -
+			Elements[9] * Elements[2] * Elements[7] +
+			Elements[9] * Elements[3] * Elements[6];
+
+		temp[7] = Elements[0] * Elements[6] * Elements[11] -
+			Elements[0] * Elements[7] * Elements[10] -
+			Elements[4] * Elements[2] * Elements[11] +
+			Elements[4] * Elements[3] * Elements[10] +
+			Elements[8] * Elements[2] * Elements[7] -
+			Elements[8] * Elements[3] * Elements[6];
+
+		temp[11] = -Elements[0] * Elements[5] * Elements[11] +
+			Elements[0] * Elements[7] * Elements[9] +
+			Elements[4] * Elements[1] * Elements[11] -
+			Elements[4] * Elements[3] * Elements[9] -
+			Elements[8] * Elements[1] * Elements[7] +
+			Elements[8] * Elements[3] * Elements[5];
+
+		temp[15] = Elements[0] * Elements[5] * Elements[10] -
+			Elements[0] * Elements[6] * Elements[9] -
+			Elements[4] * Elements[1] * Elements[10] +
+			Elements[4] * Elements[2] * Elements[9] +
+			Elements[8] * Elements[1] * Elements[6] -
+			Elements[8] * Elements[2] * Elements[5];
+
+		floatm determinant = Elements[0] * temp[0] + Elements[1] * temp[4] + Elements[2] * temp[8] + Elements[3] * temp[12];
+		determinant = 1.0f / determinant;
+		
+		for (uint32 i = 0; i < 4 * 4; i++)
+			Elements[i] = temp[i] * determinant;
 
 		return *this;
 	}

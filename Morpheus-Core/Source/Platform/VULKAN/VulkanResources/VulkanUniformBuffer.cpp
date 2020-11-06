@@ -1,20 +1,17 @@
 #include "Morppch.h"
 #include "VulkanUniformBuffer.h"
 
-#include "Platform/Vulkan/VulkanResource.h"
-
-#include "Morpheus/Core/EngineMessageSystem.h"
+#include "Morpheus/Core/EngineMessageSystem.h"		// TODO: REMOVE AND ADD INTO THIS SYSTEM AS STANDLONE 
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
 
 	VulkanUniformBuffer::VulkanUniformBuffer(const BufferLayout& _Layout)
 		: m_BufferLayout(_Layout)
 	{
-		SetID(VulkanResourceCache::GetInstance()->GetNextResourceID(VulkanResourceType::UniformBuffer));
-
-		m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-		m_Swapchain = VulkanResourceCache::GetInstance()->Get<VulkanSwapchain>(VulkanResourceType::Swapchain);
-		//m_DescriptorPool = VulkanResourceCache::GetInstance()->Get<VulkanDescriptorPool>(VulkanResourceType::DescriptorPool);
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
+		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanUniformBuffer));
 
 		CreateUniformBuffer();
 		String str = "[VULKAN] UniformBuffer #" + std::to_string(m_ID) + " Was Created!";
@@ -41,7 +38,7 @@ namespace Morpheus {
 		uint32 Size = m_BufferLayout.GetStride();
 		auto Layout = m_BufferLayout.GetCommons();
 
-		EngineMessageSystem DataMessage;
+		VulkanUniformMessage DataMessage;
 		for (uint32 i = 0; i < Layout.size(); i++)
 		{
 			switch (Layout[i].first)
@@ -73,7 +70,7 @@ namespace Morpheus {
 
 		void* pData = nullptr;
 		pData = Device.mapMemory(m_Uniform.Memory, 0, Size);
-		memcpy(pData, DataMessage.GetData().data(), Size);
+		std::memcpy(pData, DataMessage.Body.data(), Size);
 		Device.unmapMemory(m_Uniform.Memory);
 	}
 
@@ -96,34 +93,34 @@ namespace Morpheus {
 		vk::Viewport Viewport = m_Swapchain->GetViewport();
 		uint32 Size = m_BufferLayout.GetStride();
 		auto Layout = m_BufferLayout.GetCommons();
-
-		EngineMessageSystem DataMessage;
-		for (uint32 i = 0; i < Layout.size(); i++) 
+		
+		VulkanUniformMessage DataMessage;
+		for (uint32 i = 0; i < Layout.size(); i++)
 		{
 			switch (Layout[i].first)
 			{
-				case UniformDataType::Float:	DataMessage << GetUniformData<float32>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Float2:	DataMessage << GetUniformData<Vector2>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Float3:	DataMessage << GetUniformData<Vector2>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Float4:	DataMessage << GetUniformData<Vector3>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Mat3:		DataMessage << GetUniformData<Matrix4>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Mat4:		DataMessage << GetUniformData<Matrix4>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Int:		DataMessage << GetUniformData<int32>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Int2:		DataMessage << GetUniformData<Vector2>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Int3:		DataMessage << GetUniformData<Vector3>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Int4:		DataMessage << GetUniformData<Vector4>(Layout[i].second.Data);
-					break;
-				case UniformDataType::Bool:		DataMessage << GetUniformData<bool>(Layout[i].second.Data);
-
+			case UniformDataType::Float:	DataMessage << GetUniformData<float32>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Float2:	DataMessage << GetUniformData<Vector2>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Float3:	DataMessage << GetUniformData<Vector2>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Float4:	DataMessage << GetUniformData<Vector3>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Mat3:		DataMessage << GetUniformData<Matrix4>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Mat4:		DataMessage << GetUniformData<Matrix4>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Int:		DataMessage << GetUniformData<int32>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Int2:		DataMessage << GetUniformData<Vector2>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Int3:		DataMessage << GetUniformData<Vector3>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Int4:		DataMessage << GetUniformData<Vector4>(Layout[i].second.Data);
+				break;
+			case UniformDataType::Bool:		DataMessage << GetUniformData<bool>(Layout[i].second.Data);
+		
 			}
 		}
 
@@ -153,14 +150,20 @@ namespace Morpheus {
 		// Memory Copying
 		void* pData = nullptr;
 		pData = Device.mapMemory(m_Uniform.Memory, 0, Size);
-		memcpy(pData, DataMessage.GetData().data(), Size);
+
+		//uint8* CopyData = { (uint8*)(&Layout.data()->Data) };
+		//std::memcpy(pData, RealData.data(), Size);
+
+		std::memcpy(pData, DataMessage.Body.data(), Size);
+
+
 		Device.unmapMemory(m_Uniform.Memory);
 	}
 
 	Ref<VulkanUniformBuffer> VulkanUniformBuffer::VulkanCreate(const BufferLayout& _Layout)
 	{
 		Ref<VulkanUniformBuffer> s_VulkanUniformBuffer = CreateRef<VulkanUniformBuffer>(_Layout);
-		VulkanResourceCache::GetInstance()->Submit<VulkanUniformBuffer>(VulkanResourceType::UniformBuffer, s_VulkanUniformBuffer, s_VulkanUniformBuffer->GetID());
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanUniformBuffer>(VulkanResourceTypes::VulkanUniformBuffer, s_VulkanUniformBuffer); //s_VulkanUniformBuffer->GetID()
 		return s_VulkanUniformBuffer;
 	}
 

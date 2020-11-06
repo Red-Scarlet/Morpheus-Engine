@@ -37,10 +37,10 @@ namespace Morpheus {
 	void TimerClass::SetTimeScale(const float64& _Scale)
 	{ m_TimeScale = _Scale; }
 
-	const float64& TimerClass::GetTimeScale()
+	float64 TimerClass::GetTimeScale()
 	{ return m_TimeScale; }
 
-	const float64& TimerClass::GetDeltaTime()
+	float64 TimerClass::GetDeltaTime()
 	{ return m_DeltaTime.count(); }
 
 }

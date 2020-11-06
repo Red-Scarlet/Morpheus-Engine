@@ -34,6 +34,11 @@ namespace Morpheus {
 			s_RendererAPI->SetReady(_Value);
 		}
 
+		inline static void SetClearColor(const Vector4& _ClearColor)
+		{
+			s_RendererAPI->SetClearColor(_ClearColor);
+		}
+
 	private:
 		static Scope<RendererAPI> s_RendererAPI;
 	};

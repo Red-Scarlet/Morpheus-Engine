@@ -6,19 +6,22 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
 #include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
-
-#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
 #include "Platform/Vulkan/VulkanResources/VulkanDescriptorPool.h"
 #include "Platform/Vulkan/VulkanUnknown/VulkanRenderpass.h"
 
-#include "Morpheus/Renderer/RendererResources/GraphicsPipeline.h"
-
 namespace Morpheus {
 
-	class VulkanPipeline : public GraphicsPipeline
+	struct VulkanPipelineInput
 	{
 	public:
-		VulkanPipeline();
+		vk::ShaderModule VertModule;
+		vk::ShaderModule FragModule;
+	};
+
+	class VulkanPipeline
+	{
+	public:
+		VulkanPipeline(const VulkanPipelineInput& _Input);
 		virtual ~VulkanPipeline();
 		void Destory();
 
@@ -33,24 +36,25 @@ namespace Morpheus {
 		void CreatePipeline();
 
 	private:
+		Ref<VulkanDevice> m_Device;
+		Ref<VulkanSwapchain> m_Swapchain;
+		Ref<VulkanRenderpass> m_Renderpass;
+		Ref<VulkanDescriptorPool> m_DescriptorPool;
+
+		VulkanPipelineInput m_ShaderData;
+
 		vk::Pipeline m_Pipeline;
 		vk::PipelineCache m_PipelineCache;
 		vk::PipelineLayout m_PipelineLayout;
 
 		vk::PipelineVertexInputStateCreateInfo m_InputState;
-		vk::VertexInputBindingDescription m_InputBinding;
+		vk::VertexInputBindingDescription m_InputBinding;				// TODO: ADD TO SHADER OR SOMETHING!
 		Vector<vk::VertexInputAttributeDescription> m_InputAttributes;
-
-		Ref<VulkanDevice> m_Device;
-		Ref<VulkanShader> m_Shader;
-		Ref<VulkanSwapchain> m_Swapchain;
-		Ref<VulkanRenderpass> m_Renderpass;
-		Ref<VulkanDescriptorPool> m_DescriptorPool;
 
 		uint32 m_ID = 0;
 
 	public:
-		static Ref<VulkanPipeline> VulkanCreate();
+		static Ref<VulkanPipeline> VulkanCreate(const VulkanPipelineInput& _Input);
 	};
 
 }

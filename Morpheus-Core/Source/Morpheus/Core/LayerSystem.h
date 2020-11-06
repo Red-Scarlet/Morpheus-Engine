@@ -2,6 +2,7 @@
 
 #include "Common.h"
 #include "Morpheus/Utilities/DeltaTime.h"
+#include "Morpheus/Events/Event.h"
 
 namespace Morpheus {
 
@@ -11,10 +12,12 @@ namespace Morpheus {
 		Layer(const String& Name = "Layer");
 		virtual ~Layer() = default;
 
-		virtual void OnAttach() = 0;
-		virtual void OnDetach() = 0;
-		virtual void OnUpdate(const DeltaTime& _Delta) = 0;
-		virtual void OnRender() = 0;
+		virtual void OnAttach() {}
+		virtual void OnDetach() {}
+		virtual void OnUpdate(const DeltaTime& _Delta) {}
+		virtual void OnRender() {}
+		virtual void OnEvent(Event& event)  {}
+		virtual void OnImGuiRender() {}
 
 		inline const String& GetName() const { return m_DebugName; }
 

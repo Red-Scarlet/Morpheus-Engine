@@ -3,6 +3,10 @@
 // --- Core -----------------------------------
 #include "Morpheus/Core/Application.h"
 #include "Morpheus/Core/LayerSystem.h"
+#include "Morpheus/Core/Input.h"
+// --------------------------------------------
+
+// --- Utils ----------------------------------
 #include "Morpheus/Utilities/MorpheusLogger.h"
 // --------------------------------------------
 

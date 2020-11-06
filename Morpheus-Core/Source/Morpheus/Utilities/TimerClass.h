@@ -18,8 +18,8 @@ namespace Morpheus {
 		void Tick();
 
 		void SetTimeScale(const float64& _Scale = 1.00f);
-		const float64& GetTimeScale();
-		const float64& GetDeltaTime();
+		float64 GetTimeScale();
+		float64 GetDeltaTime();
 
 	private:
 		static TimerClass* s_Instance;

@@ -1,32 +1,39 @@
 #include "Morppch.h"
 #include "VulkanVertexArray.h"
 
-#include "Platform/Vulkan/VulkanResource.h"
+#include "Platform/Vulkan/VulkanMemoryManager.h"
+
+#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
 
 namespace Morpheus {
 
 	VulkanVertexArray::VulkanVertexArray()
 	{
-		//m_ID = VulkanResourceCache::GetInstance()->GetNextBindingID(VulkanBindables::VertexArray);
+		SetID(VulkanMemoryManager::GetInstance()->GetBindableCache()->GetNextBindableID(VulkanBindableTypes::VulkanVertexArray));
+		m_Identifier.Type = VulkanBindableTypes::VulkanVertexArray;
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
+		
 	}
 
 	void VulkanVertexArray::Bind()
 	{
-		//if (!VulkanResourceCache::GetInstance()->CheckBinding(VulkanBindables::VertexArray, m_ID)) {
-		//	BindingPairs VBO = MakeBindingPairs(VulkanBindables::VertexArray, m_ID, VulkanResourceType::VertexBuffer, m_VertexBuffer->GetID());
-		//	BindingPairs IBO = MakeBindingPairs(VulkanBindables::VertexArray, m_ID, VulkanResourceType::IndexBuffer, m_IndexBuffer->GetID());
-		//	BindingPairs UBO = MakeBindingPairs(VulkanBindables::VertexArray, m_ID, VulkanResourceType::UniformBuffer, m_UniformBuffer->GetID());
-		//
-		//	VulkanResourceCache::GetInstance()->SetBindedPairs(VBO);
-		//	VulkanResourceCache::GetInstance()->SetBindedPairs(IBO);
-		//	VulkanResourceCache::GetInstance()->SetBindedPairs(UBO);
-		//	VulkanResourceCache::GetInstance()->SetBinding(VulkanBindables::VertexArray, m_ID, true);
-		//}
-
+		String str = "[VULKAN] VertexArray #" + std::to_string(m_Identifier.ID) + " was Binded!";
+		MORP_CORE_TRACE(str);
+		// Message to tell that it is binded!
+		Ref<VulkanBindableCache> BindableCache = VulkanMemoryManager::GetInstance()->GetBindableCache();
+		if (!m_Identifier.Bounded) {
+			m_Identifier.Bounded = true;
+			if (BindableCache->CheckBindingAny()) {
+				Ref<VulkanShader> Shader = BindableCache->Get<VulkanShader>(VulkanBindableTypes::VulkanShader, BindableCache->GetPresentID());
+				Shader->AddToBindables(m_Identifier);
+				Shader->CompileUniform(m_UniformBuffer->GetID());
+			}
+			else BindableCache->AddAppending(m_Identifier);
+		} else {
+		}
 	}
 
 	void VulkanVertexArray::SetVertexBuffer(const Ref<VertexBuffer>& _VertexBuffer)
@@ -62,7 +69,9 @@ namespace Morpheus {
 
 	Ref<VulkanVertexArray> VulkanVertexArray::VulkanCreate()
 	{
-		return CreateRef<VulkanVertexArray>();
+		Ref<VulkanVertexArray> s_VulkanVertexArray = CreateRef<VulkanVertexArray>();
+		VulkanMemoryManager::GetInstance()->GetBindableCache()->Submit<VulkanVertexArray>(VulkanBindableTypes::VulkanVertexArray, s_VulkanVertexArray);
+		return s_VulkanVertexArray;
 	}
 
 }

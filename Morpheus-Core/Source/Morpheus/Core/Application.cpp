@@ -15,16 +15,18 @@ namespace Morpheus {
 	Application::Application()
 	{
 		s_Instance = this;
-		m_TimerClass = TimerClass::GetInstance();
 
-		WindowStruct WindowProperties;
+		WindowProps WindowProperties;
+		WindowProperties.Title = "Morpheus Engine Version: 0.2.0";
 		m_Window = Window::Create(WindowProperties);
+		m_Window->SetEventCallback(MORP_BIND_EVENT_FN(Application::OnEvent));
 
 		m_Graphics = GraphicsContext::Create();
 		m_Graphics->Init();
+		Renderer::Init();
 
-		//RESOURCE MANAGER
-		//RENDERER -> 3DRENDERER
+		m_ImGuiLayer = new ImGuiLayer();
+		PushOverlay(m_ImGuiLayer);
 
 		MORP_CORE_TRACE("[APPLICATION] Num. Threads: " + std::to_string(std::thread::hardware_concurrency()));
 		m_ThreadPool = new ThreadPool(std::thread::hardware_concurrency());
@@ -32,23 +34,22 @@ namespace Morpheus {
 
 	void Application::Run()
 	{
-		Renderer::Init();
 		while (m_Running)
 		{
-			float64 time = (float64)m_TimerClass->GetDeltaTime();
+			float64 time = (float64)glfwGetTime();
 			DeltaTime Delta = time - m_LastFrameTime;
 
-			if (Delta >= (1.00f / m_FrameLock)) {
+			if (m_FrameLock == 0.00f || (Delta >= (1.00f / m_FrameLock))) {
 				m_LastFrameTime = time;
 
 				Update(Delta);
 				Render();
 
+				//if ((1.00f / Delta) > 2000.00f)
+					//m_Window->SetUpdateStructTitle("Morpheus Engine FPS: " + std::to_string(1.00f / Delta));
+			
 				m_Window->OnUpdate();
-				m_Window->SetUpdateStructTitle("Morpheus Engine FPS: " + std::to_string(1.00f / Delta));	
 			}
-
-			m_TimerClass->Tick();
 		}
 	}
 
@@ -57,6 +58,16 @@ namespace Morpheus {
 		Renderer::Shutdown();
 		m_Graphics->Destory();
 		m_Running = false;
+	}
+
+	void Application::OnEvent(Event& e)
+	{
+		EventDispatcher dispatcher(e);
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+
+		for (auto it = m_LayerContainer.end(); it != m_LayerContainer.begin();)
+			(*--it)->OnEvent(e);
 	}
 
 	void Application::PushLayer(Layer* layer)
@@ -78,8 +89,16 @@ namespace Morpheus {
 
 	void Application::Render()
 	{
+		if (!m_Minimized) 
+			for (Layer* layer : m_LayerContainer) 
+				layer->OnRender();
+			
+		m_ImGuiLayer->Begin();
 		for (Layer* layer : m_LayerContainer)
-			layer->OnRender();
+			layer->OnImGuiRender();
+		m_ImGuiLayer->End();
+
+		m_Graphics->Render();
 	}
 
 	void Application::Update(const DeltaTime& _Delta)
@@ -89,6 +108,24 @@ namespace Morpheus {
 		for (Function<void()> Func : m_FunctionSystem)
 			m_ThreadPool->enqueue(Func);
 		m_FunctionSystem.Reset();
+	}
+
+	bool Application::OnWindowClose(WindowCloseEvent& e)
+	{
+		m_Running = false;
+		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 || e.GetHeight() == 0) {
+			m_Minimized = true;
+			return false;
+		}
+		m_Minimized = false;
+		//Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
+
+		return false;
 	}
 
 }

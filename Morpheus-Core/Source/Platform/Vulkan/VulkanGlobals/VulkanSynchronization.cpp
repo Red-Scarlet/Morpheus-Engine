@@ -1,15 +1,16 @@
 #include "Morppch.h"
 #include "VulkanSynchronization.h"
 
-#include "Platform/Vulkan/VulkanResource.h"
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
 
 	VulkanSynchronization::VulkanSynchronization()
 	{
-		m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-		m_Swapchain = VulkanResourceCache::GetInstance()->Get<VulkanSwapchain>(VulkanResourceType::Swapchain);
-		m_Command = VulkanResourceCache::GetInstance()->Get<VulkanCommand>(VulkanResourceType::CommandSystem);
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
+		//m_Command = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer);
+		SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSwapchain));
 
 		CreateSynchronization();
 		MORP_CORE_WARN("[VULKAN] Synchronization Was Created!");
@@ -30,10 +31,9 @@ namespace Morpheus {
 			Device.destroyFence(f);
 	}
 
-	bool VulkanSynchronization::Render()
+	bool VulkanSynchronization::Next()
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
-		vk::Queue Queue = m_Device->GetQueue();
 		vk::SwapchainKHR Swapchain = m_Swapchain->GetSwapchain();
 
 		vk::Result result = Device.acquireNextImageKHR(Swapchain, UINT64_MAX, m_PresentCompleteSemaphore, nullptr, &m_CurrentBuffer);
@@ -43,11 +43,20 @@ namespace Morpheus {
 		if (result == vk::Result::eErrorDeviceLost)
 			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] Driver Lost, This is a crash!");
 
+		return false;
+	}
+
+	bool VulkanSynchronization::Render()
+	{
+		vk::Device Device = m_Device->GetLogicalDevice();
+		vk::Queue Queue = m_Device->GetQueue();
+		vk::SwapchainKHR Swapchain = m_Swapchain->GetSwapchain();
+
 		// Wait for Fences
 		Device.waitForFences(1, &m_WaitFences[m_CurrentBuffer], VK_TRUE, UINT64_MAX);
 		Device.resetFences(1, &m_WaitFences[m_CurrentBuffer]);
 
-		vk::CommandBuffer Buffer = m_Command->GetCommandBuffer(m_CurrentBuffer);
+		//MORP_CORE_TRACE("[QUEUE] FLUSH MADE CURRENT: " + std::to_string(m_CurrentBuffer) + "!");
 
 		vk::SubmitInfo submitInfo;
 		vk::PipelineStageFlags waitDstStageMask = vk::PipelineStageFlagBits::eColorAttachmentOutput;
@@ -55,11 +64,11 @@ namespace Morpheus {
 			.setWaitSemaphoreCount(1)
 			.setPWaitSemaphores(&m_PresentCompleteSemaphore)
 			.setPWaitDstStageMask(&waitDstStageMask)
-			.setCommandBufferCount(1)
-			.setPCommandBuffers(&Buffer)
+			.setCommandBufferCount(m_Commands.size())
+			.setPCommandBuffers(m_Commands.data())
 			.setSignalSemaphoreCount(1)
 			.setPSignalSemaphores(&m_RenderCompleteSemaphore);
-		result = Queue.submit(1, &submitInfo, m_WaitFences[m_CurrentBuffer]);
+		vk::Result result = Queue.submit(1, &submitInfo, m_WaitFences[m_CurrentBuffer]);
 
 		if (result == vk::Result::eErrorDeviceLost)
 			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] Driver Lost, This is a crash!");
@@ -76,13 +85,17 @@ namespace Morpheus {
 			)
 		);
 
+		m_Commands.clear();
+
 		if (result == vk::Result::eErrorOutOfDateKHR || result == vk::Result::eSuboptimalKHR)
 			return true;
 
-		if (m_Command.use_count() == 0)
-			MORP_CORE_ASSERT(MORP_ERROR, "COMMAND BUFFER USAGE IS ABNORMAL!!");
-
 		return false;
+	}
+
+	void VulkanSynchronization::Append(const vk::CommandBuffer& _Command)
+	{
+		m_Commands.push_back(_Command);
 	}
 
 	void VulkanSynchronization::CreateSynchronization()
@@ -101,7 +114,7 @@ namespace Morpheus {
 	Ref<VulkanSynchronization> VulkanSynchronization::Create()
 	{
 		Ref<VulkanSynchronization> s_VulkanSynchronization = CreateRef<VulkanSynchronization>();
-		VulkanResourceCache::GetInstance()->Submit<VulkanSynchronization>(VulkanResourceType::Synchronization, s_VulkanSynchronization);
+		VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit<VulkanSynchronization>(VulkanGlobalTypes::VulkanSynchronization, s_VulkanSynchronization);
 		return s_VulkanSynchronization;
 	}
 

@@ -8,10 +8,10 @@ namespace Morpheus {
 	struct Vector2
 	{
 	public:
-		FLOAT x, y;
+		floatm x, y;
 
 		Vector2();
-		Vector2(const FLOAT& X, const FLOAT& Y);
+		Vector2(const floatm& X, const floatm& Y);
 
 		Vector2& Add(const Vector2& other);
 		Vector2& Subtract(const Vector2& other);

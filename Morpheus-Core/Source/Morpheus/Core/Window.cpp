@@ -1,14 +1,14 @@
-#include "Morppch.h"
-#include "Window.h"
+#include "morppch.h"
 
-#include "Platform/GLFW/GLFWAPIWindow.h"
+#include "Window.h"
+#include "Platform/GLFW/WindowsWindow.h"
 
 namespace Morpheus {
 
-	Scope<Window> Window::Create(const WindowStruct& _Struct)
+	Scope<Window> Window::Create(const WindowProps& props)
 	{
-		return CreateScope<GLFWAPIWindow>(_Struct);
+		return CreateScope<WindowsWindow>(props);
+		return nullptr;
 	}
 
 }
-

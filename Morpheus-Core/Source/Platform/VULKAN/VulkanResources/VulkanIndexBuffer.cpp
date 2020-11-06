@@ -1,17 +1,16 @@
 #include "Morppch.h"
 #include "VulkanIndexBuffer.h"
 
-#include "Platform/Vulkan/VulkanResource.h"
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
 
 	VulkanIndexBuffer::VulkanIndexBuffer(uint32* _Indices, const uint32& _Size)
 		: m_IndexData(_Indices), m_IndexSize(_Size)
 	{
-		SetID(VulkanResourceCache::GetInstance()->GetNextResourceID(VulkanResourceType::IndexBuffer));
-
-		m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-		m_Command = VulkanResourceCache::GetInstance()->Get<VulkanCommand>(VulkanResourceType::CommandSystem);
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Command = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer);
+		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanIndexBuffer));
 
 		CreateIndexBuffer();
 		String str = "[VULKAN] IndexBuffer #" + std::to_string(m_ID) + " Was Created!";
@@ -171,7 +170,7 @@ namespace Morpheus {
 	Ref<VulkanIndexBuffer> VulkanIndexBuffer::VulkanCreate(uint32* _Indices, const uint32& _Size)
 	{
 		Ref<VulkanIndexBuffer> s_VulkanIndexBuffer = CreateRef<VulkanIndexBuffer>(_Indices, _Size);
-		VulkanResourceCache::GetInstance()->Submit<VulkanIndexBuffer>(VulkanResourceType::IndexBuffer, s_VulkanIndexBuffer, s_VulkanIndexBuffer->GetID());
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanIndexBuffer>(VulkanResourceTypes::VulkanIndexBuffer, s_VulkanIndexBuffer); //s_VulkanIndexBuffer->GetID()
 		return s_VulkanIndexBuffer;
 	}
 

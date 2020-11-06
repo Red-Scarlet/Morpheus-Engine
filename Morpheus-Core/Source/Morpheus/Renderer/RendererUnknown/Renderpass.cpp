@@ -6,12 +6,12 @@
 
 namespace Morpheus {
 
-	Ref<Renderpass> Renderpass::Create()
+	Ref<Renderpass> Renderpass::Create(const RenderpassLayout& _Layout)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    MORP_CORE_ASSERT(MORP_ERROR, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return VulkanRenderpass::VulkanCreate();
+			case RendererAPI::API::Vulkan:  return VulkanRenderpass::VulkanCreate(_Layout);
 		}
 
 		MORP_CORE_ASSERT(MORP_ERROR, "Unknown RendererAPI!");

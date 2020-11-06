@@ -12,23 +12,25 @@ namespace Morpheus {
 	public:
 		union
 		{
-			FLOAT Elements[4 * 4];
+			floatm Elements[4 * 4];
 			Vector4 Columns[4];
 		};
 
 		Matrix4();
-		Matrix4(FLOAT Diagonal);
-		Vector4 GetColumn(UINT Index);
+		Matrix4(floatm Diagonal);
+		Vector4 GetColumn(uint32 Index);
 
-		static Matrix4& Orthographic(FLOAT Left, FLOAT Right, FLOAT Bottom, FLOAT Top, FLOAT Near, FLOAT Far);
-		static Matrix4& Perspective(FLOAT Fov, FLOAT AspectRatio, FLOAT Near, FLOAT Far);
-		static Matrix4& Translation(const Vector3& Translation);
-		static Matrix4& Rotation(FLOAT Angle, const Vector3& Axis);
-		static Matrix4& Scale(const Vector3& Scale);
-		//Matrix4 Inverse(const Matrix4& Matrix);
+		static Matrix4 Orthographic(floatm Left, floatm Right, floatm Bottom, floatm Top, floatm Near, floatm Far);
+		static Matrix4 Perspective(floatm Fov, floatm AspectRatio, floatm Near, floatm Far);
+		static Matrix4 LookAt(const Vector3& Camera, const Vector3& Object, const Vector3& Up);
+		static Matrix4 Translate(const Vector3& Translation);
+		static Matrix4 Rotation(floatm Angle, const Vector3& Axis);
+		static Matrix4 Scale(const Vector3& Scale);
+		static Matrix4 Inverse(const Matrix4& Matrix);
 
 		Matrix4& Multiply(const Matrix4& Other);
 		Matrix4& Divide(const Matrix4& Other);
+		Matrix4& Invert();
 
 		Vector3 Multiply(const Vector3& Other) const;
 		Vector4 Multiply(const Vector4& Other) const;

@@ -8,14 +8,14 @@ namespace Morpheus {
 	{
 	}
 
-	Quaternion::Quaternion(FLOAT SCALAR, Vector3 VECTOR)
+	Quaternion::Quaternion(floatm SCALAR, Vector3 VECTOR)
 		: Scalar(SCALAR), Vector(VECTOR)
 	{
 	}
 
 	Quaternion& Quaternion::Add(const Quaternion& Other)
 	{
-		FLOAT scalar = Scalar + Other.Scalar;
+		floatm scalar = Scalar + Other.Scalar;
 		Vector3 imaginary = Vector + Other.Vector;
 
 		return Quaternion(scalar, imaginary);
@@ -23,7 +23,7 @@ namespace Morpheus {
 
 	Quaternion& Quaternion::Subtract(const Quaternion& Other)
 	{
-		FLOAT scalar = Scalar - Other.Scalar;
+		floatm scalar = Scalar - Other.Scalar;
 		Vector3 imaginary = Vector - Other.Vector;
 
 		return Quaternion(scalar, imaginary);
@@ -31,7 +31,7 @@ namespace Morpheus {
 
 	Quaternion& Quaternion::Multiply(const Quaternion& Other)
 	{
-		FLOAT scalar = Scalar * Other.Scalar - Vector.Dot(Other.Vector);
+		floatm scalar = Scalar * Other.Scalar - Vector.Dot(Other.Vector);
 
 		Vector3 A = Other.Vector;
 		A.Multiply({ Scalar, Scalar, Scalar });

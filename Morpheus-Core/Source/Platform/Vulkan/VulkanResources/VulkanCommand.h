@@ -18,7 +18,10 @@ namespace Morpheus {
 		const uint32& GetID() { return m_ID; }
 		void SetID(const uint32& _ID) { m_ID = _ID; }
 
-		void SetupCommands();
+		const bool& GetRecompilationState() { return m_RecompilationRequired; }
+		void SetRecompilationState(const bool& _State) { m_RecompilationRequired = _State; }
+
+		bool SetupCommands(const Vector4& ClearColor);
 
 		const vk::CommandBuffer& GetCommandBuffer(const uint32& _Index) 
 		{ return m_CommandBuffers.at(_Index); }
@@ -30,13 +33,14 @@ namespace Morpheus {
 		void CreateCommandBuffers();
 
 	private:
-		vk::CommandPool m_CommandPool;
-		Vector<vk::CommandBuffer> m_CommandBuffers;
-
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
 
+		vk::CommandPool m_CommandPool;
+		Vector<vk::CommandBuffer> m_CommandBuffers;
+
 		uint32 m_ID = 0;
+		bool m_RecompilationRequired = true;
 
 	public:
 		static Ref<VulkanCommand> Create();

@@ -2,8 +2,7 @@
 #include "IndexBuffer.h"
 
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/VULKAN/VulkanCore/VulkanResource.h"
-#include "Platform/VULKAN/VulkanResources/VulkanIndexBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanIndexBuffer.h"
 
 namespace Morpheus {
 

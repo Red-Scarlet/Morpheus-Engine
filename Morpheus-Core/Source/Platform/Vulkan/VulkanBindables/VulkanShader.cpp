@@ -1,18 +1,25 @@
 #include "Morppch.h"
 #include "VulkanShader.h"
 
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 #include <fstream>
-#include "Platform/Vulkan/VulkanResource.h"
+
+#include "VulkanVertexArray.h"
 
 namespace Morpheus {
 
 	VulkanShader::VulkanShader(const String& _VertexPath, const String& _FragmentPath)
+		: m_DescriptorCount(1)
 	{
-		m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-		m_DescriptorPool = VulkanDescriptorPool::VulkanCreate(1);
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_DescriptorPool = VulkanDescriptorPool::VulkanCreate(m_DescriptorCount);
+		m_Identifier.Type = VulkanBindableTypes::VulkanShader;
 
 		CreateShader(_VertexPath, _FragmentPath);
+		SetID(VulkanMemoryManager::GetInstance()->GetBindableCache()->GetNextBindableID(VulkanBindableTypes::VulkanShader));
 		MORP_CORE_WARN("[VULKAN] Shader Was Created!");
+
+		m_Pipeline = VulkanPipeline::VulkanCreate(m_ShaderModules);
 	}
 
 	VulkanShader::~VulkanShader()
@@ -24,32 +31,61 @@ namespace Morpheus {
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
 
-		Device.destroyShaderModule(m_VertModule);
-		Device.destroyShaderModule(m_FragModule);
+		Device.destroyShaderModule(m_ShaderModules.VertModule);
+		Device.destroyShaderModule(m_ShaderModules.FragModule);
 	}
 
 	void VulkanShader::Bind()
 	{
+		String str = "[VULKAN] Shader #" + std::to_string(m_Identifier.ID) + " was Binded!";
+		MORP_CORE_TRACE(str);
+		// Maybe added Message
+		Ref<VulkanBindableCache> BindableCache = VulkanMemoryManager::GetInstance()->GetBindableCache();
+		if (BindableCache->CheckBinding(m_Identifier.Type, m_Identifier.ID)) {
+			// Already Bound!
+		} else {
+			BindableCache->SetPresent(m_Identifier);
+			for (uint32 i = 0; i < BindableCache->AppendingCount(); i++) {
+				VulkanBindableIdentifier Identifier = BindableCache->GetAppending(i);
+				if (Identifier.Bounded) {
+					AddToBindables(Identifier);
+					Ref<VulkanVertexArray> VAO = BindableCache->Get<VulkanVertexArray>(VulkanBindableTypes::VulkanVertexArray, Identifier.ID);
+					CompileUniform(VAO->GetUniformBuffer()->GetID());
+				}
+			}
+			BindableCache->ClearAppending();
+		}	
+	}
 
-		//uint32 BindedVAOS = VulkanResourceCache::GetInstance()->GetBindingCount(VulkanBindables::VertexArray);
-		uint32 NumUniforms = VulkanResourceCache::GetInstance()->GetResourceCount(VulkanResourceType::UniformBuffer);
-		for (uint32 i = 0; i < NumUniforms; i++)
-			m_DescriptorPool->UpdateDescriptorSet(i);
+	void VulkanShader::AddToBindables(const VulkanBindableIdentifier& _Identifer)
+	{
+		m_Bindables.push_back(_Identifer);
+	}
 
-		// Check so see how many VAO are currently Binded.
-			// Bind this Shader.
-			// Get all the VAO currently binded to this shader.
-			// Update all the descriptorSets With Uniform IDs;
+	void VulkanShader::CompileUniform(const uint32& _ID)
+	{
+		if (m_DescriptorCount > m_DescriptorPool->GetCount()) {
+			{
+				m_DescriptorPool->Destory();
+				m_DescriptorPool->SetDesciptorCount(m_DescriptorCount);
+				m_DescriptorPool->CreateDescriptorPool();
+				m_DescriptorPool->CreateDescriptorSet();
+			}
 
-		//
+			for (uint32 i = 0; i < m_Bindables.size(); i++) {
+				Ref<VulkanBindableCache> BindableCache = VulkanMemoryManager::GetInstance()->GetBindableCache();
+				Ref<VulkanVertexArray> VAO = BindableCache->Get<VulkanVertexArray>(VulkanBindableTypes::VulkanVertexArray, m_Bindables[i].ID);
+				if(VAO->GetUniformBuffer()->GetID() != _ID) {
+					Ref<VulkanUniformBuffer> UBO = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanUniformBuffer>(VulkanResourceTypes::VulkanUniformBuffer, VAO->GetUniformBuffer()->GetID());
+					UBO->SetCompiled(false);
+					m_DescriptorPool->UpdateDescriptorSet(UBO->GetID());
+				}
+			}
 
-		// Check How many Vertex Array Are currently Binded
-		// IF 2
-
-		// BIND this shader. and Increase the descriptor Set Count.
-
-		//
-		//
+		}
+	
+		m_DescriptorPool->UpdateDescriptorSet(_ID); 
+		m_DescriptorCount++;
 	}
 
 	Vector<float8> VulkanShader::ReadFile(const String& _Filepath)
@@ -75,7 +111,7 @@ namespace Morpheus {
 		Vector<float8> vertShaderCode = ReadFile(_VertexPath);
 		Vector<float8> fragShaderCode = ReadFile(_FragmentPath);
 
-		m_VertModule = Device.createShaderModule(
+		m_ShaderModules.VertModule = Device.createShaderModule(
 			vk::ShaderModuleCreateInfo(
 				vk::ShaderModuleCreateFlags(),
 				vertShaderCode.size(),
@@ -83,7 +119,7 @@ namespace Morpheus {
 			)
 		);
 
-		m_FragModule = Device.createShaderModule(
+		m_ShaderModules.FragModule = Device.createShaderModule(
 			vk::ShaderModuleCreateInfo(
 				vk::ShaderModuleCreateFlags(),
 				fragShaderCode.size(),
@@ -95,7 +131,7 @@ namespace Morpheus {
 	Ref<VulkanShader> VulkanShader::VulkanCreate(const String& _VertexPath, const String& _FragmentPath)
 	{
 		Ref<VulkanShader> s_VulkanShader = CreateRef<VulkanShader>(_VertexPath, _FragmentPath);
-		VulkanResourceCache::GetInstance()->Submit<VulkanShader>(VulkanResourceType::Shader, s_VulkanShader, s_VulkanShader->GetID());
+		VulkanMemoryManager::GetInstance()->GetBindableCache()->Submit<VulkanShader>(VulkanBindableTypes::VulkanShader, s_VulkanShader);
 		return s_VulkanShader;
 	}
 

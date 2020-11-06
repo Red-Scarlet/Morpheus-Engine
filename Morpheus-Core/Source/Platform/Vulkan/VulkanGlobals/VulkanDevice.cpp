@@ -1,15 +1,19 @@
 #include "Morppch.h"
 #include "VulkanDevice.h"
 
+#include "Platform/Vulkan/VulkanMemoryManager.h"
+
 namespace Morpheus {
 
 	VulkanDevice::VulkanDevice(const Ref<VulkanInstance>& _Instance)
+		: m_Instance(_Instance)
 	{
-		m_Instance = _Instance;
+		SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanDevice));
+
 		CreateDevice();
 		MORP_CORE_WARN("[VULKAN] Device Was Created!");
 	}
-
+	
 	VulkanDevice::~VulkanDevice()
 	{
 		MORP_CORE_WARN("[VULKAN] Device Was Destoryed!");
@@ -80,6 +84,11 @@ namespace Morpheus {
 		m_Surface->SetupColorFormats();
 	}
 
-
+	Ref<VulkanDevice> VulkanDevice::VulkanCreate(const Ref<VulkanInstance>& _Instance)
+	{
+		Ref<VulkanDevice> s_VulkanDevice = CreateRef<VulkanDevice>(_Instance);
+		VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit<VulkanDevice>(VulkanGlobalTypes::VulkanDevice, s_VulkanDevice);
+		return s_VulkanDevice;
+	}
 
 }

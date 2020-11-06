@@ -8,11 +8,11 @@ namespace Morpheus {
 	struct Quaternion
 	{
 	public:
-		FLOAT Scalar; 
+		floatm Scalar; 
 		Vector3 Vector;
 
 		Quaternion();
-		Quaternion(FLOAT SCALAR, Vector3 VECTOR);
+		Quaternion(floatm SCALAR, Vector3 VECTOR);
 
 		Quaternion& Add(const Quaternion& Other);
 		Quaternion& Subtract(const Quaternion& Other);

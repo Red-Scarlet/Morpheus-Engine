@@ -1,30 +1,54 @@
 #pragma once
 
-#include "Common.h"
+#include "Morpheus/Core/Common.h"
+#include "Morpheus/Events/Event.h"
 
 namespace Morpheus {
 
-	struct WindowStruct
+	struct WindowProps
 	{
-		String Title = "Morphues Engine";
-		uint32 Width = 1280, Height = 720;
+		String Title;
+		uint32 Width;
+		uint32 Height;
+		uint32 Rate;
+
+		WindowProps(const String& title = "Concealing Engine",
+			const uint32& width = 1280,
+			const uint32& height = 720,
+			const uint32& rate = 60)
+			: Title(title), Width(width), Height(height), Rate(rate)
+		{
+		}
 	};
 
-	class Window 
+	// Interface representing a desktop system based Window
+	class Window
 	{
 	public:
-		virtual ~Window() = default;
+		using EventCallbackFn = std::function<void(Event&)>;
+
+		virtual ~Window() {}
+
 		virtual void OnUpdate() = 0;
-		virtual const WindowStruct GetStruct() const = 0;
-		virtual void SetUpdateStructTitle(const String& Title) = 0;
 
-		virtual const uint32& GetExtensionsCount() const = 0;
-		virtual const float8** GetExtensionsData() const = 0;
+		virtual const uint32& GetWidth() const = 0;
+		virtual const uint32& GetHeight() const = 0;
+		virtual const uint32& GetRate() const = 0;
 
-		virtual void* GetWindowCore() = 0;
+		// Window attributes
+		virtual void SetEventCallback(const EventCallbackFn& callback) = 0;
+		virtual void SetVSync(bool enabled) = 0;
+		virtual bool IsVSync() const = 0;
 
-	public:
-		static Scope<Window> Create(const WindowStruct& _Struct);
+		virtual void SetFullscreen(bool enabled) = 0;
+		virtual bool IsFullscreen() const = 0;
+
+		virtual void SetMouseActive(bool enabled) = 0;
+		virtual bool IsMouseActive() const = 0;
+
+		virtual void* GetNativeWindow() const = 0;
+
+		static Scope<Window> Create(const WindowProps& props = WindowProps());
 	};
 
 }

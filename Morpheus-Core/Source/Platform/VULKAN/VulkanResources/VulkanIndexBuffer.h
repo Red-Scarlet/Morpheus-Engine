@@ -28,25 +28,24 @@ namespace Morpheus {
 		void CreateIndexBuffer();
 
 	private:
+		Ref<VulkanDevice> m_Device;
+		Ref<VulkanCommand> m_Command;
+
 		struct {
 			vk::DeviceMemory Memory;
 			vk::Buffer Buffer;
 			uint32_t Count;
 		} m_Indices;
 
-		// TODO: MAKE INDEXBUFFER AS OBJECT INSIDE THE RENDERER @ MORPHEUS CORE
 		uint32* m_IndexData;
 		uint32 m_IndexSize;
 
-		uint32 m_BufferSize = 0;
-
-		Ref<VulkanDevice> m_Device;
-		Ref<VulkanCommand> m_Command;
+		uint32 m_BufferSize = 0;	// TODO: REMOVE LATER
 
 		uint32 m_ID = 0;
 
 	public:
-		static Ref<VulkanIndexBuffer> VulkanCreate(uint32* _Indices, const uint32& _Size);
+		static Ref<VulkanIndexBuffer> VulkanCreate(uint32* _Indices, const uint32& _Size);	// TODO: ADD SUPPORT FOR VECTOR<uint32>
 	};
 
 }

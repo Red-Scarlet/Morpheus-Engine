@@ -1,8 +1,5 @@
 #pragma once
 
-typedef FLOAT float32;
-typedef UINT uint32;
-
 #include "Vector2.h"
 #include "Vector3.h"
 #include "Vector4.h"

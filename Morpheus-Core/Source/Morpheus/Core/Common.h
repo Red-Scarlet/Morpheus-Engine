@@ -10,25 +10,35 @@
 #ifdef MORP_PLATFORM_WINDOWS
 #endif
 
-#define MORP_CORE_TRACE(...)		::Morpheus::MorpheusLogger::LogTrace(__VA_ARGS__)
-#define MORP_CORE_INFO(...)			::Morpheus::MorpheusLogger::LogInfo(__VA_ARGS__)
-#define MORP_CORE_WARN(...)			::Morpheus::MorpheusLogger::LogWarn(__VA_ARGS__)
-#define MORP_CORE_ERROR(...)		::Morpheus::MorpheusLogger::LogError(__VA_ARGS__)
-#define MORP_CORE_SPECIAL(...)		::Morpheus::MorpheusLogger::LogSpecial(__VA_ARGS__)
-#define MORP_CORE_SPECIAL_2(...)	::Morpheus::MorpheusLogger::LogSpecialOverride(__VA_ARGS__)
+#define MORP_CORE_LOGGING
 
+#ifdef MORP_CORE_LOGGING
+	#define MORP_CORE_TRACE(...)		::Morpheus::MorpheusLogger::LogTrace(__VA_ARGS__)
+	#define MORP_CORE_INFO(...)			::Morpheus::MorpheusLogger::LogInfo(__VA_ARGS__)
+	#define MORP_CORE_WARN(...)			::Morpheus::MorpheusLogger::LogWarn(__VA_ARGS__)
+	#define MORP_CORE_ERROR(...)		::Morpheus::MorpheusLogger::LogError(__VA_ARGS__)
+	#define MORP_CORE_SPECIAL(...)		::Morpheus::MorpheusLogger::LogSpecial(__VA_ARGS__)
+	#define MORP_CORE_SPECIAL_2(...)	::Morpheus::MorpheusLogger::LogSpecialOverride(__VA_ARGS__)
+#else
+	#define MORP_CORE_TRACE(...)
+	#define MORP_CORE_INFO(...)
+	#define MORP_CORE_WARN(...)
+	#define MORP_CORE_ERROR(...)
+	#define MORP_CORE_SPECIAL(...)
+	#define MORP_CORE_SPECIAL_2(...)
+#endif
 
 #define MORP_CORE_ASSERTS
 
 #define MORP_ERROR true
 #ifdef MORP_CORE_ASSERTS
-#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); }}
+	#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); }}
 #else
-#define MORP_CORE_ASSERT(x, ...)
+	#define MORP_CORE_ASSERT(x, ...)
 #endif
 
 #define BIT(x) (1 << x)
-#define RC_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
+#define MORP_BIND_EVENT_FN(fn) std::bind(&fn, this, std::placeholders::_1)
 
 namespace Morpheus {
 
@@ -46,33 +56,6 @@ namespace Morpheus {
 	constexpr Ref<T> CreateRef(Args&& ... args)
 	{ return std::make_shared<T>(std::forward<Args>(args)...); }
 
-	template<typename T>
-	using Pointer = T*;
-
-	template<typename T, typename Args>
-	T GetPointer(Args args)
-	{
-		return *args;
-	}
-
-	template<typename T>
-	using Reference = T&;
-
-	//template<typename T>
-	//using Weak = std::weak_ptr<T>;
-	//template<typename T, typename ... Args>
-	//constexpr Ref<T> CreateWeak(Args&& ... args)
-	//{ return std::weak_ptr<T>(std::forward<Args>(args)...); }
-
-	//template<typename T>
-	//constexpr Ref<T> ObserveWeak(const Weak<T>& args)
-	//{
-	//	if (Ref<T> Shared = args.lock())
-	//		return Shared;
-	//	MORP_CORE_ASSERT(MORP_ERROR, "Observation Failure weak_ptr has expired");
-	//	return nullptr;
-	//}
-
 	template<typename T, typename ... Args>
 	constexpr Ref<T> CastRef(Args&& ... args)
 	{ return std::dynamic_pointer_cast<T>(std::forward<Args>(args)...); }
@@ -85,6 +68,7 @@ namespace Morpheus {
 				size_t(&offset_of_impl<T1, T2>::object);
 		}
 	};
+
 	template <typename T1, typename T2>
 	T2 offset_of_impl<T1, T2>::object;
 
@@ -105,9 +89,11 @@ namespace Morpheus {
 	template<typename T>
 	using Optional = std::optional<T>;
 
+	template<typename T, typename R>
+	using Pair = std::pair<T, R>;
+
 	using String = std::string;
 	using Ostream = std::ostream;
-
 
 	typedef std::uint64_t uint64;
 	typedef std::uint32_t uint32;
@@ -128,6 +114,8 @@ namespace Morpheus {
 	typedef float32** pfloat32;
 	typedef float16** pfloat16;
 	typedef float8** pfloat8;
+
+	typedef float32 floatm;
 
 	typedef std::nullptr_t NULLPTR;
 	typedef void* VOIDPTR;

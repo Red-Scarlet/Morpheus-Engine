@@ -76,8 +76,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;MORP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GLFW_INCLUDE_VULKAN;MORP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -95,8 +95,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;MORP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GLFW_INCLUDE_VULKAN;MORP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -117,8 +117,8 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;MORP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GLFW_INCLUDE_VULKAN;MORP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -140,56 +140,67 @@
     <ClInclude Include="Source\Morpheus\Core\Common.h" />
     <ClInclude Include="Source\Morpheus\Core\EngineMessageSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h" />
+    <ClInclude Include="Source\Morpheus\Core\Input.h" />
     <ClInclude Include="Source\Morpheus\Core\LayerSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\Window.h" />
+    <ClInclude Include="Source\Morpheus\Events\ApplicationEvent.h" />
+    <ClInclude Include="Source\Morpheus\Events\Event.h" />
+    <ClInclude Include="Source\Morpheus\Events\KeyEvent.h" />
+    <ClInclude Include="Source\Morpheus\Events\MouseEvent.h" />
+    <ClInclude Include="Source\Morpheus\ImGui\ImGuiLayer.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Matrix4.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Quaternion.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Vector2.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Vector3.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Vector4.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererUnknown\FrameBuffer.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\GraphicsPipeline.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.h" />
     <ClInclude Include="Source\Morpheus\Renderer\Mesh.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererCore\RenderCommand.h" />
     <ClInclude Include="Source\Morpheus\Renderer\Renderer.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererCore\RendererAPI.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererCore\GraphicsContext.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererUnknown\Renderpass.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererBindables\Shader.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\UniformBuffer.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererBindables\VertexArray.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererCore\GraphicsContext.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererCore\RenderCommand.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererCore\RendererAPI.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\UniformBuffer.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\VertexBuffer.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererUnknown\FrameBuffer.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererUnknown\Renderpass.h" />
     <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h" />
     <ClInclude Include="Source\Morpheus\Utilities\FileLoader.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\KeyCodes.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusIOS.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\MouseButtonCodes.h" />
     <ClInclude Include="Source\Morpheus\Utilities\ThreadPool.h" />
     <ClInclude Include="Source\Morpheus\Utilities\TimerClass.h" />
     <ClInclude Include="Source\Morppch.h" />
-    <ClInclude Include="Source\Platform\GLFW\GLFWAPIWindow.h" />
+    <ClInclude Include="Source\Platform\GLFW\WindowsInput.h" />
+    <ClInclude Include="Source\Platform\GLFW\WindowsWindow.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindable.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobal.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResource.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanUnknown\VulkanFramebuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanUnknown\VulkanRenderpass.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCommon.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobal.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanRenderQueue.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSurface.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSwapchain.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSynchronization.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGuiN.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanMemoryManager.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResource.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanUnknown\VulkanFramebuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanUnknown\VulkanRenderpass.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
@@ -197,48 +208,52 @@
     <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\LayerSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\Window.cpp" />
+    <ClCompile Include="Source\Morpheus\ImGui\ImGuiBuild.cpp" />
+    <ClCompile Include="Source\Morpheus\ImGui\ImGuiLayer.cpp" />
     <ClCompile Include="Source\Morpheus\Mathematics\Matrix4.cpp" />
     <ClCompile Include="Source\Morpheus\Mathematics\Quaternion.cpp" />
     <ClCompile Include="Source\Morpheus\Mathematics\Vector2.cpp" />
     <ClCompile Include="Source\Morpheus\Mathematics\Vector3.cpp" />
     <ClCompile Include="Source\Morpheus\Mathematics\Vector4.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererCore\RenderCommand.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\Renderer.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererCore\RendererAPI.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererCore\GraphicsContext.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererUnknown\FrameBuffer.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\GraphicsPipeline.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererUnknown\Renderpass.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererBindables\Shader.cpp" />
-    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\UniformBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererBindables\VertexArray.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererCore\GraphicsContext.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererCore\RenderCommand.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererCore\RendererAPI.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\UniformBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\VertexBuffer.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererUnknown\FrameBuffer.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererUnknown\Renderpass.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusIOS.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\TimerClass.cpp" />
     <ClCompile Include="Source\Morppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Source\Platform\GLFW\GLFWAPIWindow.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResource.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanUnknown\VulkanFramebuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanUnknown\VulkanRenderpass.cpp" />
+    <ClCompile Include="Source\Platform\GLFW\WindowsInput.cpp" />
+    <ClCompile Include="Source\Platform\GLFW\WindowsWindow.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanRenderQueue.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSurface.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSwapchain.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSynchronization.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGuiN.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanMemoryManager.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanCommand.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptorPool.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanPipeline.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanUnknown\VulkanFramebuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanUnknown\VulkanRenderpass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Vendor\GLFW\GLFW.vcxproj">
@@ -246,6 +261,9 @@
     </ProjectReference>
     <ProjectReference Include="Vendor\VULKAN\VULKAN.vcxproj">
       <Project>{36C2A7D6-2264-D2AC-0B1F-E600F75F59FD}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Vendor\IMGUI\ImGui.vcxproj">
+      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

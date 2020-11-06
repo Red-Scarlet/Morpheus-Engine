@@ -1,14 +1,14 @@
 #include "Morppch.h"
 #include "VulkanSwapchain.h"
 
-#include "Platform/Vulkan/VulkanResource.h"
+#include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
 
 	VulkanSwapchain::VulkanSwapchain()
 	{
-        m_Device = VulkanResourceCache::GetInstance()->Get<VulkanDevice>(VulkanResourceType::Device);
-        
+        m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+        SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSwapchain));
         CreateSwapchain();
         MORP_CORE_WARN("[VULKAN] Swapchain Was Created!");
 	}
@@ -86,13 +86,14 @@ namespace Morpheus {
             Device.destroySwapchainKHR(oldSwapchain);
         
         // Resize swapchain buffers for use later
-        m_SwapchainBuffers.resize(backbufferCount);
+        m_BackBufferCount = backbufferCount;
+        // m_SwapchainBuffers.resize(backbufferCount);
 	}
 
 	Ref<VulkanSwapchain> VulkanSwapchain::Create()
 	{
         Ref<VulkanSwapchain> s_VulkanSwapchain = CreateRef<VulkanSwapchain>();
-        VulkanResourceCache::GetInstance()->Submit<VulkanSwapchain>(VulkanResourceType::Swapchain, s_VulkanSwapchain);
+        VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain, s_VulkanSwapchain);
         return s_VulkanSwapchain;
 	}
 

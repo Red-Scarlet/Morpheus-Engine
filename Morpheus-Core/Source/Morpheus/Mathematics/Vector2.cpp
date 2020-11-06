@@ -8,7 +8,7 @@ namespace Morpheus {
 	{
 	}
 
-	Vector2::Vector2(const FLOAT& X, const FLOAT& Y)
+	Vector2::Vector2(const floatm& X, const floatm& Y)
 		: x(X), y(Y)
 	{
 	}

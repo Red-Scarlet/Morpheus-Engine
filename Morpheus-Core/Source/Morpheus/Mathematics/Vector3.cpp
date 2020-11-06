@@ -8,7 +8,7 @@ namespace Morpheus {
 	{
 	}
 
-	Vector3::Vector3(const FLOAT& X, const FLOAT& Y, const FLOAT& Z)
+	Vector3::Vector3(const floatm& X, const floatm& Y, const floatm& Z)
 		: x(X), y(Y), z(Z)
 	{
 	}
@@ -51,11 +51,11 @@ namespace Morpheus {
 
 	Vector3& Vector3::Normalize()
 	{
-		FLOAT magnitude = std::sqrt(x * x + y * y + z * z);
+		floatm magnitude = std::sqrt(x * x + y * y + z * z);
 
 		if (magnitude > 0.0f) {
 
-			FLOAT normal = 1.0f / magnitude;
+			floatm normal = 1.0f / magnitude;
 
 			x = x * normal;
 			y = y * normal;
@@ -76,16 +76,16 @@ namespace Morpheus {
 		return cross;
 	}
 
-	FLOAT& Vector3::Dot(const Vector3& Other)
+	floatm& Vector3::Dot(const Vector3& Other)
 	{
-		FLOAT dot;
+		floatm dot;
 		dot = x * Other.x + y * Other.y + z * Other.z;
 		return dot;
 	}
 
-	FLOAT& Vector3::Magnitude()
+	floatm& Vector3::Magnitude()
 	{
-		FLOAT magnitude;
+		floatm magnitude;
 		magnitude = std::sqrt(x * x + y * y + z * z);
 		return magnitude;
 	}

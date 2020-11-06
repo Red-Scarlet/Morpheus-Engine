@@ -2,6 +2,8 @@
 
 #include "Morpheus/Core/Common.h"
 
+#include "Morpheus/Renderer/RendererUnknown/Renderpass.h"
+
 namespace Morpheus {
 
 	class FrameBuffer
@@ -10,7 +12,7 @@ namespace Morpheus {
 		virtual ~FrameBuffer() = default;
 
 	public:
-		static Ref<FrameBuffer> Create();
+		static Ref<FrameBuffer> Create(const Ref<Renderpass> _Renderpass);
 	};
 
 }

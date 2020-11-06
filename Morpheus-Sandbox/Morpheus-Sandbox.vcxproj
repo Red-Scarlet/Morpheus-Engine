@@ -79,7 +79,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MORP_PLATFORM_WINDOWS;MORP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -97,7 +97,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MORP_PLATFORM_WINDOWS;MORP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -118,7 +118,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MORP_PLATFORM_WINDOWS;MORP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -141,19 +141,6 @@
     <ProjectReference Include="..\Morpheus-Core\Morpheus-Core.vcxproj">
       <Project>{6EC07974-DA80-F5AA-A3BB-3E280F3B3A87}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Assets\Compile.bat" />
-    <None Include="Assets\frag.spv" />
-    <None Include="Assets\Shader.frag" />
-    <None Include="Assets\Shader.vert" />
-    <None Include="Assets\triangle.frag" />
-    <None Include="Assets\triangle.frag.spv" />
-    <None Include="Assets\triangle.vert" />
-    <None Include="Assets\triangle.vert.spv" />
-    <None Include="Assets\uniform.frag" />
-    <None Include="Assets\uniform.vert" />
-    <None Include="Assets\vert.spv" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

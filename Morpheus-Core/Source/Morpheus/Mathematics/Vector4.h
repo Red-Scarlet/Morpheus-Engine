@@ -7,10 +7,10 @@ namespace Morpheus {
 	struct Vector4
 	{
 	public:
-		FLOAT x, y, z, w;
+		floatm x, y, z, w;
 
 		Vector4();
-		Vector4(FLOAT X, FLOAT Y, FLOAT Z, FLOAT W);
+		Vector4(floatm X, floatm Y, floatm Z, floatm W);
 
 		Vector4& Add(const Vector4& Other);
 		Vector4& Subtract(const Vector4& Other);

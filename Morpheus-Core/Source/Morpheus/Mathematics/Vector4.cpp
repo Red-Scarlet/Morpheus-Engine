@@ -8,7 +8,7 @@ namespace Morpheus {
 	{
 	}
 
-	Vector4::Vector4(FLOAT X, FLOAT Y, FLOAT Z, FLOAT W)
+	Vector4::Vector4(floatm X, floatm Y, floatm Z, floatm W)
 		: x(X), y(Y), z(Z), w(W)
 	{
 	}
