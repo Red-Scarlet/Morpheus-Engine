@@ -1,23 +1,19 @@
 # Morpheus-Engine
 C++ Multithreaded Vulkan Engine
 
-### Engine Systems
-* Core ~ 1.0.0
-* Mathematics ~ 1.0.0
-* Renderer ~ 1.2.0
-* Utils ~ 1.0.0
-* Platform/Vulkan ~ 1.4.0
+Morpheus Engine Stage 2 development has began.
+### Features
+* Better Memory allocation and management.
+* Improvement to Draw Commands, Command Buffers and respectively allocation for staging buffers
+* Shader, Pipeline, DescriptorSet, UniformBuffers will be dyamically created.
+* Added support for TextureBuffers
 
 ### Todo
-* Add Vertex & Index Buffers
-* Add Custom Shaders
-* Add Textures
-* Improve the Overall Architecture of Vulkan implemented
-* Add Memory Manager
-* Create Resource Allocator
-* Add ImGui for Level Editor
-* Add Entity Component System
-* Add Lights, Shadows and Better Pipeline.
+* Resource Allocator
+* Multithreading
+* ImGui Level Editor (Save and Load)
+* ECS, Unity like components.
+* Lights, Forward & Deferred Rendering.
 
 ### Libraries Used
 * GLFW 3.3.2
