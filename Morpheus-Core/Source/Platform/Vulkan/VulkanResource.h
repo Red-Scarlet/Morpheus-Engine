@@ -9,6 +9,7 @@ namespace Morpheus {
 		VulkanVertexBuffer,
 		VulkanIndexBuffer,
 		VulkanUniformBuffer,
+		VulkanTextureBuffer,
 
 		// For Now
 		VulkanRenderpass,

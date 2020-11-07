@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
+#include "Platform/Vulkan/VulkanCommon.h"
 #include "Morpheus/Renderer/RendererBindables/VertexArray.h"
 
 #include "Morpheus/Renderer/RendererResources/VertexBuffer.h"
@@ -10,6 +11,14 @@
 #include "Platform/Vulkan/VulkanBindable.h"
 
 namespace Morpheus {
+
+	struct VulkanVertexAttributes
+	{
+	public:
+		vk::PipelineVertexInputStateCreateInfo InputState;
+		vk::VertexInputBindingDescription InputBinding;
+		Vector<vk::VertexInputAttributeDescription> InputAttributes;
+	};
 
 	class VulkanVertexArray : public VertexArray
 	{
@@ -33,6 +42,11 @@ namespace Morpheus {
 
 		const bool& CheckBound()
 		{ return m_Identifier.Bounded; }
+
+		const vk::PipelineVertexInputStateCreateInfo& GetInputState() { return m_Attributes.InputState; }
+
+	private:
+		VulkanVertexAttributes m_Attributes;
 
 	private:
 		Ref<VertexBuffer> m_VertexBuffer;

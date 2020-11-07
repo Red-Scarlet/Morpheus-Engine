@@ -6,15 +6,14 @@
 
 namespace Morpheus {
 
-	VulkanPipeline::VulkanPipeline(const VulkanPipelineInput& _Input)
-		: m_ShaderData(_Input)
+	VulkanPipeline::VulkanPipeline(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState)
+		: m_ShaderData(_Input), m_InputState(_InputState)
 	{
 		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
 		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
 		m_DescriptorPool = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanDescriptorPool>(VulkanResourceTypes::VulkanDescriptor);
 		m_Renderpass = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanRenderpass>(VulkanResourceTypes::VulkanRenderpass);
 
-		VertexInputData();
 		CreatePipeline();
 
 		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanPipeline));
@@ -32,37 +31,6 @@ namespace Morpheus {
 		Device.destroyPipelineCache(m_PipelineCache);
 		Device.destroyPipeline(m_Pipeline);
 		Device.destroyPipelineLayout(m_PipelineLayout);
-	}
-
-	void VulkanPipeline::VertexInputData()
-	{
-		// Vertex input binding
-		m_InputBinding.binding = 0;
-		m_InputBinding.stride = sizeof(VertexData);
-		m_InputBinding.inputRate = vk::VertexInputRate::eVertex;
-
-		// Inpute attribute binding describe shader attribute locations and memory layouts
-		// These match the following shader layout (see assets/shaders/triangle.vert):
-		//	layout (location = 0) in vec3 inPos;
-		//	layout (location = 1) in vec3 inColor;
-		m_InputAttributes.resize(2);
-		// Attribute location 0: Position
-		m_InputAttributes[0].binding = 0;
-		m_InputAttributes[0].location = 0;
-		m_InputAttributes[0].format = vk::Format::eR32G32B32Sfloat;
-		m_InputAttributes[0].offset = offsetof(VertexData, Position);
-		// Attribute location 1: Color
-		m_InputAttributes[1].binding = 0;
-		m_InputAttributes[1].location = 1;
-		m_InputAttributes[1].format = vk::Format::eR32G32B32Sfloat;
-		m_InputAttributes[1].offset = offsetof(VertexData, Color);
-
-		// Assign to the vertex input state used for pipeline creation
-		m_InputState.flags = vk::PipelineVertexInputStateCreateFlags();
-		m_InputState.vertexBindingDescriptionCount = 1;
-		m_InputState.pVertexBindingDescriptions = &m_InputBinding;
-		m_InputState.vertexAttributeDescriptionCount = (uint32)m_InputAttributes.size();
-		m_InputState.pVertexAttributeDescriptions = m_InputAttributes.data();
 	}
 
 	void VulkanPipeline::CreatePipeline()
@@ -87,8 +55,6 @@ namespace Morpheus {
 			)
 		);
 
-		
-
 		Vector<vk::PipelineShaderStageCreateInfo> pipelineShaderStages = {
 			vk::PipelineShaderStageCreateInfo(
 				vk::PipelineShaderStageCreateFlags(),
@@ -105,8 +71,6 @@ namespace Morpheus {
 				nullptr
 			)
 		};
-
-		vk::PipelineVertexInputStateCreateInfo pvi = m_InputState;
 
 		vk::PipelineInputAssemblyStateCreateInfo pia(
 			vk::PipelineInputAssemblyStateCreateFlags(),
@@ -156,7 +120,7 @@ namespace Morpheus {
 		);
 
 		// Blend State - How two primatives should draw on top of each other.
-		Vector<vk::PipelineColorBlendAttachmentState> colorBlendAttachments =
+		Vector<vk::PipelineColorBlendAttachmentState> ColorBlendAttachments =
 		{
 			vk::PipelineColorBlendAttachmentState(
 				VK_FALSE,
@@ -170,32 +134,34 @@ namespace Morpheus {
 			)
 		};
 
-		vk::PipelineColorBlendStateCreateInfo pbs(
-			vk::PipelineColorBlendStateCreateFlags(),
-			0,
-			vk::LogicOp::eClear,
-			(uint32)colorBlendAttachments.size(),
-			colorBlendAttachments.data()
-		);
+		vk::PipelineColorBlendStateCreateInfo BlendStateCreateInfo = {};
+		{
+			BlendStateCreateInfo.flags = vk::PipelineColorBlendStateCreateFlags();
+			BlendStateCreateInfo.logicOpEnable = 0;
+			BlendStateCreateInfo.logicOp = vk::LogicOp::eClear;
+			BlendStateCreateInfo.attachmentCount = ColorBlendAttachments.size();
+			BlendStateCreateInfo.pAttachments = ColorBlendAttachments.data();
+		}
 
-		Vector<vk::DynamicState> dynamicStates =
+		Vector<vk::DynamicState> DynamicStates =
 		{
 			vk::DynamicState::eViewport,
 			vk::DynamicState::eScissor
 		};
 
-		vk::PipelineDynamicStateCreateInfo pdy(
-			vk::PipelineDynamicStateCreateFlags(),
-			(uint32)dynamicStates.size(),
-			dynamicStates.data()
-		);
+		vk::PipelineDynamicStateCreateInfo DynamicStateCreateInfo = {};
+		{
+			DynamicStateCreateInfo.flags = vk::PipelineDynamicStateCreateFlags();
+			DynamicStateCreateInfo.dynamicStateCount = DynamicStates.size();
+			DynamicStateCreateInfo.pDynamicStates = DynamicStates.data();
+		}
 
 		vk::GraphicsPipelineCreateInfo CreateInfo {};
 		{
 			CreateInfo.flags = vk::PipelineCreateFlags();
 			CreateInfo.stageCount = (uint32)pipelineShaderStages.size();
 			CreateInfo.pStages = pipelineShaderStages.data();
-			CreateInfo.pVertexInputState = &pvi;
+			CreateInfo.pVertexInputState = &m_InputState;
 			CreateInfo.pInputAssemblyState = &pia;
 			CreateInfo.pTessellationState = nullptr;
 			CreateInfo.pViewportState = &pv;
@@ -203,43 +169,21 @@ namespace Morpheus {
 			CreateInfo.pMultisampleState = &pm;
 		
 			CreateInfo.pDepthStencilState = &pds;
-			CreateInfo.pColorBlendState = &pbs;
-			CreateInfo.pDynamicState = &pdy;
-		
+			CreateInfo.pColorBlendState = &BlendStateCreateInfo;
+			CreateInfo.pDynamicState = &DynamicStateCreateInfo;
+
 			CreateInfo.layout = m_PipelineLayout;
 			CreateInfo.renderPass = Renderpass;
-		
 			CreateInfo.basePipelineIndex = 0;
 		}
 		
-		auto ThePipeline = Device.createGraphicsPipeline(
-			m_PipelineCache,
-			vk::GraphicsPipelineCreateInfo(
-				vk::PipelineCreateFlags(),
-				static_cast<uint32_t>(pipelineShaderStages.size()),
-				pipelineShaderStages.data(),
-				&pvi,
-				&pia,
-				nullptr,
-				&pv,
-				&pr,
-				&pm,
-				&pds,
-				&pbs,
-				&pdy,
-				m_PipelineLayout,
-				Renderpass,
-				0
-			)
-		);
-
-		m_Pipeline = ThePipeline;
-
+		auto Pipeline = Device.createGraphicsPipeline(m_PipelineCache, CreateInfo);
+		m_Pipeline = Pipeline;
 	}
 
-	Ref<VulkanPipeline> VulkanPipeline::VulkanCreate(const VulkanPipelineInput& _Input)
+	Ref<VulkanPipeline> VulkanPipeline::VulkanCreate(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState)
 	{
-		Ref<VulkanPipeline> s_VulkanPipeline = CreateRef<VulkanPipeline>(_Input);
+		Ref<VulkanPipeline> s_VulkanPipeline = CreateRef<VulkanPipeline>(_Input, _InputState);
 		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanPipeline>(VulkanResourceTypes::VulkanPipeline, s_VulkanPipeline);
 		return s_VulkanPipeline;
 	}

@@ -1,7 +1,6 @@
 #include "Morppch.h"
 #include "VulkanUniformBuffer.h"
 
-#include "Morpheus/Core/EngineMessageSystem.h"		// TODO: REMOVE AND ADD INTO THIS SYSTEM AS STANDLONE 
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
@@ -150,13 +149,7 @@ namespace Morpheus {
 		// Memory Copying
 		void* pData = nullptr;
 		pData = Device.mapMemory(m_Uniform.Memory, 0, Size);
-
-		//uint8* CopyData = { (uint8*)(&Layout.data()->Data) };
-		//std::memcpy(pData, RealData.data(), Size);
-
 		std::memcpy(pData, DataMessage.Body.data(), Size);
-
-
 		Device.unmapMemory(m_Uniform.Memory);
 	}
 

@@ -6,7 +6,7 @@
 #include "Morpheus/Events/KeyEvent.h"
 #include "Morpheus/Events/MouseEvent.h"
 
-#include "Platform/Vulkan/VulkanImGui/VulkanImGuiN.h"
+#include "Platform/Vulkan/VulkanImGui/VulkanImGui.h"
 
 namespace Morpheus {
 

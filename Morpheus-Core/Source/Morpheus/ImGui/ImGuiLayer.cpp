@@ -15,7 +15,6 @@
 
 namespace Morpheus {
 
-
 	ImGuiLayer::ImGuiLayer()
 		: Layer("ImGuiLayer")
 	{
@@ -75,21 +74,15 @@ namespace Morpheus {
 		Application& app = Application::Get();
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
-		// Rendering
 		ImGui::Render();
-
 		m_VulkanImGui->SetupCommands();
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
-			//GLFWwindow* backup_current_context = glfwGetCurrentContext();
+			GLFWwindow* backup_current_context = glfwGetCurrentContext();
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
-			//glfwMakeContextCurrent(backup_current_context);
+			glfwMakeContextCurrent(backup_current_context);
 		}		
-
-		//
-		m_VulkanImGui->Flush();
-
 	}
 }

@@ -28,6 +28,11 @@ namespace Morpheus {
 		virtual ~VulkanFramebuffer();
 		void Destory();
 
+		virtual void* GetImage(uint32 id)
+		{
+			return m_DepthImage;// m_SwapchainBuffers[id].Image;
+		}
+
 		const uint32& GetID() { return m_ID; }
 		void SetID(const uint32& _ID) { m_ID = _ID; }
 

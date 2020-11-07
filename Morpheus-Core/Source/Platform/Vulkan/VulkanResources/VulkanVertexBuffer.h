@@ -9,42 +9,48 @@
 
 namespace Morpheus {
 
+	struct VulkanBuffer
+	{
+	public:
+		vk::DeviceMemory Memory;
+		vk::Buffer Buffer;
+	};
+
 	class VulkanVertexBuffer : public VertexBuffer
 	{
 	public:
-		VulkanVertexBuffer(VertexData* _VertexData, const uint32& _Size);
+		VulkanVertexBuffer(const Memory32& _Data, const uint32& _Size);
+		VulkanVertexBuffer(const uint32& _Size);
 		virtual ~VulkanVertexBuffer();
-		void Destory();
 
 		virtual const uint32& GetID() override { return m_ID; }
 		void SetID(const uint32& _ID) { m_ID = _ID; }
-
-		const vk::Buffer& GetBuffer() { return m_Vertices.Buffer; }
+		
+		virtual const VertexAttributeLayout& GetLayout() const override { return m_Layout; }
+		virtual void SetLayout(const VertexAttributeLayout& _Layout) override { m_Layout = _Layout; }
+		virtual void SetData(const Memory32& _Data, const uint32& _Size) override;
+		const vk::Buffer& GetBuffer() { return m_VulkanBuffer.Buffer; }
 
 	private:
 		uint32 GetMemoryTypeIndex(vk::PhysicalDevice& _PhysicalDevice, uint32 _TypeBits, vk::MemoryPropertyFlags _Properties);
 		void Submit(const vk::Buffer& StagingBuffer);
 		void CreateVertexBuffer();
+		VulkanBuffer CreateStagingBuffer();
 
 	private:
-		struct {
-			vk::DeviceMemory Memory;
-			vk::Buffer Buffer;		
-		} m_Vertices;
-
-		// TODO: MAKE VERTEXBUFFER AS OBJECT INSIDE THE RENDERER @ MORPHEUS CORE
-		VertexData* m_VertexData;
-		uint32 m_VertexSize;
-
-		uint32 m_BufferSize = 0;
-
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanCommand> m_Command;
-
 		uint32 m_ID = 0;
 
+		VertexAttributeLayout m_Layout;
+		VulkanBuffer m_VulkanBuffer;
+		Memory32 m_Data;
+		uint32 m_Size;
+
 	public:
-		static Ref<VulkanVertexBuffer> VulkanCreate(VertexData* _VertexData, const uint32& _Size);
+		static Ref<VulkanVertexBuffer> VulkanCreate(const Memory32& _Data, const uint32& _Size);
+		static Ref<VulkanVertexBuffer> VulkanCreate(const uint32& _Size);
+		static Ref<VulkanVertexBuffer> VulkanDestory();
 
 	};
 

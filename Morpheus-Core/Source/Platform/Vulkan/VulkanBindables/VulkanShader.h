@@ -28,6 +28,7 @@ namespace Morpheus {
 
 		void AddToBindables(const VulkanBindableIdentifier& _Identifer);
 		void CompileUniform(const uint32& _ID);
+		void CheckVertexArray();
 
 	private:
 		Vector<float8> ReadFile(const String& _Filepath);
@@ -44,6 +45,7 @@ namespace Morpheus {
 		Vector<VulkanBindableIdentifier> m_Bindables;
 
 		uint32 m_DescriptorCount = 0;
+		bool m_Checked = false;
 
 	public:
 		static Ref<VulkanShader> VulkanCreate(const String& _VertexPath, const String& _FragmentPath);

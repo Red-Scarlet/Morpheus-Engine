@@ -18,8 +18,6 @@ namespace Morpheus {
 		CreateShader(_VertexPath, _FragmentPath);
 		SetID(VulkanMemoryManager::GetInstance()->GetBindableCache()->GetNextBindableID(VulkanBindableTypes::VulkanShader));
 		MORP_CORE_WARN("[VULKAN] Shader Was Created!");
-
-		m_Pipeline = VulkanPipeline::VulkanCreate(m_ShaderModules);
 	}
 
 	VulkanShader::~VulkanShader()
@@ -86,6 +84,18 @@ namespace Morpheus {
 	
 		m_DescriptorPool->UpdateDescriptorSet(_ID); 
 		m_DescriptorCount++;
+
+		CheckVertexArray();
+	}
+
+	void VulkanShader::CheckVertexArray()
+	{
+		if (!m_Checked) {	
+			Ref<VulkanBindableCache> BindableCache = VulkanMemoryManager::GetInstance()->GetBindableCache();
+			Ref<VulkanVertexArray> VAO = BindableCache->Get<VulkanVertexArray>(VulkanBindableTypes::VulkanVertexArray, m_Bindables[0].ID);
+			m_Pipeline = VulkanPipeline::VulkanCreate(m_ShaderModules, VAO->GetInputState());
+			m_Checked = true;
+		}
 	}
 
 	Vector<float8> VulkanShader::ReadFile(const String& _Filepath)

@@ -1,5 +1,5 @@
 #include "Morppch.h"
-#include "VulkanImGuiN.h"
+#include "VulkanImGui.h"
 
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
@@ -18,33 +18,20 @@ namespace Morpheus {
 
 		m_Surface = m_Device->GetSurface();
 		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
-		//m_RenderQueue = VulkanRenderQueue::VulkanCreate();
 		m_RenderQueue = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanRenderQueue>(VulkanGlobalTypes::VulkanRenderQueue);
-
-		//m_CommandBuffers
-		
-		//auto buffer = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer);
-		//m_CommandBuffers.resize(2);
-		//m_CommandBuffers[0] = (buffer->GetCommandBuffer(0));
-		//m_CommandBuffers[1] = (buffer->GetCommandBuffer(1));
-		//m_CommandPool = buffer->GetPool();
-		//m_Framebuffer = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanFramebuffer>(VulkanResourceTypes::VulkanFrameBuffer);
-		//m_Renderpass = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanRenderpass>(VulkanResourceTypes::VulkanRenderpass);
-
 	}
 
 	void VulkanImGui::Init()
 	{
 		RenderpassLayout RPLayout = {
 				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_LOAD, RenderpassAttachment::ATTACHMENT_STORE }
-				//{ RenderpassTypes::ATTACHMENT_DEPTH, RenderpassAttachment::ATTACHMENT_LOAD, RenderpassAttachment::ATTACHMENT_DONTCARE }
 		};
+
 		m_Renderpass = VulkanRenderpass::VulkanCreate(RPLayout);
 		m_Framebuffer = VulkanFramebuffer::VulkanCreate(m_Renderpass, false);
 
 		CreateDescriptorPool();
 		CreateCommandBuffer();
-
 
 		ImGui_ImplVulkan_InitInfo Info = {};
 		{
@@ -117,14 +104,13 @@ namespace Morpheus {
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
 		uint32 Size = m_Swapchain->GetSize();
-		uint32 i = m_RenderQueue->GetCurrentFrame();
+		uint32 Index = m_RenderQueue->GetCurrentFrame();
 
-		VkCommandBuffer& cmd = m_CommandBuffers[i];
+		VkCommandBuffer& cmd = m_CommandBuffers[Index];
 		Vector<VkClearValue> ClearValues = 
 		{ VkClearValue({ 0.25f, 0.25f, 0.25f, 1.00f }) };
-		VkResult Result;
-		//VkResult Result = vkResetCommandPool(Device, m_CommandPool, 0);
-		//MORP_CORE_ASSERT(Result, "Failed to reset command pool!");
+		VkResult Result = vkResetCommandPool(Device, m_CommandPool, 0);
+		MORP_CORE_ASSERT(Result, "Failed to reset command pool!");
 		VkCommandBufferBeginInfo BeginInfo = {};
 		BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 		BeginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
@@ -135,7 +121,7 @@ namespace Morpheus {
 		VkRenderPassBeginInfo RenderpassInfo = {};
 		RenderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
 		RenderpassInfo.renderPass = m_Renderpass->GetRenderpass();
-		RenderpassInfo.framebuffer = Framebuffers[i].Framebuffer;
+		RenderpassInfo.framebuffer = Framebuffers[Index].Framebuffer;
 		RenderpassInfo.renderArea.extent.width = 1280;			//Extent
 		RenderpassInfo.renderArea.extent.height = 720;			//Extent
 		RenderpassInfo.clearValueCount = ClearValues.size();
@@ -149,16 +135,8 @@ namespace Morpheus {
 		MORP_CORE_ASSERT(Result, "Failed to end command buffer!");
 
 		m_RenderQueue->Submit(cmd);
-		//MORP_CORE_INFO("[QUEUE] Submission made from IMGUIAPI #" + std::to_string(i) + "!");
-
 	}
 
-	void VulkanImGui::Flush()
-	{
-
-
-		//m_RenderQueue->Flush(false);
-	}
 
 	void VulkanImGui::CreateDescriptorPool()
 	{
@@ -186,10 +164,6 @@ namespace Morpheus {
 
 		VkResult Result = vkCreateDescriptorPool(m_Device->GetLogicalDevice(), &CreateInfo, nullptr, &m_DescriptorPool);
 		MORP_CORE_ASSERT(Result, "Failed to allocate Descriptor Pool!");
-	}
-
-	void VulkanImGui::SetupVulkanStuff()
-	{
 	}
 
 	void VulkanImGui::CreateCommandBuffer()

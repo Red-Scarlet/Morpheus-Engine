@@ -15,7 +15,6 @@ namespace Morpheus {
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
-		
 	}
 
 	void VulkanVertexArray::Bind()
@@ -39,6 +38,32 @@ namespace Morpheus {
 	void VulkanVertexArray::SetVertexBuffer(const Ref<VertexBuffer>& _VertexBuffer)
 	{
 		m_VertexBuffer = _VertexBuffer;
+		const auto& Layout = m_VertexBuffer->GetLayout();
+
+		{
+			m_Attributes.InputBinding.binding = 0;
+			m_Attributes.InputBinding.stride = Layout.GetStride();
+			m_Attributes.InputBinding.inputRate = vk::VertexInputRate::eVertex;
+		}
+
+		uint32 Index = 0;
+		for (const VertexAttributeElement& Element : Layout) {
+			vk::VertexInputAttributeDescription Attribute = {};
+			Attribute.binding = 0;
+			Attribute.location = Index;
+			Attribute.format = vk::Format::eR32G32B32Sfloat;
+			Attribute.offset = Element.Offset;
+			m_Attributes.InputAttributes.push_back(Attribute);
+			Index++;
+		}
+
+		{
+			m_Attributes.InputState.flags = vk::PipelineVertexInputStateCreateFlags();
+			m_Attributes.InputState.vertexBindingDescriptionCount = 1;
+			m_Attributes.InputState.pVertexBindingDescriptions = &m_Attributes.InputBinding;
+			m_Attributes.InputState.vertexAttributeDescriptionCount = m_Attributes.InputAttributes.size();
+			m_Attributes.InputState.pVertexAttributeDescriptions = m_Attributes.InputAttributes.data();
+		}
 	}
 
 	void VulkanVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& _IndexBuffer)
@@ -49,7 +74,6 @@ namespace Morpheus {
 	void VulkanVertexArray::SetUniformBuffer(const Ref<UniformBuffer>& _UniformBuffer)
 	{
 		m_UniformBuffer = _UniformBuffer;
-
 	}
 
 	const Ref<UniformBuffer>& VulkanVertexArray::GetUniformBuffer() const

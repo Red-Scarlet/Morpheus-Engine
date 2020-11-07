@@ -19,7 +19,6 @@
 #include "Platform/Vulkan/VulkanUnknown/VulkanRenderpass.h"
 #include "Platform/Vulkan/VulkanUnknown/VulkanFramebuffer.h"
 
-
 namespace Morpheus {
 
 	class VulkanImGui
@@ -31,12 +30,8 @@ namespace Morpheus {
 		void InitCommands();
 		void SetupCommands();
 
-		void Flush();
-
 	private:
 		void CreateDescriptorPool();
-		void SetupVulkanStuff();
-
 		void CreateCommandBuffer();
 
 	private:
@@ -47,6 +42,7 @@ namespace Morpheus {
 
 		Ref<VulkanRenderpass> m_Renderpass;
 		Ref<VulkanFramebuffer> m_Framebuffer;
+
 		Ref<VulkanRenderQueue> m_RenderQueue;
 
 		VkDescriptorPool m_DescriptorPool;

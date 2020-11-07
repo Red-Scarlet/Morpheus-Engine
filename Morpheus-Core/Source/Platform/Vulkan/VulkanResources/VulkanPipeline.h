@@ -21,7 +21,7 @@ namespace Morpheus {
 	class VulkanPipeline
 	{
 	public:
-		VulkanPipeline(const VulkanPipelineInput& _Input);
+		VulkanPipeline(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState);
 		virtual ~VulkanPipeline();
 		void Destory();
 
@@ -31,8 +31,9 @@ namespace Morpheus {
 		const vk::Pipeline& GetPipeline() { return m_Pipeline; }
 		const vk::PipelineLayout& GetLayout() { return m_PipelineLayout; }
 
+		void SetInputState(const vk::PipelineVertexInputStateCreateInfo& _InputState) { m_InputState = _InputState; }
+
 	private:
-		void VertexInputData();
 		void CreatePipeline();
 
 	private:
@@ -48,13 +49,11 @@ namespace Morpheus {
 		vk::PipelineLayout m_PipelineLayout;
 
 		vk::PipelineVertexInputStateCreateInfo m_InputState;
-		vk::VertexInputBindingDescription m_InputBinding;				// TODO: ADD TO SHADER OR SOMETHING!
-		Vector<vk::VertexInputAttributeDescription> m_InputAttributes;
 
 		uint32 m_ID = 0;
 
 	public:
-		static Ref<VulkanPipeline> VulkanCreate(const VulkanPipelineInput& _Input);
+		static Ref<VulkanPipeline> VulkanCreate(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState);
 	};
 
 }

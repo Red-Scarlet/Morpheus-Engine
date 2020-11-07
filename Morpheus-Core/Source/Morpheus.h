@@ -16,8 +16,8 @@
 
 // --- Renderer -------------------------------
 #include "Morpheus/Renderer/Renderer.h"
+#include "Morpheus/Renderer/RendererSystems/Renderer2D.h"
 // --------------------------------------------
-
 
 // --- Entry Point ----------------------------
 #define ENTRYPOINT

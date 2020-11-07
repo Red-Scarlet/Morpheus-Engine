@@ -117,8 +117,9 @@ namespace Morpheus {
 
 	typedef float32 floatm;
 
-	typedef std::nullptr_t NULLPTR;
-	typedef void* VOIDPTR;
-	
+	typedef std::nullptr_t undefined32;
+	//typedef Ref<void> Memory32;
+	typedef void* Memory32;
+
 	//using FVector8 = Vector<const float8*>;
 }

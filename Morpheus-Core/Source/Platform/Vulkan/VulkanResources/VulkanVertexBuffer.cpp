@@ -5,8 +5,8 @@
 
 namespace Morpheus {
 
-	VulkanVertexBuffer::VulkanVertexBuffer(VertexData* _VertexData, const uint32& _Size)
-		: m_VertexData(_VertexData), m_VertexSize(_Size)
+	VulkanVertexBuffer::VulkanVertexBuffer(const Memory32& _Data, const uint32& _Size)
+		: m_Data(_Data), m_Size(_Size)
 	{
 		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
 		m_Command = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer);
@@ -17,16 +17,30 @@ namespace Morpheus {
 		MORP_CORE_WARN(str);
 	}
 
+	VulkanVertexBuffer::VulkanVertexBuffer(const uint32& _Size)
+		: m_Data(nullptr), m_Size(_Size)
+	{
+		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Command = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer);
+		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanVertexBuffer));
+
+		String str = "[VULKAN] VertexBuffer #" + std::to_string(m_ID) + " Was Created!";
+		MORP_CORE_WARN(str);
+	}
+
 	VulkanVertexBuffer::~VulkanVertexBuffer()
 	{
+		vk::Device Device = m_Device->GetLogicalDevice();
+		Device.freeMemory(m_VulkanBuffer.Memory);
+		Device.destroyBuffer(m_VulkanBuffer.Buffer);
 		MORP_CORE_WARN("[VULKAN] VertexBuffer Was Destoryed!");
 	}
 
-	void VulkanVertexBuffer::Destory()
+	void VulkanVertexBuffer::SetData(const Memory32& _Data, const uint32& _Size)
 	{
-		vk::Device Device = m_Device->GetLogicalDevice();
-		Device.freeMemory(m_Vertices.Memory);
-		Device.destroyBuffer(m_Vertices.Buffer);
+		m_Data = _Data;
+		m_Size = _Size;
+		CreateVertexBuffer();	// maybe add function to just zero bits and fill them in later
 	}
 
 	uint32 VulkanVertexBuffer::GetMemoryTypeIndex(vk::PhysicalDevice& _PhysicalDevice, uint32 _TypeBits, vk::MemoryPropertyFlags _Properties)
@@ -70,11 +84,11 @@ namespace Morpheus {
 
 		Vector<vk::BufferCopy> copyRegions =
 		{
-			vk::BufferCopy(0, 0, m_BufferSize)
+			vk::BufferCopy(0, 0, m_Size)
 		};
 
 		// Vertex buffer
-		copyCmd.copyBuffer(StagingBuffer, m_Vertices.Buffer, copyRegions);
+		copyCmd.copyBuffer(StagingBuffer, m_VulkanBuffer.Buffer, copyRegions);
 
 		// Flushing the command buffer will also submit it to the queue and uses a fence to ensure that all commands have been executed before returning
 		auto flushCommandBuffer = [&](vk::CommandBuffer commandBuffer)
@@ -102,76 +116,79 @@ namespace Morpheus {
 	void VulkanVertexBuffer::CreateVertexBuffer()
 	{
 		vk::PhysicalDevice PhysicalDevice = m_Device->GetPhysicalDevice();
-		vk::Device Device = m_Device->GetLogicalDevice();
 		uint32 QueueFamilyIndex = m_Device->GetQueueFamilyIndex();
+		vk::Device Device = m_Device->GetLogicalDevice();
 
+		VulkanBuffer VulkanStagingBuffer = CreateStagingBuffer();
 
-		m_BufferSize = m_VertexSize *sizeof(VertexData);
+		vk::BufferCreateInfo CreateInfo = {};
+		{
+			CreateInfo.flags = vk::BufferCreateFlags();
+			CreateInfo.size = m_Size;
+			CreateInfo.usage = vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst;
+			CreateInfo.sharingMode = vk::SharingMode::eExclusive;
+			CreateInfo.queueFamilyIndexCount = 1;
+			CreateInfo.pQueueFamilyIndices = &QueueFamilyIndex;
+		}
+		m_VulkanBuffer.Buffer = Device.createBuffer(CreateInfo);
+		vk::MemoryRequirements MemoryRequirements = Device.getBufferMemoryRequirements(m_VulkanBuffer.Buffer);
 
-		struct {
-			vk::DeviceMemory Memory;
-			vk::Buffer Buffer;
-		} StagingBuffer;
+		m_VulkanBuffer.Memory = Device.allocateMemory(vk::MemoryAllocateInfo(MemoryRequirements.size, GetMemoryTypeIndex(PhysicalDevice, MemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)));
+		Device.bindBufferMemory(m_VulkanBuffer.Buffer, m_VulkanBuffer.Memory, 0);
 
-		StagingBuffer.Buffer = Device.createBuffer(
-			vk::BufferCreateInfo(
-				vk::BufferCreateFlags(),
-				m_BufferSize,
-				vk::BufferUsageFlagBits::eTransferSrc,
-				vk::SharingMode::eExclusive,
-				1,
-				&QueueFamilyIndex
-			)
-		);
+		// After That is done!
 
-		auto memReqs = Device.getBufferMemoryRequirements(StagingBuffer.Buffer);
-
-		StagingBuffer.Memory = Device.allocateMemory(
-			vk::MemoryAllocateInfo(
-				memReqs.size,
-				GetMemoryTypeIndex(PhysicalDevice, memReqs.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)
-			)
-		);
-
-		void* data;
-		data = Device.mapMemory(StagingBuffer.Memory, 0, memReqs.size, vk::MemoryMapFlags());
-		memcpy(data, m_VertexData, m_BufferSize);
-		Device.unmapMemory(StagingBuffer.Memory);
-		Device.bindBufferMemory(StagingBuffer.Buffer, StagingBuffer.Memory, 0);
-
-		// Create a device local buffer to which the (host local) vertex data will be copied and which will be used for rendering
-		m_Vertices.Buffer = Device.createBuffer(
-			vk::BufferCreateInfo(
-				vk::BufferCreateFlags(),
-				m_BufferSize,
-				vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst,
-				vk::SharingMode::eExclusive,
-				1,
-				&QueueFamilyIndex
-			)
-		);
-
-		memReqs = Device.getBufferMemoryRequirements(m_Vertices.Buffer);
-
-		m_Vertices.Memory = Device.allocateMemory(
-			vk::MemoryAllocateInfo(
-				memReqs.size,
-				GetMemoryTypeIndex(PhysicalDevice, memReqs.memoryTypeBits, vk::MemoryPropertyFlagBits::eDeviceLocal)
-			)
-		);
-
-		Device.bindBufferMemory(m_Vertices.Buffer, m_Vertices.Memory, 0);
-
-		Submit(StagingBuffer.Buffer);
-		Device.destroyBuffer(StagingBuffer.Buffer);
-		Device.freeMemory(StagingBuffer.Memory);
+		Submit(VulkanStagingBuffer.Buffer);
+		Device.destroyBuffer(VulkanStagingBuffer.Buffer);
+		Device.freeMemory(VulkanStagingBuffer.Memory);
 	}
 
-	Ref<VulkanVertexBuffer> VulkanVertexBuffer::VulkanCreate(VertexData* _VertexData, const uint32& _Size)
+	VulkanBuffer VulkanVertexBuffer::CreateStagingBuffer()
 	{
-		Ref<VulkanVertexBuffer> s_VulkanVertexBuffer = CreateRef<VulkanVertexBuffer>(_VertexData, _Size);
+		vk::PhysicalDevice PhysicalDevice = m_Device->GetPhysicalDevice();
+		uint32 QueueFamilyIndex = m_Device->GetQueueFamilyIndex();
+		vk::Device Device = m_Device->GetLogicalDevice();
+
+		VulkanBuffer VulkanStagingBuffer;
+		vk::BufferCreateInfo CreateInfo = {};
+		{
+			CreateInfo.flags = vk::BufferCreateFlags();
+			CreateInfo.size = m_Size;
+			CreateInfo.usage = vk::BufferUsageFlagBits::eTransferSrc;
+			CreateInfo.sharingMode = vk::SharingMode::eExclusive;
+			CreateInfo.queueFamilyIndexCount = 1;
+			CreateInfo.pQueueFamilyIndices = &QueueFamilyIndex;
+		}
+		VulkanStagingBuffer.Buffer = Device.createBuffer(CreateInfo);
+		vk::MemoryRequirements MemoryRequirements = Device.getBufferMemoryRequirements(VulkanStagingBuffer.Buffer);
+		VulkanStagingBuffer.Memory = Device.allocateMemory(vk::MemoryAllocateInfo(MemoryRequirements.size, GetMemoryTypeIndex(PhysicalDevice, MemoryRequirements.memoryTypeBits, vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent)));
+
+		void* Data;
+		Data = Device.mapMemory(VulkanStagingBuffer.Memory, 0, MemoryRequirements.size, vk::MemoryMapFlags());
+		std::memcpy(Data, &m_Data, m_Size);
+		Device.unmapMemory(VulkanStagingBuffer.Memory);
+		Device.bindBufferMemory(VulkanStagingBuffer.Buffer, VulkanStagingBuffer.Memory, 0);
+
+		return VulkanStagingBuffer;
+	}
+
+	Ref<VulkanVertexBuffer> VulkanVertexBuffer::VulkanCreate(const Memory32& _Data, const uint32& _Size)
+	{
+		Ref<VulkanVertexBuffer> s_VulkanVertexBuffer = CreateRef<VulkanVertexBuffer>(_Data, _Size);
 		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanVertexBuffer>(VulkanResourceTypes::VulkanVertexBuffer, s_VulkanVertexBuffer); // s_VulkanVertexBuffer->GetID()
 		return s_VulkanVertexBuffer;
+	}
+
+	Ref<VulkanVertexBuffer> VulkanVertexBuffer::VulkanCreate(const uint32& _Size)
+	{
+		Ref<VulkanVertexBuffer> s_VulkanVertexBuffer = CreateRef<VulkanVertexBuffer>(_Size);
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanVertexBuffer>(VulkanResourceTypes::VulkanVertexBuffer, s_VulkanVertexBuffer); // s_VulkanVertexBuffer->GetID()
+		return s_VulkanVertexBuffer;
+	}
+
+	Ref<VulkanVertexBuffer> VulkanVertexBuffer::VulkanDestory()
+	{
+		return Ref<VulkanVertexBuffer>();
 	}
 
 }
