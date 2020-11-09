@@ -98,7 +98,7 @@ namespace Morpheus {
 			layer->OnImGuiRender();
 		m_ImGuiLayer->End();
 
-		m_Graphics->Render();
+		m_Graphics->End();
 	}
 
 	void Application::Update(const DeltaTime& _Delta)

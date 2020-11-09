@@ -4,16 +4,12 @@
     <ClCompile Include="MorpheusApp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Assets\uniform.vert" />
-    <None Include="Assets\uniform.frag" />
-    <None Include="Assets\triangle.vert.spv" />
-    <None Include="Assets\Compile.bat" />
-    <None Include="Assets\frag.spv" />
-    <None Include="Assets\Shader.frag" />
-    <None Include="Assets\Shader.vert" />
-    <None Include="Assets\triangle.frag" />
-    <None Include="Assets\triangle.frag.spv" />
-    <None Include="Assets\triangle.vert" />
-    <None Include="Assets\vert.spv" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Morpheus-Sandbox.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\Morpheus-Assets\Icon.ico" />
   </ItemGroup>
 </Project>

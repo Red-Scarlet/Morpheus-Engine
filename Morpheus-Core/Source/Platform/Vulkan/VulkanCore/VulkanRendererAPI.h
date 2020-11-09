@@ -3,8 +3,9 @@
 #include "Morpheus/Core/Common.h"
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
 
-#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanRenderQueue.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanQueue.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandSystem.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
 
 
 namespace Morpheus {
@@ -16,19 +17,19 @@ namespace Morpheus {
 		virtual void Shutdown() override;
 		virtual void Flush() override;
 
-		virtual void SetCompile(const bool& _Value) override;
-		virtual void SetReady(const bool& _Value) override;
-
 		virtual void SetClearColor(const Vector4& _ClearColor) override;
+		virtual void SetCompile() override;
 
 	private:
-		void Resize();
+		void SetupCommands();
 
 	private:
-		Ref<VulkanCommand> m_Command;
-		Ref<VulkanRenderQueue> m_RenderQueue;
+		Ref<VulkanQueue> m_Queue;
+		Ref<VulkanCommandSystem> m_CommandSystem;
+		VulkanCommands m_CommandBuffers;
+
 		Vector4 m_ClearColor = { 0.25f, 0.25f, 0.25f, 1.00f };
-		bool m_ReadyRender = true;
+		bool m_Compiled = false;
 	};
 
 

@@ -6,21 +6,54 @@
 namespace Morpheus {
 
 	VulkanRenderpass::VulkanRenderpass(const RenderpassLayout& _Layout)
-		: m_Layout(_Layout)
+		: VulkanResource(VulkanResourceTypes::VulkanRenderpass), m_Layout(_Layout)
 	{
 		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Surface = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSurface>(VulkanGlobalTypes::VulkanSurface);
 		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanRenderpass));
 
-		CreateRenderpass();
-		MORP_CORE_WARN("[VULKAN] Renderpass Was Created!");
+		VulkanCreate();
+		MORP_CORE_WARN("[VULKAN] Renderpass #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanRenderpass::~VulkanRenderpass()
 	{
+		VulkanDestory();
 		MORP_CORE_WARN("[VULKAN] Renderpass Was Destoryed!");
 	}
 
-	void VulkanRenderpass::Destory()
+	void VulkanRenderpass::VulkanCreate()
+	{
+		vk::Device Device = m_Device->GetLogicalDevice();
+		InvalidateAttachments();
+
+		m_SubpassDesc.push_back(vk::SubpassDescription(
+			vk::SubpassDescriptionFlags(),
+			vk::PipelineBindPoint::eGraphics,
+			0,
+			nullptr,
+			(uint32)m_ColorReference.size(),
+			m_ColorReference.data(),
+			nullptr,
+			m_DepthReference.data(),
+			0,
+			nullptr
+		));
+
+		m_RenderPass = Device.createRenderPass(
+			vk::RenderPassCreateInfo(
+				vk::RenderPassCreateFlags(),
+				(uint32)m_Attachments.size(),
+				m_Attachments.data(),
+				(uint32)m_SubpassDesc.size(),
+				m_SubpassDesc.data(),
+				(uint32)m_Dependencies.size(),
+				m_Dependencies.data()
+			)
+		);
+	}
+
+	void VulkanRenderpass::VulkanDestory()
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
 		Device.destroyRenderPass(m_RenderPass);
@@ -29,13 +62,16 @@ namespace Morpheus {
 	void VulkanRenderpass::InvalidateAttachments()
 	{
 		auto layout = m_Layout.GetElements();
-		auto SurfaceFormats = m_Device->GetSurface()->GetStruct();
+
+		vk::Format ColorFormat = m_Surface->GetColorFormat();
+		vk::Format DepthFormat = m_Surface->GetDepthFormat();
+
 		for (uint32 i = 0; i < layout.size(); i++)
 		{
 			// Attachment & RenderpassInfo
 			vk::AttachmentLoadOp LoadType;
 			vk::AttachmentStoreOp StoreType;
-				
+			
 			switch (layout[i].LoadAttachment)
 			{
 			case RenderpassAttachment::ATTACHMENT_CLEAR:
@@ -81,21 +117,17 @@ namespace Morpheus {
 			case RenderpassTypes::ATTACHMENT_COLOR: {		
 				VkAttachmentDescription ColorAttachment {};
 				{
-					ColorAttachment.format = VkFormat(SurfaceFormats.ColorFormat);
+					ColorAttachment.format = VkFormat(ColorFormat);
 					ColorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-					ColorAttachment.loadOp = VkAttachmentLoadOp(LoadType);//VK_ATTACHMENT_LOAD_OP_CLEAR;
-					ColorAttachment.storeOp = VkAttachmentStoreOp(StoreType);// VK_ATTACHMENT_STORE_OP_STORE;
+					ColorAttachment.loadOp = VkAttachmentLoadOp(LoadType);
+					ColorAttachment.storeOp = VkAttachmentStoreOp(StoreType);
 					ColorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 					ColorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-					
-					if (m_ID == 1) {
-						ColorAttachment.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+					ColorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 
-					}
-					else {
+					if (GetID() == 0) 
 						ColorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-					}
-
+					else ColorAttachment.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 					ColorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 				}
 				m_Attachments.push_back(ColorAttachment);
@@ -116,28 +148,17 @@ namespace Morpheus {
 				Dependency.srcAccessMask = 0;
 				Dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 				Dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-
 				m_Dependencies.push_back(Dependency);
-
-				//m_Dependencies.push_back(vk::SubpassDependency(
-				//	VK_SUBPASS_EXTERNAL,
-				//	0,
-				//	vk::PipelineStageFlagBits::eColorAttachmentOutput,
-				//	vk::PipelineStageFlagBits::eBottomOfPipe,
-				//	vk::AccessFlagBits::eMemoryRead,
-				//	vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
-				//	vk::DependencyFlagBits::eByRegion
-				//));
 
 			} break;
 	
 			case RenderpassTypes::ATTACHMENT_DEPTH: {
 				VkAttachmentDescription DepthAttachment{};
 				{
-					DepthAttachment.format = VkFormat(SurfaceFormats.DepthFormat);
+					DepthAttachment.format = VkFormat(DepthFormat);
 					DepthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-					DepthAttachment.loadOp = VkAttachmentLoadOp(LoadType);//VK_ATTACHMENT_LOAD_OP_CLEAR;
-					DepthAttachment.storeOp = VkAttachmentStoreOp(StoreType);// VK_ATTACHMENT_STORE_OP_DONT_CARE;
+					DepthAttachment.loadOp = VkAttachmentLoadOp(LoadType);
+					DepthAttachment.storeOp = VkAttachmentStoreOp(StoreType);
 					DepthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 					DepthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 					DepthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
@@ -153,58 +174,25 @@ namespace Morpheus {
 				}
 
 				m_DepthReference.push_back(DepthAttachmentRef);
-
-				//m_Dependencies.push_back(vk::SubpassDependency(
-				//	0,
-				//	VK_SUBPASS_EXTERNAL,
-				//	vk::PipelineStageFlagBits::eColorAttachmentOutput,
-				//	vk::PipelineStageFlagBits::eBottomOfPipe,
-				//	vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
-				//	vk::AccessFlagBits::eMemoryRead,
-				//	vk::DependencyFlagBits::eByRegion
-				//));
+				m_Dependencies.push_back(vk::SubpassDependency(
+					0,
+					VK_SUBPASS_EXTERNAL,
+					vk::PipelineStageFlagBits::eColorAttachmentOutput,
+					vk::PipelineStageFlagBits::eBottomOfPipe,
+					vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
+					vk::AccessFlagBits::eMemoryRead,
+					vk::DependencyFlagBits::eByRegion
+				));
 
 			} break;
 			}
 		}
 	}
 
-	void VulkanRenderpass::CreateRenderpass()
-	{
-		vk::Device Device = m_Device->GetLogicalDevice();
-		auto Struct = m_Device->GetSurface()->GetStruct();
-		InvalidateAttachments();
-
-		m_SubpassDesc.push_back(vk::SubpassDescription(
-			vk::SubpassDescriptionFlags(),
-			vk::PipelineBindPoint::eGraphics,
-			0,
-			nullptr,
-			(uint32)m_ColorReference.size(),
-			m_ColorReference.data(),
-			nullptr,
-			m_DepthReference.data(),
-			0,
-			nullptr
-		));
-
-		m_RenderPass = Device.createRenderPass(
-			vk::RenderPassCreateInfo(
-				vk::RenderPassCreateFlags(),
-				(uint32)m_Attachments.size(),
-				m_Attachments.data(),
-				(uint32)m_SubpassDesc.size(),
-				m_SubpassDesc.data(),
-				(uint32)m_Dependencies.size(),
-				m_Dependencies.data()
-			)
-		);
-	}
-
-	Ref<VulkanRenderpass> VulkanRenderpass::VulkanCreate(const RenderpassLayout& _Layout)
+	Ref<VulkanRenderpass> VulkanRenderpass::Make(const RenderpassLayout& _Layout)
 	{
 		Ref<VulkanRenderpass> s_VulkanRenderpass = CreateRef<VulkanRenderpass>(_Layout);
-		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanRenderpass>(VulkanResourceTypes::VulkanRenderpass, s_VulkanRenderpass);
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit(s_VulkanRenderpass);
 		return s_VulkanRenderpass;
 	}
 

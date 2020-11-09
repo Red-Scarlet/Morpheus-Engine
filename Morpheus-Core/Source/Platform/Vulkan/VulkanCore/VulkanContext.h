@@ -7,7 +7,11 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
 
-#include "Platform/Vulkan/VulkanGlobals/VulkanRenderQueue.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandSystem.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanSynchronization.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanQueue.h"
+
+#include "Platform/Vulkan/VulkanCore/VulkanValidation.h"
 
 namespace Morpheus {
 
@@ -17,16 +21,17 @@ namespace Morpheus {
 		VulkanContext();
 		virtual void Init() override;
 		virtual void Destory() override;
-
-		virtual void Render() override;
+		virtual void End() override;
 
 	private:
 		Ref<VulkanInstance> m_Instance;
+
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
-		Ref<VulkanRenderQueue> m_RenderQueue;
-
 		Ref<VulkanSynchronization> m_Sync;
+		Ref<VulkanCommandSystem> m_CommandSystem;
+
+		Ref<VulkanQueue> m_Queue;
 
 	};
 

@@ -7,25 +7,9 @@
 #include <functional>
 #include <optional>
 
+#include "Morpheus/Utilities/MorpheusLogger.h"
+
 #ifdef MORP_PLATFORM_WINDOWS
-#endif
-
-#define MORP_CORE_LOGGING
-
-#ifdef MORP_CORE_LOGGING
-	#define MORP_CORE_TRACE(...)		::Morpheus::MorpheusLogger::LogTrace(__VA_ARGS__)
-	#define MORP_CORE_INFO(...)			::Morpheus::MorpheusLogger::LogInfo(__VA_ARGS__)
-	#define MORP_CORE_WARN(...)			::Morpheus::MorpheusLogger::LogWarn(__VA_ARGS__)
-	#define MORP_CORE_ERROR(...)		::Morpheus::MorpheusLogger::LogError(__VA_ARGS__)
-	#define MORP_CORE_SPECIAL(...)		::Morpheus::MorpheusLogger::LogSpecial(__VA_ARGS__)
-	#define MORP_CORE_SPECIAL_2(...)	::Morpheus::MorpheusLogger::LogSpecialOverride(__VA_ARGS__)
-#else
-	#define MORP_CORE_TRACE(...)
-	#define MORP_CORE_INFO(...)
-	#define MORP_CORE_WARN(...)
-	#define MORP_CORE_ERROR(...)
-	#define MORP_CORE_SPECIAL(...)
-	#define MORP_CORE_SPECIAL_2(...)
 #endif
 
 #define MORP_CORE_ASSERTS
@@ -123,3 +107,8 @@ namespace Morpheus {
 
 	//using FVector8 = Vector<const float8*>;
 }
+
+#define uint64_max std::numeric_limits<Morpheus::uint64>::max()
+#define uint32_max std::numeric_limits<Morpheus::uint32>::max()
+#define uint16_max std::numeric_limits<Morpheus::uint16>::max()
+#define uint8_max std::numeric_limits<Morpheus::uint8>::max()

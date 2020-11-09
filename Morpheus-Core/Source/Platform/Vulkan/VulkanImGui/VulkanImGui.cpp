@@ -9,16 +9,19 @@
 #include <GLFW/glfw3.h>
 #include "Morpheus/Core/Application.h"
 
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
+
 namespace Morpheus {
 
 	VulkanImGui::VulkanImGui()
 	{
+		m_Instance = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanInstance>(VulkanGlobalTypes::VulkanInstance);
 		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-		m_Instance = m_Device->GetVulkanInstance();
 
-		m_Surface = m_Device->GetSurface();
+		m_Surface = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSurface>(VulkanGlobalTypes::VulkanSurface);
 		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
-		m_RenderQueue = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanRenderQueue>(VulkanGlobalTypes::VulkanRenderQueue);
+		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanCommandSystem>(VulkanGlobalTypes::VulkanCommand);
+		m_Queue = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanQueue>(VulkanGlobalTypes::VulkanQueue);
 	}
 
 	void VulkanImGui::Init()
@@ -26,12 +29,16 @@ namespace Morpheus {
 		RenderpassLayout RPLayout = {
 				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_LOAD, RenderpassAttachment::ATTACHMENT_STORE }
 		};
+		
+		m_Renderpass = VulkanRenderpass::Make(RPLayout);
+		m_Framebuffer = VulkanFramebuffer::Make(m_Renderpass, false);
 
-		m_Renderpass = VulkanRenderpass::VulkanCreate(RPLayout);
-		m_Framebuffer = VulkanFramebuffer::VulkanCreate(m_Renderpass, false);
-
+		m_CommandBuffers.resize(m_Queue->GetBufferCount());
+		VulkanCommands Buffers = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
+		for (uint32 i = 0; i < Buffers.size(); i++)
+			m_CommandBuffers[i] = VkCommandBuffer(Buffers[i]);
+	
 		CreateDescriptorPool();
-		CreateCommandBuffer();
 
 		ImGui_ImplVulkan_InitInfo Info = {};
 		{
@@ -54,20 +61,20 @@ namespace Morpheus {
 	{
 		uint32 QueueFamilyIndices = m_Device->GetQueueFamilyIndex();
 		uint32 SwapchainSize = m_Swapchain->GetSize();
-
+		
 		// Use any command queue
 		VkCommandPool command_pool = nullptr;
 		VkCommandBuffer command_buffer = nullptr;
-
+		
 		VkCommandPoolCreateInfo PoolInfo{};
 		{
 			PoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
 			PoolInfo.queueFamilyIndex = QueueFamilyIndices;
 		}
-
+		
 		VkResult Result = vkCreateCommandPool(m_Device->GetLogicalDevice(), &PoolInfo, nullptr, &command_pool);
 		MORP_CORE_ASSERT(Result, "Failed to create CommandPool!");
-
+		
 		VkCommandBufferAllocateInfo AllocInfo{};
 		{
 			AllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -75,66 +82,63 @@ namespace Morpheus {
 			AllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 			AllocInfo.commandBufferCount = 1;
 		}
-
+		
 		Result = vkAllocateCommandBuffers(m_Device->GetLogicalDevice(),
 			&AllocInfo, &command_buffer);
-
+		
 		MORP_CORE_ASSERT(Result, "Failed to allocate Command Buffers!");
 
 		Result = vkResetCommandPool(m_Device->GetLogicalDevice(), command_pool, 0);
-		VkCommandBufferBeginInfo begin_info = {};
-		begin_info.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		begin_info.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-		Result = vkBeginCommandBuffer(command_buffer, &begin_info);
-
+		VkCommandBufferBeginInfo BeginInfo = {};
+		{
+			BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			BeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+			Result = vkBeginCommandBuffer(command_buffer, &BeginInfo);
+		}	
 		ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
-
+		
 		VkSubmitInfo end_info = {};
 		end_info.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 		end_info.commandBufferCount = 1;
 		end_info.pCommandBuffers = &command_buffer;
 		Result = vkEndCommandBuffer(command_buffer);
 		Result = vkQueueSubmit(m_Device->GetQueue(), 1, &end_info, VK_NULL_HANDLE);
-
+		
 		Result = vkDeviceWaitIdle(m_Device->GetLogicalDevice());
 		ImGui_ImplVulkan_InvalidateFontUploadObjects();
 	}
 
 	void VulkanImGui::SetupCommands()
 	{
-		vk::Device Device = m_Device->GetLogicalDevice();
-		uint32 Size = m_Swapchain->GetSize();
-		uint32 Index = m_RenderQueue->GetCurrentFrame();
+		uint32 CurrentFrame = m_Queue->GetCurrentFrame();
+		VkCommandBuffer cmd = m_CommandBuffers[CurrentFrame];
+		{
+			Vector<VkClearValue> ClearValues =
+			{ VkClearValue({ 0.25f, 0.25f, 0.25f, 1.00f }) };
 
-		VkCommandBuffer& cmd = m_CommandBuffers[Index];
-		Vector<VkClearValue> ClearValues = 
-		{ VkClearValue({ 0.25f, 0.25f, 0.25f, 1.00f }) };
-		VkResult Result = vkResetCommandPool(Device, m_CommandPool, 0);
-		MORP_CORE_ASSERT(Result, "Failed to reset command pool!");
-		VkCommandBufferBeginInfo BeginInfo = {};
-		BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-		BeginInfo.flags |= VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-		Result = vkBeginCommandBuffer(cmd, &BeginInfo);
-		MORP_CORE_ASSERT(Result, "Failed to begin command buffer!");
+			vkResetCommandBuffer(cmd, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
 
-		auto Framebuffers = m_Framebuffer->GetSwapchainBuffers();
-		VkRenderPassBeginInfo RenderpassInfo = {};
-		RenderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-		RenderpassInfo.renderPass = m_Renderpass->GetRenderpass();
-		RenderpassInfo.framebuffer = Framebuffers[Index].Framebuffer;
-		RenderpassInfo.renderArea.extent.width = 1280;			//Extent
-		RenderpassInfo.renderArea.extent.height = 720;			//Extent
-		RenderpassInfo.clearValueCount = ClearValues.size();
-		RenderpassInfo.pClearValues = ClearValues.data();
-		vkCmdBeginRenderPass(cmd, &RenderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			VkCommandBufferBeginInfo BeginInfo = {};
+			BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+			BeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+			vkBeginCommandBuffer(cmd, &BeginInfo);	
 
-		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
+			VkRenderPassBeginInfo RenderpassInfo = {};
+			RenderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+			RenderpassInfo.renderPass = m_Renderpass->GetRenderpass();
+			RenderpassInfo.framebuffer = m_Framebuffer->GetFramebuffer(CurrentFrame);
+			RenderpassInfo.renderArea.extent.width = 1280;			//Extent
+			RenderpassInfo.renderArea.extent.height = 720;			//Extent
+			RenderpassInfo.clearValueCount = ClearValues.size();
+			RenderpassInfo.pClearValues = ClearValues.data();
+			
+			vkCmdBeginRenderPass(cmd, &RenderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
+			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
+			vkCmdEndRenderPass(cmd);
 
-		vkCmdEndRenderPass(cmd);
-		Result = vkEndCommandBuffer(cmd);
-		MORP_CORE_ASSERT(Result, "Failed to end command buffer!");
-
-		m_RenderQueue->Submit(cmd);
+			vkEndCommandBuffer(cmd);
+		}
+		m_Queue->Submit(cmd);
 	}
 
 
@@ -164,35 +168,6 @@ namespace Morpheus {
 
 		VkResult Result = vkCreateDescriptorPool(m_Device->GetLogicalDevice(), &CreateInfo, nullptr, &m_DescriptorPool);
 		MORP_CORE_ASSERT(Result, "Failed to allocate Descriptor Pool!");
-	}
-
-	void VulkanImGui::CreateCommandBuffer()
-	{
-		uint32 QueueFamilyIndices = m_Device->GetQueueFamilyIndex();
-		uint32 SwapchainSize = m_Swapchain->GetSize();
-
-		VkCommandPoolCreateInfo PoolInfo {};
-		{
-			PoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-			PoolInfo.queueFamilyIndex = QueueFamilyIndices;
-		}
-
-		VkResult Result1 = vkCreateCommandPool(m_Device->GetLogicalDevice(), &PoolInfo, nullptr, &m_CommandPool);
-		MORP_CORE_ASSERT(Result1, "Failed to create CommandPool!");
-
-		VkCommandBufferAllocateInfo AllocInfo{};
-		{
-			AllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-			AllocInfo.commandPool = m_CommandPool;
-			AllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-			AllocInfo.commandBufferCount = SwapchainSize;
-		}
-		m_CommandBuffers.resize(SwapchainSize);
-
-		VkResult Result2 = vkAllocateCommandBuffers(m_Device->GetLogicalDevice(),
-			&AllocInfo, m_CommandBuffers.data());
-
-		MORP_CORE_ASSERT(Result2, "Failed to allocate Command Buffers!");
 	}
 
 }

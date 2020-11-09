@@ -7,33 +7,25 @@
 namespace Morpheus {
 
 	VulkanPipeline::VulkanPipeline(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState)
-		: m_ShaderData(_Input), m_InputState(_InputState)
+		: VulkanResource(VulkanResourceTypes::VulkanPipeline), m_ShaderData(_Input), m_InputState(_InputState)
 	{
 		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
 		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
 		m_DescriptorPool = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanDescriptorPool>(VulkanResourceTypes::VulkanDescriptor);
 		m_Renderpass = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanRenderpass>(VulkanResourceTypes::VulkanRenderpass);
-
-		CreatePipeline();
-
 		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanPipeline));
-		MORP_CORE_WARN("[VULKAN] Pipeline Was Created!");
+
+		VulkanCreate();
+		MORP_CORE_WARN("[VULKAN] Pipeline #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanPipeline::~VulkanPipeline()
 	{
+		VulkanDestory();
 		MORP_CORE_WARN("[VULKAN] Pipeline Was Destoryed!");
 	}
 
-	void VulkanPipeline::Destory()
-	{
-		vk::Device Device = m_Device->GetLogicalDevice();
-		Device.destroyPipelineCache(m_PipelineCache);
-		Device.destroyPipeline(m_Pipeline);
-		Device.destroyPipelineLayout(m_PipelineLayout);
-	}
-
-	void VulkanPipeline::CreatePipeline()
+	void VulkanPipeline::VulkanCreate()
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
 		vk::Rect2D RenderArea = m_Swapchain->GetRenderArea();
@@ -71,6 +63,8 @@ namespace Morpheus {
 				nullptr
 			)
 		};
+
+		vk::PipelineVertexInputStateCreateInfo pvi = m_InputState;
 
 		vk::PipelineInputAssemblyStateCreateInfo pia(
 			vk::PipelineInputAssemblyStateCreateFlags(),
@@ -134,57 +128,63 @@ namespace Morpheus {
 			)
 		};
 
-		vk::PipelineColorBlendStateCreateInfo BlendStateCreateInfo = {};
-		{
-			BlendStateCreateInfo.flags = vk::PipelineColorBlendStateCreateFlags();
-			BlendStateCreateInfo.logicOpEnable = 0;
-			BlendStateCreateInfo.logicOp = vk::LogicOp::eClear;
-			BlendStateCreateInfo.attachmentCount = ColorBlendAttachments.size();
-			BlendStateCreateInfo.pAttachments = ColorBlendAttachments.data();
-		}
 
-		Vector<vk::DynamicState> DynamicStates =
+		vk::PipelineColorBlendStateCreateInfo pbs(
+			vk::PipelineColorBlendStateCreateFlags(),
+			0,
+			vk::LogicOp::eClear,
+			ColorBlendAttachments.size(),
+			ColorBlendAttachments.data()
+		);
+
+		Vector<vk::DynamicState> dynamicStates =
 		{
 			vk::DynamicState::eViewport,
 			vk::DynamicState::eScissor
 		};
 
-		vk::PipelineDynamicStateCreateInfo DynamicStateCreateInfo = {};
-		{
-			DynamicStateCreateInfo.flags = vk::PipelineDynamicStateCreateFlags();
-			DynamicStateCreateInfo.dynamicStateCount = DynamicStates.size();
-			DynamicStateCreateInfo.pDynamicStates = DynamicStates.data();
-		}
+		vk::PipelineDynamicStateCreateInfo pdy(
+			vk::PipelineDynamicStateCreateFlags(),
+			dynamicStates.size(),
+			dynamicStates.data()
+		);
 
-		vk::GraphicsPipelineCreateInfo CreateInfo {};
-		{
-			CreateInfo.flags = vk::PipelineCreateFlags();
-			CreateInfo.stageCount = (uint32)pipelineShaderStages.size();
-			CreateInfo.pStages = pipelineShaderStages.data();
-			CreateInfo.pVertexInputState = &m_InputState;
-			CreateInfo.pInputAssemblyState = &pia;
-			CreateInfo.pTessellationState = nullptr;
-			CreateInfo.pViewportState = &pv;
-			CreateInfo.pRasterizationState = &pr;
-			CreateInfo.pMultisampleState = &pm;
-		
-			CreateInfo.pDepthStencilState = &pds;
-			CreateInfo.pColorBlendState = &BlendStateCreateInfo;
-			CreateInfo.pDynamicState = &DynamicStateCreateInfo;
+  		auto ThePipeline = Device.createGraphicsPipeline(
+			m_PipelineCache,
+			vk::GraphicsPipelineCreateInfo(
+				vk::PipelineCreateFlags(),
+				pipelineShaderStages.size(),
+				pipelineShaderStages.data(),
+				&pvi,
+				&pia,
+				nullptr,
+				&pv,
+				&pr,
+				&pm,
+				&pds,
+				&pbs,
+				&pdy,
+				m_PipelineLayout,
+				Renderpass,
+				0
+			)
+		);
 
-			CreateInfo.layout = m_PipelineLayout;
-			CreateInfo.renderPass = Renderpass;
-			CreateInfo.basePipelineIndex = 0;
-		}
-		
-		auto Pipeline = Device.createGraphicsPipeline(m_PipelineCache, CreateInfo);
-		m_Pipeline = Pipeline;
+		m_Pipeline = ThePipeline;
 	}
 
-	Ref<VulkanPipeline> VulkanPipeline::VulkanCreate(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState)
+	void VulkanPipeline::VulkanDestory()
+	{
+		vk::Device Device = m_Device->GetLogicalDevice();
+		Device.destroyPipelineCache(m_PipelineCache);
+		Device.destroyPipeline(m_Pipeline);
+		Device.destroyPipelineLayout(m_PipelineLayout);
+	}
+
+	Ref<VulkanPipeline> VulkanPipeline::Make(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState)
 	{
 		Ref<VulkanPipeline> s_VulkanPipeline = CreateRef<VulkanPipeline>(_Input, _InputState);
-		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanPipeline>(VulkanResourceTypes::VulkanPipeline, s_VulkanPipeline);
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit(s_VulkanPipeline);
 		return s_VulkanPipeline;
 	}
 

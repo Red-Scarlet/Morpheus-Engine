@@ -7,6 +7,8 @@
 
 #include "Morpheus/Renderer/RendererResources/UniformBuffer.h"
 
+#include "VulkanResource.h"
+
 namespace Morpheus {
 
 	class VulkanUniformMessage
@@ -40,16 +42,17 @@ namespace Morpheus {
 		}
 	};
 
-	class VulkanUniformBuffer : public UniformBuffer
+	class VulkanUniformBuffer : public VulkanResource, public UniformBuffer
 	{
 	public:
 		VulkanUniformBuffer(const BufferLayout& _Layout);
 		virtual ~VulkanUniformBuffer();
-		void Destory();
+	
+	private:
+		virtual void VulkanCreate() override;
+		virtual void VulkanDestory() override;
 
-		virtual const uint32& GetID() override { return m_ID; }
-		void SetID(const uint32& _ID) { m_ID = _ID; }
-		
+	public:
 		const bool& GetCompiled() { return CompiledUniform; }
 		void SetCompiled(const bool& _State) { CompiledUniform = _State; }
 
@@ -59,10 +62,6 @@ namespace Morpheus {
 
 		const vk::DescriptorBufferInfo& GetDescriptorBuffer()
 		{ return m_Uniform.Descriptor; }
-
-	private:
-		uint32 GetMemoryTypeIndex(vk::PhysicalDevice& _PhysicalDevice, uint32 _TypeBits, vk::MemoryPropertyFlags _Properties);
-		void CreateUniformBuffer();
 
 	private:
 		Ref<VulkanDevice> m_Device;
@@ -75,12 +74,10 @@ namespace Morpheus {
 		}  m_Uniform;
 
 		BufferLayout m_BufferLayout;
-
-		uint32 m_ID = 0;
 		bool CompiledUniform = false;
 
 	public:
-		static Ref<VulkanUniformBuffer> VulkanCreate(const BufferLayout& _Layout);
+		static Ref<VulkanUniformBuffer> Make(const BufferLayout& _Layout);
 	};
 
 }

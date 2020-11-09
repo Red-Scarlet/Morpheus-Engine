@@ -19,9 +19,9 @@ namespace Morpheus {
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& _IndexBuffer) = 0;
 		virtual void SetUniformBuffer(const Ref<UniformBuffer>& _UniformBuffer) = 0;
 
-		virtual const Ref<VertexBuffer>& GetVertexBuffer() const = 0;
-		virtual const Ref<IndexBuffer>& GetIndexBuffer() const = 0;
-		virtual const Ref<UniformBuffer>& GetUniformBuffer() const = 0;
+		virtual const uint32& GetVertexBufferID() const = 0;
+		virtual const uint32& GetIndexBufferID() const = 0;
+		virtual const uint32& GetUniformBufferID() const = 0;
 
 	public:
 		static Ref<VertexArray> Create();

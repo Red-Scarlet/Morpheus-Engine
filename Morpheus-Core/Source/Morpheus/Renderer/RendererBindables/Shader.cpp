@@ -6,12 +6,12 @@
 
 namespace Morpheus {
 
-	Ref<Shader> Shader::Create(const String& _VertexPath, const String& _FragmentPath)
+	Ref<Shader> Shader::Create(const VertexAttributeLayout& _Layout, const ShaderInfo& _ShaderPath)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    MORP_CORE_ASSERT(MORP_ERROR, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return VulkanShader::VulkanCreate(_VertexPath, _FragmentPath);
+			case RendererAPI::API::Vulkan:  return VulkanShader::Make(_Layout, _ShaderPath);
 		}
 
 		MORP_CORE_ASSERT(MORP_ERROR, "Unknown RendererAPI!");

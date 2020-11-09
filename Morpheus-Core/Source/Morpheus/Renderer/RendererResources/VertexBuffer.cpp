@@ -6,12 +6,12 @@
 
 namespace Morpheus {
 
-	Ref<VertexBuffer> VertexBuffer::Create(const Memory32& _Data, const uint32& _Size)
+	Ref<VertexBuffer> VertexBuffer::Create(QuadVertex* _Data, const uint32& _Size)
 	{
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    MORP_CORE_ASSERT(MORP_ERROR, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return VulkanVertexBuffer::VulkanCreate(_Data, _Size);
+			case RendererAPI::API::Vulkan:  return VulkanVertexBuffer::Make(_Data, _Size);
 		}
 
 		MORP_CORE_ASSERT(MORP_ERROR, "Unknown RendererAPI!");
@@ -23,7 +23,7 @@ namespace Morpheus {
 		switch (RendererAPI::GetAPI())
 		{
 			case RendererAPI::API::None:    MORP_CORE_ASSERT(MORP_ERROR, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return VulkanVertexBuffer::VulkanCreate(_Size);
+			case RendererAPI::API::Vulkan:  return VulkanVertexBuffer::Make(_Size);
 		}
 
 		MORP_CORE_ASSERT(MORP_ERROR, "Unknown RendererAPI!");

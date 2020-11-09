@@ -3,37 +3,40 @@
 #include "VulkanUniformBuffer.h"
 
 #include "Platform/Vulkan/VulkanMemoryManager.h"
-#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
+#include "Morpheus/Renderer/RendererCore/RenderCommand.h"
 
 namespace Morpheus {
 
 	VulkanDescriptorPool::VulkanDescriptorPool(const uint32& _NumObjects)
-		: m_CurrentSize(_NumObjects)
+		: VulkanResource(VulkanResourceTypes::VulkanDescriptor), m_CurrentSize(_NumObjects)
 	{
 		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
 		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanDescriptor));
 
-		// SHADER WILL TELL THE DESCRIPTOR LAYOUT HOW MANY BUFFER CAN BE ATTACHED!
-		CreateDescriptorLayout();
-
-		CreateDescriptorPool();
-		CreateDescriptorSet();
-
-		MORP_CORE_WARN("[VULKAN] DescriptorPool Was Created!");
+		VulkanCreate();
+		MORP_CORE_WARN("[VULKAN] DescriptorPool #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanDescriptorPool::~VulkanDescriptorPool()
 	{
+		VulkanDestory();
 		MORP_CORE_WARN("[VULKAN] DescriptorPool Was Destoryed!");
 	}
 
-	void VulkanDescriptorPool::Destory()
+	void VulkanDescriptorPool::VulkanCreate()
+	{
+		CreateDescriptorLayout();
+		CreateDescriptorPool();
+		CreateDescriptorSet();
+	}
+
+	void VulkanDescriptorPool::VulkanDestory()
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
-		
+
 		Device.freeDescriptorSets(m_DescriptorPool, m_DescriptorSets);
 		Device.destroyDescriptorPool(m_DescriptorPool);
-		//Device.destroyDescriptorSetLayout(m_DescriptorSetLayout);
+		Device.destroyDescriptorSetLayout(m_DescriptorSetLayout);
 	}
 
 	void VulkanDescriptorPool::CreateDescriptorLayout()
@@ -71,7 +74,8 @@ namespace Morpheus {
 
 			vk::DescriptorPoolCreateInfo PoolCreateInfo{};
 			{
-				PoolCreateInfo.flags = vk::DescriptorPoolCreateFlags();
+				//PoolCreateInfo.flags = ;
+				PoolCreateInfo.flags = vk::DescriptorPoolCreateFlags(VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT);
 				PoolCreateInfo.poolSizeCount = (uint32)DescriptorPoolSizes.size();
 				PoolCreateInfo.pPoolSizes = DescriptorPoolSizes.data();
 				PoolCreateInfo.maxSets = m_CurrentSize;
@@ -112,9 +116,9 @@ namespace Morpheus {
 
 			}
 
-			Ref<VulkanCommand> Command = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanCommand>(VulkanResourceTypes::VulkanCommandBuffer, 0);
-			Command->SetRecompilationState(true);
 
+			// Set Compilation State!
+			RenderCommand::SetCompile();
 		}
 	}
 
@@ -145,14 +149,22 @@ namespace Morpheus {
 			Device.updateDescriptorSets(descriptorWrites, nullptr);
 			UBO->SetCompiled(true);
 			MORP_CORE_ERROR("[VULKAN] Update to DescriptorWrite of UBO #" + std::to_string(_ID) + " was made!");
-
 		}
 	}
 
-	Ref<VulkanDescriptorPool> VulkanDescriptorPool::VulkanCreate(const uint32& _NumObjects)
+	void VulkanDescriptorPool::FreeDescriptor()
+	{
+		vk::Device Device = m_Device->GetLogicalDevice();
+		DeleteDescriptorSet();
+
+		//Device.freeDescriptorSets(m_DescriptorPool, m_DescriptorSets);
+		Device.destroyDescriptorPool(m_DescriptorPool);
+	}
+
+	Ref<VulkanDescriptorPool> VulkanDescriptorPool::Make(const uint32& _NumObjects)
 	{
 		Ref<VulkanDescriptorPool> s_VulkanDescriptorPool = CreateRef<VulkanDescriptorPool>(_NumObjects);
-		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit<VulkanDescriptorPool>(VulkanResourceTypes::VulkanDescriptor, s_VulkanDescriptorPool);
+		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit(s_VulkanDescriptorPool);
 		return s_VulkanDescriptorPool;
 	}
 

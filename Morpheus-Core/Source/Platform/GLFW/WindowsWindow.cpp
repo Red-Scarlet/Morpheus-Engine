@@ -5,14 +5,18 @@
 #include "Morpheus/Events/MouseEvent.h"
 #include "Morpheus/Events/KeyEvent.h"
 
+#include <string>
+
 namespace Morpheus {
 
 	static bool s_GLFWInitialized = false;
 
 	static void GLFWErrorCallback(int error, const char* description)
 	{
-		//MORP_CORE_ERROR("GLFW Error ({0}): {1}", error, description);
-		MORP_CORE_ASSERT(MORP_ERROR, "GLFW ERROR");
+		String Message = "[GLFW] " + String(description);
+		MORP_CORE_ERROR(Message);
+		MORP_CORE_ASSERT(MORP_ERROR, "[GLFW] ERROR CALLBACK!");
+
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)

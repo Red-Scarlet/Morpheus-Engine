@@ -6,41 +6,42 @@
 namespace Morpheus {
 
 	VulkanSwapchain::VulkanSwapchain()
+        : VulkanGlobal(VulkanGlobalTypes::VulkanSwapchain)
 	{
         m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-        SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSwapchain));
-        CreateSwapchain();
+        m_Surface = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSurface>(VulkanGlobalTypes::VulkanSurface);
+
+        VulkanCreate();
         MORP_CORE_WARN("[VULKAN] Swapchain Was Created!");
+        SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSwapchain));
 	}
 
 	VulkanSwapchain::~VulkanSwapchain()
 	{
+        VulkanDestory();
         MORP_CORE_WARN("[VULKAN] Swapchain Was Destoryed!");
 	}
 
-    void VulkanSwapchain::Destory()
-    {
-        vk::Device Device = m_Device->GetLogicalDevice();
-        Device.destroySwapchainKHR(m_Swapchain);
-    }
-
-    void VulkanSwapchain::CreateSwapchain()
+    void VulkanSwapchain::VulkanCreate()
     {
         vk::PhysicalDevice PhysicalDevice = m_Device->GetPhysicalDevice();
         vk::Device Device = m_Device->GetLogicalDevice();
         uint32 QueueFamilyIndex = m_Device->GetQueueFamilyIndex();
 
-        SurfaceStruct Struct = m_Device->GetSurface()->GetStruct();
+        vk::SurfaceKHR Surface = m_Surface->GetSurface();
+        vk::Format ColorFormat = m_Surface->GetColorFormat();
+        vk::ColorSpaceKHR ColorSpace = m_Surface->GetColorSpace();
+        vk::Format DepthFormat = m_Surface->GetDepthFormat();
 
         vk::Extent2D SwapchainSize = vk::Extent2D(m_Width, m_Height);
-        vk::SurfaceCapabilitiesKHR surfaceCapabilities = PhysicalDevice.getSurfaceCapabilitiesKHR(Struct.Surface);
+        vk::SurfaceCapabilitiesKHR surfaceCapabilities = PhysicalDevice.getSurfaceCapabilitiesKHR(Surface);
         if (!(surfaceCapabilities.currentExtent.width == -1 || surfaceCapabilities.currentExtent.height == -1)) {
             SwapchainSize = surfaceCapabilities.currentExtent;
             m_RenderArea = vk::Rect2D(vk::Offset2D(), SwapchainSize);
             m_Viewport = vk::Viewport(0.0f, 0.0f, (float32)SwapchainSize.width, (float32)SwapchainSize.height, 0, 1.0f);
         }
 
-        Vector<vk::PresentModeKHR> surfacePresentModes = PhysicalDevice.getSurfacePresentModesKHR(Struct.Surface);
+        Vector<vk::PresentModeKHR> surfacePresentModes = PhysicalDevice.getSurfacePresentModesKHR(Surface);
         vk::PresentModeKHR presentMode = vk::PresentModeKHR::eImmediate;
 
         for (vk::PresentModeKHR& pm : surfacePresentModes) {
@@ -53,14 +54,14 @@ namespace Morpheus {
         m_Device->Wait();
         vk::SwapchainKHR oldSwapchain = m_Swapchain;
 
-        uint32_t backbufferCount = std::clamp(surfaceCapabilities.maxImageCount, 1U, 2U);
+        uint32 backbufferCount = std::clamp(surfaceCapabilities.maxImageCount, 1U, 2U);
 
-        vk::SwapchainCreateInfoKHR CreateInfo {};
+        vk::SwapchainCreateInfoKHR CreateInfo{};
         CreateInfo.flags = vk::SwapchainCreateFlagsKHR();
-        CreateInfo.surface = Struct.Surface;
+        CreateInfo.surface = Surface;
         CreateInfo.minImageCount = backbufferCount;
-        CreateInfo.imageFormat = Struct.ColorFormat;
-        CreateInfo.imageColorSpace = Struct.ColorSpace;
+        CreateInfo.imageFormat = ColorFormat;
+        CreateInfo.imageColorSpace = ColorSpace;
         CreateInfo.imageExtent = SwapchainSize;
 
         CreateInfo.imageArrayLayers = 1;
@@ -81,19 +82,22 @@ namespace Morpheus {
         m_RenderArea = vk::Rect2D(vk::Offset2D(), m_SurfaceSize);
         m_Viewport = vk::Viewport(0.0f, 0.0f, (float32)m_SurfaceSize.width, (float32)m_SurfaceSize.height, 0, 1.0f);
 
-        // Destroy previous swapchain
         if (oldSwapchain != vk::SwapchainKHR(nullptr))
             Device.destroySwapchainKHR(oldSwapchain);
-        
-        // Resize swapchain buffers for use later
-        m_BackBufferCount = backbufferCount;
-        // m_SwapchainBuffers.resize(backbufferCount);
-	}
 
-	Ref<VulkanSwapchain> VulkanSwapchain::Create()
+        m_BackBufferCount = backbufferCount;
+    }
+
+    void VulkanSwapchain::VulkanDestory()
+    {
+        vk::Device Device = m_Device->GetLogicalDevice();
+        Device.destroySwapchainKHR(m_Swapchain);
+    }
+
+	Ref<VulkanSwapchain> VulkanSwapchain::Make()
 	{
         Ref<VulkanSwapchain> s_VulkanSwapchain = CreateRef<VulkanSwapchain>();
-        VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain, s_VulkanSwapchain);
+        VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit(s_VulkanSwapchain);
         return s_VulkanSwapchain;
 	}
 

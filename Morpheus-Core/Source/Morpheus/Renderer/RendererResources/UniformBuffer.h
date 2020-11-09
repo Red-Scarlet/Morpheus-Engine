@@ -133,8 +133,6 @@ namespace Morpheus {
 	public:
 		virtual ~UniformBuffer() = default;
 
-		virtual const uint32& GetID() = 0;
-
 		virtual void SetLayout(const BufferLayout& _Layout) = 0;
 		virtual const BufferLayout& GetLayout() const = 0;
 

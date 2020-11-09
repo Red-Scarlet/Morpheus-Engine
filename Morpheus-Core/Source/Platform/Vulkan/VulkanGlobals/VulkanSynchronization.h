@@ -5,42 +5,47 @@
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
-#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
+
+#include "VulkanGlobal.h"
 
 namespace Morpheus {
 
-	class VulkanSynchronization
+	class VulkanSynchronization: public VulkanGlobal
 	{
 	public:
 		VulkanSynchronization();
-		~VulkanSynchronization();
-		void Destory();
+		virtual ~VulkanSynchronization();
 
-		const uint32& GetID() { return m_ID; }
-		void SetID(const uint32& _ID) { m_ID = _ID; }
+	private:
+		virtual void VulkanCreate() override;
+		virtual void VulkanDestory()  override;
 
-		bool Next();
+	public:
 		bool Render();
 		void Append(const vk::CommandBuffer& _Command);
 
 	private:
-		void CreateSynchronization();
-
-	private:
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
-
-		Vector<vk::CommandBuffer> m_Commands;
+		Vector<VkCommandBuffer> m_Commands;
 
 		vk::Semaphore m_PresentCompleteSemaphore;
 		vk::Semaphore m_RenderCompleteSemaphore;
 		Vector<vk::Fence> m_WaitFences;
-		uint32 m_CurrentBuffer = 0;
+		uint32 m_CurrentBuffer;
 
-		uint32 m_ID = 0;
+		Vector<VkSemaphore> m_ImageSemaphores;
+		Vector<VkSemaphore> m_RenderSemaphores;
+		Vector<VkFence> m_InFlightFences;
+		Vector<VkFence> m_ImagesInFlight;
+
+		uint32 m_CurrentFrame = 0;
+		uint32 m_ImageIndex = 0;
+
+		const uint32 m_TotalNumberOfFrames = 2;
 
 	public:
-		static Ref<VulkanSynchronization> Create();
+		static Ref<VulkanSynchronization> Make();
 	};
 
 }

@@ -9,7 +9,7 @@ namespace Morpheus {
 	public:
 		virtual void Init() = 0;
 		virtual void Destory() = 0;
-		virtual void Render() = 0;
+		virtual void End() = 0;
 
 	public:
 		static Scope<GraphicsContext> Create();

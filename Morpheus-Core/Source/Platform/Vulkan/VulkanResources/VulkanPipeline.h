@@ -5,9 +5,12 @@
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
-#include "Platform/Vulkan/VulkanResources/VulkanCommand.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandSystem.h"
+
 #include "Platform/Vulkan/VulkanResources/VulkanDescriptorPool.h"
-#include "Platform/Vulkan/VulkanUnknown/VulkanRenderpass.h"
+#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
+
+#include "VulkanResource.h"
 
 namespace Morpheus {
 
@@ -18,23 +21,20 @@ namespace Morpheus {
 		vk::ShaderModule FragModule;
 	};
 
-	class VulkanPipeline
+	class VulkanPipeline : public VulkanResource
 	{
 	public:
 		VulkanPipeline(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState);
 		virtual ~VulkanPipeline();
-		void Destory();
-
-		const uint32& GetID() { return m_ID; }
-		void SetID(const uint32& _ID) { m_ID = _ID; }
-
-		const vk::Pipeline& GetPipeline() { return m_Pipeline; }
-		const vk::PipelineLayout& GetLayout() { return m_PipelineLayout; }
-
-		void SetInputState(const vk::PipelineVertexInputStateCreateInfo& _InputState) { m_InputState = _InputState; }
 
 	private:
-		void CreatePipeline();
+		virtual void VulkanCreate() override;
+		virtual void VulkanDestory() override;
+
+	public:
+		const vk::Pipeline& GetPipeline() { return m_Pipeline; }
+		const vk::PipelineLayout& GetLayout() { return m_PipelineLayout; }
+		void SetInputState(const vk::PipelineVertexInputStateCreateInfo& _InputState) { m_InputState = _InputState; }
 
 	private:
 		Ref<VulkanDevice> m_Device;
@@ -50,10 +50,8 @@ namespace Morpheus {
 
 		vk::PipelineVertexInputStateCreateInfo m_InputState;
 
-		uint32 m_ID = 0;
-
 	public:
-		static Ref<VulkanPipeline> VulkanCreate(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState);
+		static Ref<VulkanPipeline> Make(const VulkanPipelineInput& _Input, const vk::PipelineVertexInputStateCreateInfo& _InputState);
 	};
 
 }

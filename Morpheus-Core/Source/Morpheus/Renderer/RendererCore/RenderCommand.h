@@ -24,14 +24,9 @@ namespace Morpheus {
 			s_RendererAPI->Flush();
 		}
 
-		inline static void SetCompile(const bool& _Value)
+		inline static void SetCompile()
 		{
-			s_RendererAPI->SetCompile(_Value);
-		}
-
-		inline static void SetReady(const bool& _Value)
-		{
-			s_RendererAPI->SetReady(_Value);
+			s_RendererAPI->SetCompile();
 		}
 
 		inline static void SetClearColor(const Vector4& _ClearColor)

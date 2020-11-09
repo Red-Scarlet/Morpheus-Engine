@@ -59,7 +59,6 @@ namespace Morpheus {
 	{
 	public:
 		virtual ~Renderpass() = default;
-		virtual const uint32& GetID() = 0;
 
 	public:
 		static Ref<Renderpass> Create(const RenderpassLayout& _Layout);

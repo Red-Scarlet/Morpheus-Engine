@@ -5,30 +5,31 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanSurface.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 
-#include "Morpheus/Renderer/RendererUnknown/Renderpass.h"
+#include "Morpheus/Renderer/RendererResources/Renderpass.h"
+
+#include "VulkanResource.h"
 
 namespace Morpheus {
 
-	class VulkanRenderpass : public Renderpass
+	class VulkanRenderpass : public VulkanResource, public Renderpass
 	{
 	public:
 		VulkanRenderpass(const RenderpassLayout& _Layout);
 		virtual ~VulkanRenderpass();
-		void Destory();
 
-		virtual const uint32& GetID() override 
-		{ return m_ID; }
-		void SetID(const uint32& _ID) { m_ID = _ID; }
+	private:
+		virtual void VulkanCreate() override;
+		virtual void VulkanDestory() override;
 
+	public:
 		const vk::RenderPass& GetRenderpass() { return m_RenderPass; }
 
+	private:
 		void InvalidateAttachments();
 
 	private:
-		void CreateRenderpass();
-
-	private:
 		Ref<VulkanDevice> m_Device;
+		Ref<VulkanSurface> m_Surface;
 
 		RenderpassLayout m_Layout;
 		Vector<vk::AttachmentDescription> m_Attachments;
@@ -39,10 +40,9 @@ namespace Morpheus {
 		Vector<vk::SubpassDescription> m_SubpassDesc;
 
 		vk::RenderPass m_RenderPass;
-		uint32 m_ID = 0;
 
 	public:
-		static Ref<VulkanRenderpass> VulkanCreate(const RenderpassLayout& _Layout);
+		static Ref<VulkanRenderpass> Make(const RenderpassLayout& _Layout);
 	};
 
 }

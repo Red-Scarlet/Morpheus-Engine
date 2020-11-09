@@ -14,10 +14,9 @@ namespace Morpheus {
 		virtual void Shutdown() = 0;
 		virtual void Flush() = 0;
 
-		virtual void SetCompile(const bool& _Value) = 0;
-		virtual void SetReady(const bool& _Value) = 0;
-
+		virtual void SetCompile() = 0;
 		virtual void SetClearColor(const Vector4& _ClearColor) = 0;
+
 
 		inline static void SetAPI(const API& _API) { s_RenderAPI = _API; }
 		inline static API GetAPI() { return s_RenderAPI; }

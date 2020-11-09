@@ -1,9 +1,9 @@
 #pragma once
 #include "Morpheus/Core/Common.h"
 
-#include "VulkanGlobal.h"
-#include "VulkanResource.h"
-#include "VulkanBindable.h"
+#include "VulkanGlobals/VulkanGlobal.h"
+#include "VulkanResources/VulkanResource.h"
+#include "VulkanBindables/VulkanBindable.h"
 
 namespace Morpheus {
 

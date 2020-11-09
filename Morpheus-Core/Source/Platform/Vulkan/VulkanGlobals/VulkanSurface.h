@@ -3,45 +3,40 @@
 #include "Morpheus/Core/Common.h"
 #include "Platform/Vulkan/VulkanCommon.h"	
 
+#include "Platform/Vulkan/VulkanGlobals/VulkanInstance.h"
+#include "VulkanGlobal.h"
+
 namespace Morpheus {
 
-	struct SurfaceStruct
-	{
-		vk::SurfaceKHR Surface;
-		vk::Format ColorFormat;
-		vk::ColorSpaceKHR ColorSpace;
-		vk::Format DepthFormat;
-	};
-
-	class VulkanSurface
+	class VulkanSurface : public VulkanGlobal
 	{
 	public:
-		VulkanSurface(const vk::Instance& _Instance, const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex);
-		~VulkanSurface();
-		// Destory Function Here!
-
-		const uint32& GetID() { return m_ID; }
-		void SetID(const uint32& _ID) { m_ID = _ID; }
-
+		VulkanSurface(const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex);
+		virtual ~VulkanSurface();
 		void SetupColorFormats();
 
-		const SurfaceStruct& GetStruct() { return m_Struct; }
+		const vk::SurfaceKHR& GetSurface() { return m_Surface; }
+		const vk::Format& GetColorFormat() { return m_ColorFormat; }
+		const vk::ColorSpaceKHR& GetColorSpace() { return m_ColorSpace; }
+		const vk::Format& GetDepthFormat() { return m_DepthFormat; }
 
 	private:
-		bool CreateSurface();
+		virtual void VulkanCreate() override;
+		virtual void VulkanDestory() override;
 
 	private:
-		SurfaceStruct m_Struct;
-
-		vk::Instance m_Instance;
+		Ref<VulkanInstance> m_Instance;
 		vk::PhysicalDevice m_PhysicalDevice;
 		uint32 m_QueueFamilyIndex = 0;
 
-		uint32 m_ID = 0;
+		vk::SurfaceKHR m_Surface;
+		vk::Format m_ColorFormat;
+		vk::ColorSpaceKHR m_ColorSpace;
+		vk::Format m_DepthFormat;
 
 	public:
-		static Ref<VulkanSurface> Create(const vk::Instance& _Instance, const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex)
-		{ return CreateRef<VulkanSurface>(_Instance, _Physical, _QueueFamilyIndex); }
+		static Ref<VulkanSurface> Make(const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex);
+
 	};
 
 }

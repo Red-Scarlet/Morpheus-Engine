@@ -2,7 +2,7 @@
 
 #include "Morpheus/Core/Common.h"
 
-#include "Morpheus/Renderer/RendererUnknown/Renderpass.h"
+#include "Morpheus/Renderer/RendererResources/Renderpass.h"
 
 namespace Morpheus {
 
@@ -11,7 +11,7 @@ namespace Morpheus {
 	public:
 		virtual ~FrameBuffer() = default;
 
-		virtual void* GetImage(uint32 id) = 0;
+		virtual void Bind() = 0;
 
 	public:
 		static Ref<FrameBuffer> Create(const Ref<Renderpass> _Renderpass);

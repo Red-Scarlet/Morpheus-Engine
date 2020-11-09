@@ -11,28 +11,25 @@ namespace Morpheus {
 
 	void VulkanContext::Init()
 	{
-		m_Instance = VulkanInstance::Create();
-		m_Device = VulkanDevice::VulkanCreate(m_Instance);
-		m_Swapchain = VulkanSwapchain::Create();
+		// Create Instance
+		m_Instance = VulkanInstance::Make();
 
-		m_Sync = VulkanSynchronization::Create();
-		m_RenderQueue = VulkanRenderQueue::VulkanCreate();
+		m_Device = VulkanDevice::Make();
+		m_Swapchain = VulkanSwapchain::Make();
+
+		m_CommandSystem = VulkanCommandSystem::Make();
+		m_Sync = VulkanSynchronization::Make();
+		m_Queue = VulkanQueue::Make();
 	}
 
 	void VulkanContext::Destory()
 	{
 		m_Device->Wait();
-
-		m_Sync->Destory();
-		m_Swapchain->Destory();
-		m_Device->Destory();
-		m_Instance->Destroy();
 	}
 
-	void VulkanContext::Render()
+	void VulkanContext::End()
 	{
-		m_RenderQueue->Flush(false);
-		m_Sync->Next();
+		m_Queue->Flush();
 	}
 
 }

@@ -45,5 +45,4 @@
 #define STRICT
 
 #include <Windows.h>
-
 #include "Morpheus/Utilities/MorpheusLogger.h"
