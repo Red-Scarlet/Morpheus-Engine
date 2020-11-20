@@ -15,23 +15,21 @@ namespace Morpheus {
 
 	VulkanImGui::VulkanImGui()
 	{
-		m_Instance = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanInstance>(VulkanGlobalTypes::VulkanInstance);
-		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
+		m_Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
+		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
 
-		m_Surface = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSurface>(VulkanGlobalTypes::VulkanSurface);
-		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
-		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanCommandSystem>(VulkanGlobalTypes::VulkanCommand);
-		m_Queue = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanQueue>(VulkanGlobalTypes::VulkanQueue);
+		m_Surface = VulkanMemoryManager::GetInstance()->GetSurface();
+		m_Swapchain = VulkanMemoryManager::GetInstance()->GetSwapchain();
+		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
+		m_Queue = VulkanMemoryManager::GetInstance()->GetQueue();
 	}
 
 	void VulkanImGui::Init()
 	{
-		RenderpassLayout RPLayout = {
+		RenderpassLayout RenderpassLayout = {
 				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_LOAD, RenderpassAttachment::ATTACHMENT_STORE }
 		};
-		
-		m_Renderpass = VulkanRenderpass::Make(RPLayout);
-		m_Framebuffer = VulkanFramebuffer::Make(m_Renderpass, false);
+		m_Framebuffer = VulkanFrameBuffer::Make(RenderpassLayout);
 
 		m_CommandBuffers.resize(m_Queue->GetBufferCount());
 		VulkanCommands Buffers = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
@@ -52,7 +50,7 @@ namespace Morpheus {
 			Info.Allocator = nullptr;
 			Info.CheckVkResultFn = nullptr;
 		}
-		ImGui_ImplVulkan_Init(&Info, m_Renderpass->GetRenderpass());
+		ImGui_ImplVulkan_Init(&Info, m_Framebuffer->GetRenderpass());
 
 		InitCommands();
 	}
@@ -125,10 +123,10 @@ namespace Morpheus {
 
 			VkRenderPassBeginInfo RenderpassInfo = {};
 			RenderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			RenderpassInfo.renderPass = m_Renderpass->GetRenderpass();
-			RenderpassInfo.framebuffer = m_Framebuffer->GetFramebuffer(CurrentFrame);
-			RenderpassInfo.renderArea.extent.width = 1280;			//Extent
-			RenderpassInfo.renderArea.extent.height = 720;			//Extent
+			RenderpassInfo.renderPass = m_Framebuffer->GetRenderpass();
+			RenderpassInfo.framebuffer = m_Framebuffer->GetFrameBuffer(CurrentFrame);
+			RenderpassInfo.renderArea.extent.width = m_Swapchain->GetExtent2D().width;
+			RenderpassInfo.renderArea.extent.height = m_Swapchain->GetExtent2D().height;
 			RenderpassInfo.clearValueCount = ClearValues.size();
 			RenderpassInfo.pClearValues = ClearValues.data();
 			
@@ -138,9 +136,8 @@ namespace Morpheus {
 
 			vkEndCommandBuffer(cmd);
 		}
-		m_Queue->Submit(cmd);
+		m_Queue->Submit(cmd, QueueCommandFlags::DeleteCommand);
 	}
-
 
 	void VulkanImGui::CreateDescriptorPool()
 	{
@@ -163,7 +160,7 @@ namespace Morpheus {
 		CreateInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 		CreateInfo.flags = VK_DESCRIPTOR_POOL_CREATE_FREE_DESCRIPTOR_SET_BIT;
 		CreateInfo.maxSets = 1000 * IM_ARRAYSIZE(pool_sizes);
-		CreateInfo.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
+		CreateInfo.poolSizeCount = (uint32)IM_ARRAYSIZE(pool_sizes);
 		CreateInfo.pPoolSizes = pool_sizes;
 
 		VkResult Result = vkCreateDescriptorPool(m_Device->GetLogicalDevice(), &CreateInfo, nullptr, &m_DescriptorPool);

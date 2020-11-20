@@ -3,16 +3,12 @@
 
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
-
-
 namespace Morpheus {
 
 	VulkanInstance::VulkanInstance()
-        : VulkanGlobal(VulkanGlobalTypes::VulkanInstance)
 	{
         VulkanCreate();
         MORP_CORE_WARN("[VULKAN] Instance Was Created!");
-        SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanInstance));
 	}
 
 	VulkanInstance::~VulkanInstance()
@@ -109,7 +105,7 @@ namespace Morpheus {
     Ref<VulkanInstance> VulkanInstance::Make()
     {
         Ref<VulkanInstance> s_VulkanInstance = CreateRef<VulkanInstance>();
-        VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit(s_VulkanInstance);
+        VulkanMemoryManager::GetInstance()->SetVulkanInstance(s_VulkanInstance);
         return s_VulkanInstance;
     }
 

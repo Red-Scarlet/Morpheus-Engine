@@ -1,8 +1,6 @@
 #include "Morppch.h"
 #include "Renderer.h"
 
-#include "Morpheus/Renderer/RendererSystems/Renderer2D.h"
-
 namespace Morpheus {
 
 	Renderer::RenderData* Renderer::s_RenderData = nullptr;

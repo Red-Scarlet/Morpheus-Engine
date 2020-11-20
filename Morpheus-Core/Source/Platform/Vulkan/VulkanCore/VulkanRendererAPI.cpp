@@ -1,91 +1,98 @@
 #include "Morppch.h"
 #include "VulkanRendererAPI.h"
 
-#include "Platform/Vulkan/VulkanResources/VulkanPipeline.h"
-#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
-
 #include "Platform/Vulkan/VulkanBindables/VulkanFramebuffer.h"
+#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
 #include "Platform/Vulkan/VulkanBindables/VulkanVertexArray.h"
+#include "Platform/Vulkan/VulkanBindables/VulkanBindingChain.h"
 
 #include "Platform/Vulkan/VulkanMemoryManager.h"
+
 
 namespace Morpheus {
 
 	void VulkanRendererAPI::Init()
 	{
-		m_Queue = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanQueue>(VulkanGlobalTypes::VulkanQueue);
-		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanCommandSystem>(VulkanGlobalTypes::VulkanCommand);
+		m_Queue = VulkanMemoryManager::GetInstance()->GetQueue();
+		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
+		m_Commands = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
 	}
 
 	void VulkanRendererAPI::Shutdown()
 	{
-		m_CommandSystem->BatchDeallocate(m_CommandBuffers);
-	}
-
-	void VulkanRendererAPI::Flush()
-	{
-		if (!m_Compiled)
-			SetupCommands();
-
-		m_Queue->Submit(m_CommandBuffers[m_Queue->GetCurrentFrame()]);
 	}
 
 	void VulkanRendererAPI::SetClearColor(const Vector4& _ClearColor)
 	{
-		if (m_ClearColor != _ClearColor) {
-			m_ClearColor = _ClearColor;
-			m_Compiled = false;
-		}
+		m_ClearColor = _ClearColor;
 	}
 
-	void VulkanRendererAPI::SetCompile()
+	void VulkanRendererAPI::Clear()
 	{
-		m_Compiled = false;
+	}
+
+	void VulkanRendererAPI::DrawIndexed(const Ref<VertexArray>& _VertexArray)
+	{
+		VulkanBindingChain& Chain = VulkanMemoryManager::GetInstance()->GetBindingChain();
+
+		uint32 ShaderID = Chain.GetShaderID();
+		if (ShaderID == uint32_max)
+			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No Shader is binded!");
+		Ref<VulkanShader> Shader = VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID);
+
+		if (Chain.GetVertexArrayID() == _VertexArray->GetID()) {
+			m_VertexArrays.emplace_back(_VertexArray->GetID());
+			Shader->CompileUniform(_VertexArray->GetUniformBufferID());
+		}	
+	}
+
+	void VulkanRendererAPI::Flush()
+	{
+		if (!m_Compilation)
+			SetupCommands();
+
+		uint32 _FrameIndex = m_Queue->GetCurrentFrame();
+		m_Queue->Submit(m_Commands[_FrameIndex], QueueCommandFlags::DeleteCommand);
 	}
 
 	void VulkanRendererAPI::SetupCommands()
-	{	
-		MORP_CORE_WARN("[VULKAN] Compilation has Started!");
-		m_CommandSystem->BatchDeallocate(m_CommandBuffers);
-		m_CommandBuffers = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
-		
-		Ref<VulkanRenderpass> m_DefaultRenderpass = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanRenderpass>(VulkanResourceTypes::VulkanRenderpass);
-		Ref<VulkanFramebuffer> m_DefaultFramebuffer = VulkanMemoryManager::GetInstance()->GetBindableCache()->Get<VulkanFramebuffer>(VulkanBindableTypes::VulkanFramebuffer);
-		Ref<VulkanPipeline> m_DefaultPipeline = VulkanMemoryManager::GetInstance()->GetResourceCache()->Get<VulkanPipeline>(VulkanResourceTypes::VulkanPipeline);
-		
-		Ref<VulkanBindableCache> BindableCache = VulkanMemoryManager::GetInstance()->GetBindableCache();
-		uint32 VertexArrayCount = BindableCache->GetNextBindableID(VulkanBindableTypes::VulkanVertexArray);
-		
-		auto Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
-		vk::Viewport Viewport = Swapchain->GetViewport();
-		vk::Rect2D RenderArea = Swapchain->GetRenderArea();
-		
-		for (uint32 i = 0; i < m_Queue->GetBufferCount(); i++) {
-			vk::CommandBuffer& cmd = m_CommandBuffers[i];
-			VulkanCommandBuffer BufferExecutor(cmd);
-		
+	{
+		VulkanBindingChain& Chain = VulkanMemoryManager::GetInstance()->GetBindingChain();
+
+		uint32 FrameBufferID = Chain.GetFrameBufferID();
+		if (FrameBufferID == uint32_max)
+			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No FrameBuffer is binded!");
+		Ref<VulkanFrameBuffer> FrameBuffer = VulkanMemoryManager::GetInstance()->GetFrameBufferCache().Get(FrameBufferID);
+
+		uint32 ShaderID = Chain.GetShaderID();
+		if (ShaderID == uint32_max)
+			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No Shader is binded!");
+		Ref<VulkanShader> Shader = VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID);
+
+		for (uint32 i = 0; i < m_Queue->GetBufferCount(); i++)
+		{
+			Ref<VulkanSwapchain> Swapchain = VulkanMemoryManager::GetInstance()->GetSwapchain();
+			vk::Viewport Viewport = Swapchain->GetViewport();
+			vk::Rect2D RenderArea = Swapchain->GetRenderArea();
+
+			VulkanCommandBuffer BufferExecutor(m_Commands[i]);
 			BufferExecutor.ResetBuffer();
 			BufferExecutor.BeginBuffer();
 			BufferExecutor.SetClearColor(m_ClearColor);
-			BufferExecutor.BindFramebuffer(m_DefaultFramebuffer, i);
-			BufferExecutor.BeginRenderpass(m_DefaultRenderpass);
+			BufferExecutor.BindFramebuffer(FrameBuffer, i);
 			BufferExecutor.SetViewport(Viewport);
 			BufferExecutor.SetScissor(RenderArea);
-			BufferExecutor.BindPipeline(m_DefaultPipeline);
-			for (uint32 j = 0; j < VertexArrayCount; j++) {
-				Ref<VulkanVertexArray> VertexArray = BindableCache->Get<VulkanVertexArray>(VulkanBindableTypes::VulkanVertexArray, j);
-				BufferExecutor.SubmitVertexArray(VertexArray);
-			}
+			BufferExecutor.BindShader(Shader);
+
+			for (uint32 j = 0; j < m_VertexArrays.size(); j++) 
+				BufferExecutor.SubmitVertexArray(m_VertexArrays[j]);
+
 			BufferExecutor.DrawIndexed();
-			BufferExecutor.EndRenderpass();
 			BufferExecutor.EndBuffer();
-		
 			BufferExecutor.Compile();
 		}
-		
-		m_Compiled = true;
-		MORP_CORE_WARN("[VULKAN] Compilation has Finished!");
-	}
 
+		m_Compilation = true;
+	}
 
 }

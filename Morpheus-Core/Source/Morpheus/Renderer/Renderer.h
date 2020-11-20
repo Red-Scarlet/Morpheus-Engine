@@ -6,21 +6,46 @@
 
 #include "RendererResources/VertexBuffer.h"
 #include "RendererResources/IndexBuffer.h"
-#include "RendererResources/UniformBuffer.h"
-
-#include "RendererResources/Renderpass.h"
+#include "RendererResources/TextureBuffer.h"
 
 #include "RendererBindables/FrameBuffer.h"
 #include "RendererBindables/VertexArray.h"
 #include "RendererBindables/Shader.h"
 
+
+#include "Morpheus/Renderer/Camera.h"
+
+// TODO: Fix spelling mistake (Destroy)
+
 namespace Morpheus {
 
 	class Renderer
 	{
-	public:
-		static void CreateGeomerty()
+	public:	
+		static void Init()
 		{
+			RenderCommand::Init();
+			s_RenderData = new RenderData;
+	
+			RenderpassLayout RenderpassLayout = {
+				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_CLEAR, RenderpassAttachment::ATTACHMENT_STORE }
+			};
+			s_RenderData->FrameBuffer = FrameBuffer::Create(RenderpassLayout);
+
+			ShaderAttributeLayout ShaderLayoutData = {
+				{ ShaderAttributeType::Float2, "Position" },
+				{ ShaderAttributeType::Float3, "Color" }
+			};
+
+			ShaderAttributeLayout UniformLayoutData = {
+				{ ShaderAttributeType::Mat4, "ProjectionMatrix" },
+				{ ShaderAttributeType::Mat4, "ViewMatrix" },
+				{ ShaderAttributeType::Mat4, "TransformMatrix" }
+			};
+
+			s_RenderData->Shader = Shader::Create(ShaderLayoutData, "Assets/uniform.vert.spv", "Assets/uniform.frag.spv");
+			s_RenderData->Shader->SetUniformDescription(UniformLayoutData);
+
 			QuadVertex Data[4] =
 			{
 				{ { 0.25f, 0.25f }, { 1.0f, 0.0f, 0.0f } },
@@ -30,106 +55,22 @@ namespace Morpheus {
 			};
 
 			uint32 IndexBufferData[6] = { 0, 1, 2, 0, 2, 3 };
-	
-			BufferLayout LayoutData1 = {
-				{ UniformDataType::Mat4, "ProjectionMatrix",  s_RenderData->ProjectionMatrix },
-				{ UniformDataType::Mat4, "ViewMatrix",  s_RenderData->ViewMatrix },
-				{ UniformDataType::Mat4, "TransformMatrix",  s_RenderData->TransformMatrix }
-			};
-	
-			Matrix4 Broken = Matrix4(1.00f);
-			Broken.Translate(Vector3(0.0f, 0.0f, 1.0f));
-	
-			s_RenderData->VertexArray1 = VertexArray::Create();
 
-			s_RenderData->VertexArray1->SetVertexBuffer(VertexBuffer::Create(Data, sizeof(Data) / sizeof(QuadVertex)));
-			s_RenderData->VertexArray1->SetIndexBuffer(IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData) / sizeof(uint32)));
-		
-			s_RenderData->UniformBuffer1 = UniformBuffer::Create(LayoutData1);
-			s_RenderData->VertexArray1->SetUniformBuffer(s_RenderData->UniformBuffer1);
-	
-			// 2
-			s_RenderData->VertexArray2 = VertexArray::Create();
-			s_RenderData->VertexArray2->SetVertexBuffer(VertexBuffer::Create(Data, sizeof(Data) / sizeof(QuadVertex)));
-			s_RenderData->VertexArray2->SetIndexBuffer(IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData) / sizeof(uint32)));
-	
-			BufferLayout LayoutData2 = {
-				{ UniformDataType::Mat4, "ProjectionMatrix",  s_RenderData->ProjectionMatrix },
-				{ UniformDataType::Mat4, "ViewMatrix",  s_RenderData->ViewMatrix },
-				{ UniformDataType::Mat4, "TransformMatrix",  s_RenderData->TransformMatrix2 }
-			};
-	
-			s_RenderData->UniformBuffer2 = UniformBuffer::Create(LayoutData2);
-			s_RenderData->VertexArray2->SetUniformBuffer(s_RenderData->UniformBuffer2);
-	
-			BufferLayout LayoutData3 = {
-				{ UniformDataType::Mat4, "ProjectionMatrix",  s_RenderData->ProjectionMatrix },
-				{ UniformDataType::Mat4, "ViewMatrix",  s_RenderData->ViewMatrix },
-				{ UniformDataType::Mat4, "TransformMatrix",  s_RenderData->TransformMatrix3 }
-			};
-	
-			s_RenderData->VertexArray3 = VertexArray::Create();
-			s_RenderData->VertexArray3->SetVertexBuffer(VertexBuffer::Create(Data, sizeof(Data) / sizeof(QuadVertex)));
-			s_RenderData->VertexArray3->SetIndexBuffer(IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData) / sizeof(uint32)));
-	
-			s_RenderData->UniformBuffer3 = UniformBuffer::Create(LayoutData3);
-			s_RenderData->VertexArray3->SetUniformBuffer(s_RenderData->UniformBuffer3);
-		}
-	
-		static void UpdateBasicCamera()
-		{
-			Matrix4 T1 = Matrix4(1.00f);
-			T1 *= Matrix4::Translate(Vector3(0.50f, 0.00f, -0.50f));
-			T1 *= Matrix4::Rotation(s_RenderData->RotationValue, Vector3(0.00f, 0.00f, 1.00f));
-	
-			s_RenderData->TransformMatrix = T1;
-	
-			Matrix4 T2 = Matrix4(1.00f);
-			T2 *= Matrix4::Translate(Vector3(-0.50f, 0.00f, -0.50f));
-			T2 *= Matrix4::Rotation(s_RenderData->RotationValue, Vector3(0.00f, 0.00f, 1.00f));
-	
-			s_RenderData->TransformMatrix2 = T2;
-		}
-		
-		static void Init()
-		{
-			RenderCommand::Init();
-			s_RenderData = new RenderData;
-	
-			RenderpassLayout RPLayout = {
-				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_CLEAR, RenderpassAttachment::ATTACHMENT_STORE }
-				//{ RenderpassTypes::ATTACHMENT_DEPTH, RenderpassAttachment::ATTACHMENT_CLEAR, RenderpassAttachment::ATTACHMENT_DONTCARE }
-			};
-	
-			s_RenderData->Renderpass = Renderpass::Create(RPLayout);
-			s_RenderData->FrameBuffer = FrameBuffer::Create(s_RenderData->Renderpass);
-	
-			float32 zoom = -2.5f;
-			s_RenderData->ProjectionMatrix = Matrix4::Perspective(45.0f, (float32)1280.0f / (float32)720.0f, 0.01f, 1024.0f);;
-			s_RenderData->ViewMatrix = Matrix4::Translate(Vector3(0.0f, 0.0f, zoom));
-			s_RenderData->TransformMatrix = Matrix4::Translate(Vector3(0.5f, 0.0f, 0.00f));
-			s_RenderData->TransformMatrix2 = Matrix4::Translate(Vector3(-0.5f, 0.0f, 0.00f));
-	
-			UpdateBasicCamera();
+			uint32 CraftSize = 1;
 
-			VertexAttributeLayout VertexLayoutData = {
-				{ VertexAttributeType::Float2, "Position" },
-				{ VertexAttributeType::Float3, "Color" }
-			};
-
-			s_RenderData->Shader = Shader::Create(VertexLayoutData, { "Assets/uniform.vert.spv", "Assets/uniform.frag.spv" });
-	
-			CreateGeomerty();
+			s_RenderData->VertexArrays.resize(CraftSize);
+			for (uint32 i = 0; i < s_RenderData->VertexArrays.size(); i++)
 			{
-				s_RenderData->FrameBuffer->Bind();
-				s_RenderData->Shader->Bind();
-				s_RenderData->VertexArray1->Bind();
-				s_RenderData->VertexArray2->Bind();
-				s_RenderData->VertexArray3->Bind();
+				s_RenderData->VertexArrays[i] = VertexArray::Create();
+				s_RenderData->VertexArrays[i]->SetVertexBuffer(VertexBuffer::Create(Data, sizeof(Data) / sizeof(QuadVertex)));
+				s_RenderData->VertexArrays[i]->SetIndexBuffer(IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData) / sizeof(uint32)));
 			}
-	
-			RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.0f});
-			RenderCommand::SetCompile();
+
+			s_RenderData->TextureBuffer = TextureBuffer::Create("Assets/Textures/texture.jpg");
+
+			s_RenderData->PositionMatrixs.resize(CraftSize);
+			for (uint32 i = 0; i < s_RenderData->PositionMatrixs.size(); i++)
+				s_RenderData->PositionMatrixs[i] = Matrix4::Translate(Vector3(i * 0.5f, 0.00f, 0.00f));
 		}
 	
 		static void Shutdown()
@@ -137,34 +78,30 @@ namespace Morpheus {
 			RenderCommand::Shutdown();
 		}
 	
-		static void BeginScene()
+		static void BeginScene(Camera& Camera)
 		{
-			// Loops
-			s_RenderData->BreakValue += 0.00005f;
-			s_RenderData->RotationValue += 0.05;
-	
-			UpdateBasicCamera();
-			// Update Uniform Buffer (Update Shader)!
+			RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.0f });
 
-			BufferLayout Layout = {
-				{ UniformDataType::Mat4, "ProjectionMatrix",  s_RenderData->ProjectionMatrix },
-				{ UniformDataType::Mat4, "ViewMatrix",  s_RenderData->ViewMatrix },
-				{ UniformDataType::Mat4, "TransformMatrix",  s_RenderData->TransformMatrix }
-			};
-			
-			BufferLayout Layout2 = {
-				{ UniformDataType::Mat4, "ProjectionMatrix",  s_RenderData->ProjectionMatrix },
-				{ UniformDataType::Mat4, "ViewMatrix",  s_RenderData->ViewMatrix },
-				{ UniformDataType::Mat4, "TransformMatrix",  s_RenderData->TransformMatrix2 }
-			};
-	
-			s_RenderData->UniformBuffer1->SetLayout(Layout);
-			s_RenderData->UniformBuffer2->SetLayout(Layout2);
+			s_RenderData->RotationValue += 0.05;
+
+			s_RenderData->ProjectionMatrix = Camera.GetProjectionMatrix();
+			s_RenderData->ViewMatrix = Camera.GetViewMatrix();
 		}
 	
 		static void EndScene()
 		{
-			// Loops
+			s_RenderData->FrameBuffer->Bind();
+
+			for (uint32 i = 0; i < s_RenderData->VertexArrays.size(); i++)
+			{
+				s_RenderData->Shader->Bind();
+				s_RenderData->Shader->SetMat4("ProjectionMatrix", s_RenderData->ProjectionMatrix);
+				s_RenderData->Shader->SetMat4("ViewMatrix", s_RenderData->ViewMatrix);
+				s_RenderData->Shader->SetMat4("TransformMatrix", s_RenderData->PositionMatrixs[i]);
+				s_RenderData->VertexArrays[i]->Bind();
+				RenderCommand::DrawIndexed(s_RenderData->VertexArrays[i]);
+			}
+
 			RenderCommand::Flush();
 		}
 	
@@ -172,25 +109,18 @@ namespace Morpheus {
 		struct RenderData 
 		{
 		public:
-			Ref<VertexArray> VertexArray1;
-			Ref<VertexArray> VertexArray2;
-			Ref<VertexArray> VertexArray3;
-	
-			Ref<UniformBuffer> UniformBuffer1;
-			Ref<UniformBuffer> UniformBuffer2;
-			Ref<UniformBuffer> UniformBuffer3;
-	
+			Vector<Ref<VertexArray>> VertexArrays;
+			Vector<Matrix4> PositionMatrixs;
+
+			Ref<TextureBuffer> TextureBuffer;
+
 			Ref<FrameBuffer> FrameBuffer;
-			Ref<Renderpass> Renderpass;
 			Ref<Shader> Shader;
 	
 			Matrix4 ProjectionMatrix = Matrix4(1.00f);
 			Matrix4 ViewMatrix = Matrix4(1.00f);
 			Matrix4 TransformMatrix = Matrix4(1.00f);
-			Matrix4 TransformMatrix2 = Matrix4(1.00f);
-			Matrix4 TransformMatrix3 = Matrix4(1.00f);
-	
-			float32 BreakValue = 1.25f;
+
 			float32 RotationValue = 0.00f;
 	
 			bool NToggle = true;

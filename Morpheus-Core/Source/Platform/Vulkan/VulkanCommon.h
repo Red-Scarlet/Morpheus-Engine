@@ -10,9 +10,16 @@ namespace Morpheus {
 	struct VulkanBuffer
 	{
 	public:
-		vk::DeviceMemory Memory;
 		vk::Buffer Buffer;
-	};	// Make into struct types .h
+		vk::DeviceMemory Memory;
+	};
+
+	struct VulkanImage
+	{
+	public:
+		VkImage Image;
+		VkDeviceMemory Memory;
+	};
 
 }
 

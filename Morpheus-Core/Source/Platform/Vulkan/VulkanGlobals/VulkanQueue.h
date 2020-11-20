@@ -5,38 +5,42 @@
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanSynchronization.h"
-
-#include "VulkanGlobal.h"
 
 namespace Morpheus {
 
-	class VulkanQueue : public VulkanGlobal
+	enum class QueueCommandFlags : uint8
+	{ None = 0, DeleteCommand, KeepRecycle };
+
+	class VulkanQueue
 	{
 	public:
 		VulkanQueue();
 		virtual ~VulkanQueue();
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
+		void VulkanCreate();
+		void VulkanDestory();
 
 	public:
-		void Flush();
+		Boolean Flush();
+		void Submit(const VkCommandBuffer& _CommmandBuffer, const QueueCommandFlags& _Flags);
 
-		void Submit(const vk::CommandBuffer& _Commandbuffer);
-
-		const uint32& GetCurrentFrame() 
-		{ return m_CurrentIndex; }
-
+		const uint32& GetCurrentFrame() const { return m_CurrentFrame; }
 		const uint32& GetBufferCount() { return m_Swapchain->GetSize(); }
 
 	private:
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
-		Ref<VulkanSynchronization> m_Sync;
-		Vector<vk::CommandBuffer> m_Queue;
-		uint32 m_CurrentIndex = 0;
+		
+		Vector<VkSemaphore> m_ImageSemaphores;
+		Vector<VkSemaphore> m_RenderSemaphores;
+		Vector<VkFence> m_InFlightFences;
+		Vector<VkFence> m_ImagesInFlight;
+
+		uint32 m_CurrentFrame = 0;
+		uint32 m_ImageIndex = 0;
+
+		Vector<VkCommandBuffer> m_Queue;
 
 	public:
 		static Ref<VulkanQueue> Make();

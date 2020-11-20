@@ -6,6 +6,11 @@
 #include <cstddef>
 #include <functional>
 #include <optional>
+#include <any>
+#include <unordered_map>
+#include <bitset>
+#include <queue>
+#include <array>
 
 #include "Morpheus/Utilities/MorpheusLogger.h"
 
@@ -44,6 +49,11 @@ namespace Morpheus {
 	constexpr Ref<T> CastRef(Args&& ... args)
 	{ return std::dynamic_pointer_cast<T>(std::forward<Args>(args)...); }
 
+	using AnyData = std::any;
+	template<typename T>
+	inline T AnyCast(const AnyData& _Data)
+	{ return std::any_cast<T>(_Data); }
+
 	template <typename T1, typename T2>
 		struct offset_of_impl {
 		static T2 object;
@@ -70,11 +80,26 @@ namespace Morpheus {
 	template<typename T>
 	using Vector = std::vector<T>;
 
+	template<typename T, std::size_t length>
+	using Array = std::array<T, length>;
+
+	template<std::size_t S>
+	using Bitset = std::bitset<S>;
+
+	template<typename T>
+	using Queue = std::queue<T>;
+
+	template<typename T>
+	using Vector2D = Vector<Vector<T>>;
+
 	template<typename T>
 	using Optional = std::optional<T>;
 
 	template<typename T, typename R>
 	using Pair = std::pair<T, R>;
+
+	template<typename T, typename R>
+	using UnorderedMap = std::unordered_map<T, R>;
 
 	using String = std::string;
 	using Ostream = std::ostream;
@@ -93,7 +118,7 @@ namespace Morpheus {
 	typedef float float32;
 	typedef short float16;
 	typedef char float8;
-
+	
 	typedef float64** pfloat64;
 	typedef float32** pfloat32;
 	typedef float16** pfloat16;
@@ -101,9 +126,12 @@ namespace Morpheus {
 
 	typedef float32 floatm;
 
+	typedef bool Boolean;
+
 	typedef std::nullptr_t undefined32;
 	//typedef Ref<void> Memory32;
 	typedef void* Memory32;
+
 
 	//using FVector8 = Vector<const float8*>;
 }

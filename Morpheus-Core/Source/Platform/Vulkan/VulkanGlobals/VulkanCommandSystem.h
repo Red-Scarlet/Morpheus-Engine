@@ -5,11 +5,9 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
 
-#include "Platform/Vulkan/VulkanGlobals/VulkanGlobal.h"
-
 namespace Morpheus {
 
-	class VulkanCommandSystem : public VulkanGlobal
+	class VulkanCommandSystem
 	{
 	public:
 		VulkanCommandSystem();
@@ -18,8 +16,8 @@ namespace Morpheus {
 		const vk::CommandPool GetCommandPool() { return m_CommandPool; }
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
+		void VulkanCreate();
+		void VulkanDestory();
 
 	public:
 		vk::CommandBuffer Allocate(const bool& _LevelFlag = false);

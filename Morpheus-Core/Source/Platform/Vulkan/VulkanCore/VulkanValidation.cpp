@@ -22,7 +22,7 @@ namespace Morpheus {
 
 	VulkanValidation::~VulkanValidation()
 	{
-		Ref<VulkanInstance> Instance = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanInstance>(VulkanGlobalTypes::VulkanInstance);
+		Ref<VulkanInstance> Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
 		DestroyDebugMessenger(Instance->GetInstance(), m_DebugMessenger, nullptr);
 	}
 
@@ -54,7 +54,7 @@ namespace Morpheus {
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessenger(createInfo);
 
-		Ref<VulkanInstance> Instance = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanInstance>(VulkanGlobalTypes::VulkanInstance);
+		Ref<VulkanInstance> Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
 		VkResult result = CreateDebugMessenger(Instance->GetInstance(), &createInfo, nullptr, &m_DebugMessenger);
 		MORP_CORE_ASSERT(result, "Vulkan Instance Error!");
 	}

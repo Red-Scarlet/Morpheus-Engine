@@ -1,9 +1,9 @@
 #include "Morppch.h"
 #include "Matrix4.h"
 
-namespace Morpheus {
+#include "MathematicsFunc.h"
 
-	#define MORP_PI 3.14159265358f
+namespace Morpheus {
 
 	Matrix4::Matrix4()
 	{
@@ -46,8 +46,8 @@ namespace Morpheus {
 	Matrix4 Matrix4::Perspective(floatm Fov, floatm AspectRatio, floatm Near, floatm Far)
 	{
 		Matrix4 result(1.00f);
-		
-		floatm y_scale = (1.00f / tan((Fov / 2.00f) * (MORP_PI / 180.00f))) * AspectRatio;
+
+		floatm y_scale = (1.00f / tan(ToRadians(Fov / 2.00f))) * AspectRatio;
 		floatm x_scale = (y_scale / AspectRatio);
 		floatm frustum_length = (Far / Near);
 		
@@ -67,12 +67,14 @@ namespace Morpheus {
 	Matrix4 Matrix4::LookAt(const Vector3& Camera, const Vector3& Object, const Vector3& Up)
 	{
 		Matrix4 result = Matrix4(1.00f);
-		Vector3 f = (Object - Camera).Normalize();
 
-		Vector3 n = Up;
+		Vector3 f = Vector3::Normalize(Object - Camera);
+		Vector3 s = Vector3::Cross(f, Vector3::Normalize(Up));
+		Vector3 u = Vector3::Cross(s, f);
 		
-		Vector3 s = f.Cross(n.Normalize());
-		Vector3 u = s.Cross(f);
+		//Vector3 n = Vector3::Normalize(Up);
+		//Vector3 s = Vector3::Cross(f, n);
+		//Vector3 u = Vector3::Cross(s, f);
 
 		result.Elements[0 + 0 * 4] = s.x;
 		result.Elements[0 + 1 * 4] = s.y;
@@ -100,11 +102,11 @@ namespace Morpheus {
 		return result;
 	}
 
-	Matrix4 Matrix4::Rotation(floatm Angle, const Vector3& Axis)
+	Matrix4 Matrix4::Rotation(const floatm& Angle, const Vector3& Axis)
 	{
 		Matrix4 result(1.0f);
 
-		floatm r = Angle * (MORP_PI / 180.00f);
+		floatm r = ToRadians(Angle);
 		floatm c = cos(r);
 		floatm s = sin(r);
 		floatm omc = 1.0f - c;
@@ -126,6 +128,40 @@ namespace Morpheus {
 		result.Elements[2 + 1 * 4] = y * z * omc - x * s;		
 		result.Elements[2 + 2 * 4] = z * z * omc + c;
 
+		return result;
+	}
+
+	Matrix4 Matrix4::Rotation(const Quaternion& Quat)
+	{
+		Matrix4 result(1.0f);
+
+		floatm qx, qy, qz, qw, qx2, qy2, qz2, qxqx2, qyqy2, qzqz2, qxqy2, qyqz2, qzqw2, qxqz2, qyqw2, qxqw2;
+		qx = Quat.Scalar;
+		qy = Quat.Vector.x;
+		qz = Quat.Vector.y;
+		qw = Quat.Vector.z; 
+
+		//qx = Quat.Vector.x;
+		//qy = Quat.Vector.y;
+		//qz = Quat.Vector.z;
+		//qw = Quat.Scalar;
+
+		qx2 = (qx + qx);
+		qy2 = (qy + qy);
+		qz2 = (qz + qz);
+		qxqx2 = (qx * qx2);
+		qxqy2 = (qx * qy2);
+		qxqz2 = (qx * qz2);
+		qxqw2 = (qw * qx2);
+		qyqy2 = (qy * qy2);
+		qyqz2 = (qy * qz2);
+		qyqw2 = (qw * qy2);
+		qzqz2 = (qz * qz2);
+		qzqw2 = (qw * qz2);
+
+		result.Columns[0] = Vector4(((1.0f - qyqy2) - qzqz2), (qxqy2 - qzqw2), (qxqz2 + qyqw2), 0.0f);
+		result.Columns[1] = Vector4((qxqy2 + qzqw2), ((1.0f - qxqx2) - qzqz2), (qyqz2 - qxqw2), 0.0f);
+		result.Columns[2] = Vector4((qxqz2 - qyqw2), (qyqz2 + qxqw2), ((1.0f - qxqx2) - qyqy2), 0.0f);
 		return result;
 	}
 
@@ -350,5 +386,14 @@ namespace Morpheus {
 		return Left.Multiply(Right);
 	}
 
+	String Matrix4::ToString() const
+	{
+		std::stringstream result;
+		result << "Matrix4: (" << Columns[0].x << ", " << Columns[1].x << ", " << Columns[2].x << ", " << Columns[3].x << "), ";
+		result << "(" << Columns[0].y << ", " << Columns[1].y << ", " << Columns[2].y << ", " << Columns[3].y << "), ";
+		result << "(" << Columns[0].z << ", " << Columns[1].z << ", " << Columns[2].z << ", " << Columns[3].z << "), ";
+		result << "(" << Columns[0].w << ", " << Columns[1].w << ", " << Columns[2].w << ", " << Columns[3].w << ")";
+		return result.str();
+	}
 
 }

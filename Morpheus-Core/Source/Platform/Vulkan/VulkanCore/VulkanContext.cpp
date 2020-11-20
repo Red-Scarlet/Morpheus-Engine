@@ -11,14 +11,12 @@ namespace Morpheus {
 
 	void VulkanContext::Init()
 	{
-		// Create Instance
 		m_Instance = VulkanInstance::Make();
 
 		m_Device = VulkanDevice::Make();
 		m_Swapchain = VulkanSwapchain::Make();
 
 		m_CommandSystem = VulkanCommandSystem::Make();
-		m_Sync = VulkanSynchronization::Make();
 		m_Queue = VulkanQueue::Make();
 	}
 

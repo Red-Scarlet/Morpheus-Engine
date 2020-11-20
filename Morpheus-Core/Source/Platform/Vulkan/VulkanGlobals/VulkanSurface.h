@@ -4,11 +4,10 @@
 #include "Platform/Vulkan/VulkanCommon.h"	
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanInstance.h"
-#include "VulkanGlobal.h"
 
 namespace Morpheus {
 
-	class VulkanSurface : public VulkanGlobal
+	class VulkanSurface
 	{
 	public:
 		VulkanSurface(const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex);
@@ -21,8 +20,8 @@ namespace Morpheus {
 		const vk::Format& GetDepthFormat() { return m_DepthFormat; }
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
+		void VulkanCreate();
+		void VulkanDestory();
 
 	private:
 		Ref<VulkanInstance> m_Instance;

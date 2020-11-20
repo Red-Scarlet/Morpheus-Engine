@@ -45,9 +45,6 @@ namespace Morpheus {
 				Update(Delta);
 				Render();
 
-				//if ((1.00f / Delta) > 2000.00f)
-					//m_Window->SetUpdateStructTitle("Morpheus Engine FPS: " + std::to_string(1.00f / Delta));
-			
 				m_Window->OnUpdate();
 			}
 		}

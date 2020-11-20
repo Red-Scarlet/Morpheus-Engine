@@ -4,6 +4,7 @@
 
 #include "Vector3.h"
 #include "Vector4.h"
+#include "Quaternion.h"
 
 namespace Morpheus {
 
@@ -24,7 +25,8 @@ namespace Morpheus {
 		static Matrix4 Perspective(floatm Fov, floatm AspectRatio, floatm Near, floatm Far);
 		static Matrix4 LookAt(const Vector3& Camera, const Vector3& Object, const Vector3& Up);
 		static Matrix4 Translate(const Vector3& Translation);
-		static Matrix4 Rotation(floatm Angle, const Vector3& Axis);
+		static Matrix4 Rotation(const floatm& Angle, const Vector3& Axis);
+		static Matrix4 Rotation(const Quaternion& Quad);
 		static Matrix4 Scale(const Vector3& Scale);
 		static Matrix4 Inverse(const Matrix4& Matrix);
 
@@ -43,6 +45,8 @@ namespace Morpheus {
 
 		Matrix4& operator*=(const Matrix4& Other);
 		Matrix4& operator/=(const Matrix4& Other);
+
+		String ToString() const;
 	};
 
 }

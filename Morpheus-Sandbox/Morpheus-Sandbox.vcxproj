@@ -142,15 +142,6 @@
       <Project>{6EC07974-DA80-F5AA-A3BB-3E280F3B3A87}</Project>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="resource.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="Morpheus-Sandbox.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\Morpheus-Assets\Icon.ico" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

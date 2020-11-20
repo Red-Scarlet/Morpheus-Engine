@@ -21,11 +21,13 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Morpheus-Core/Vendor/GLFW/include"
 IncludeDir["VULKAN"] = "Morpheus-Core/Vendor/VULKAN/Include"
 IncludeDir["IMGUI"] = "Morpheus-Core/Vendor/IMGUI"
+IncludeDir["STB"] = "Morpheus-Core/Vendor/STB"
 
 group "Dependencies"
 	include "Morpheus-Core/Vendor/GLFW"
 	include "Morpheus-Core/Vendor/VULKAN"
 	include "Morpheus-Core/Vendor/IMGUI"
+	include "Morpheus-Core/Vendor/STB"
 
 group ""
 
@@ -45,7 +47,9 @@ project "Morpheus-Core"
 	files
 	{
 		"%{prj.name}/Source/**.h",
-		"%{prj.name}/Source/**.cpp"
+		"%{prj.name}/Source/**.cpp",
+		"%{prj.name}/Vendor/STB/**.h",
+		"%{prj.name}/Vendor/STB/**.cpp"
 	}
 
 	defines
@@ -60,7 +64,7 @@ project "Morpheus-Core"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.VULKAN}",
 		"%{IncludeDir.IMGUI}",
-
+		"%{IncludeDir.STB}"
 	}
 
 	links

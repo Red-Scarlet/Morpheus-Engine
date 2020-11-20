@@ -9,13 +9,12 @@
 namespace Morpheus {
 
 	VulkanSurface::VulkanSurface(const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex)
-		: VulkanGlobal(VulkanGlobalTypes::VulkanSurface), m_PhysicalDevice(_Physical), m_QueueFamilyIndex(_QueueFamilyIndex)
+		: m_PhysicalDevice(_Physical), m_QueueFamilyIndex(_QueueFamilyIndex)
 	{
-		m_Instance = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanInstance>(VulkanGlobalTypes::VulkanInstance);
+		m_Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
 
 		VulkanCreate();
 		MORP_CORE_WARN("[VULKAN] Surface Was Created!");
-		SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSurface));
 	}
 
 	VulkanSurface::~VulkanSurface()
@@ -71,7 +70,7 @@ namespace Morpheus {
 	Ref<VulkanSurface> VulkanSurface::Make(const vk::PhysicalDevice& _Physical, const uint32& _QueueFamilyIndex)
 	{
 		Ref<VulkanSurface> s_VulkanSurface = CreateRef<VulkanSurface>(_Physical, _QueueFamilyIndex);
-		VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit(s_VulkanSurface);
+		VulkanMemoryManager::GetInstance()->SetSurface(s_VulkanSurface);
 		return s_VulkanSurface;
 	}
 	

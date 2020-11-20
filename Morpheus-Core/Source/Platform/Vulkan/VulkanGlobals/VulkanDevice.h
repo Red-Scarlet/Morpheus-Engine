@@ -6,11 +6,9 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanInstance.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSurface.h"
 
-#include "VulkanGlobal.h"
-
 namespace Morpheus {
 
-	class VulkanDevice : public VulkanGlobal
+	class VulkanDevice
 	{
 	public:
 		VulkanDevice();
@@ -18,8 +16,8 @@ namespace Morpheus {
 		void Wait();
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
+		void VulkanCreate();
+		void VulkanDestory();
 
 	public:
 		uint32 GetMemoryTypeIndex(uint32 _TypeBits, const vk::MemoryPropertyFlags& _Properties);

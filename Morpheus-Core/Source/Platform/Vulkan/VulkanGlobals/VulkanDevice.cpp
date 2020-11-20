@@ -6,13 +6,11 @@
 namespace Morpheus {
 
 	VulkanDevice::VulkanDevice()
-		: VulkanGlobal(VulkanGlobalTypes::VulkanDevice)
 	{
-		m_Instance = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanInstance>(VulkanGlobalTypes::VulkanInstance);
+		m_Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
 
 		VulkanCreate();
 		MORP_CORE_WARN("[VULKAN] Device Was Created!");
-		SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanDevice));
 	}
 
 	VulkanDevice::~VulkanDevice()
@@ -31,6 +29,14 @@ namespace Morpheus {
 		Vector<vk::PhysicalDevice> physicalDevices = m_Instance->GetInstance().enumeratePhysicalDevices();
 		m_PhysicalDevice = physicalDevices[0];
 		m_QueueFamilyIndex = GetQueueIndex(m_PhysicalDevice, vk::QueueFlagBits::eGraphics);
+
+		{
+			VkPhysicalDeviceFeatures DeviceFeatures = {};
+			DeviceFeatures.samplerAnisotropy = VK_TRUE;
+
+			VkPhysicalDeviceFeatures supportedFeatures;
+			vkGetPhysicalDeviceFeatures(m_PhysicalDevice, &supportedFeatures);
+		}
 
 		// Create Surface
 		m_Surface = VulkanSurface::Make(m_PhysicalDevice, m_QueueFamilyIndex);
@@ -102,7 +108,7 @@ namespace Morpheus {
 	Ref<VulkanDevice> VulkanDevice::Make()
 	{
 		Ref<VulkanDevice> s_VulkanDevice = CreateRef<VulkanDevice>();
-		VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit(s_VulkanDevice);
+		VulkanMemoryManager::GetInstance()->SetDevice(s_VulkanDevice);
 		return s_VulkanDevice;
 	}
 

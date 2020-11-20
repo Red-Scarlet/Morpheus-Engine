@@ -32,16 +32,16 @@ namespace Morpheus {
 	Quaternion& Quaternion::Multiply(const Quaternion& Other)
 	{
 		floatm scalar = Scalar * Other.Scalar - Vector.Dot(Other.Vector);
-
+		
 		Vector3 A = Other.Vector;
 		A.Multiply({ Scalar, Scalar, Scalar });
 		
 		Vector3 B = Vector;
 		B.Multiply({ Other.Scalar, Other.Scalar, Other.Scalar });
-
-		Vector3 imaginary = A + B + Vector.Cross(Other.Vector);
-
-		return Quaternion(scalar, imaginary);
+		
+		Vector3 imaginary = A + B + Vector3::Cross(Vector, Other.Vector);
+		
+		return Quaternion(1.00f, Vector3(1.0f , 1.0f, 1.0f));
 	}
 
 	Quaternion& operator+(Quaternion Left, const Quaternion& Right)

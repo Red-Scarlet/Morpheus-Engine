@@ -4,13 +4,12 @@
 #include "Platform/Vulkan/VulkanCommon.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanValidation.h"
-#include "VulkanGlobal.h"
 
 namespace Morpheus {
 
 	typedef const float8* Extention;
 
-	class VulkanInstance : public VulkanGlobal
+	class VulkanInstance
 	{
 	public:
 		VulkanInstance();
@@ -18,8 +17,8 @@ namespace Morpheus {
 		const vk::Instance& GetInstance() { return m_Instance; }
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
+		void VulkanCreate();
+		void VulkanDestory();
 
 	private:
 		Vector<Extention> GetExtensions(const Vector<vk::ExtensionProperties>& _Installed, const Vector<Extention>& _Wanted);

@@ -5,19 +5,17 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSurface.h"
 
-#include "VulkanGlobal.h"
-
 namespace Morpheus {
 
-	class VulkanSwapchain : public VulkanGlobal
+	class VulkanSwapchain
 	{
 	public:
 		VulkanSwapchain();
 		virtual ~VulkanSwapchain();
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
+		void VulkanCreate();
+		void VulkanDestory();
 
 	public:
 		const vk::SwapchainKHR& GetSwapchain() { return m_Swapchain; }

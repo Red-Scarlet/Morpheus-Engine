@@ -6,12 +6,8 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSurface.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
-#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
 
 #include "Morpheus/Renderer/RendererBindables/FrameBuffer.h"
-#include "Morpheus/Renderer/RendererResources/Renderpass.h"
-
-#include "VulkanBindable.h"
 
 namespace Morpheus {
 
@@ -23,35 +19,73 @@ namespace Morpheus {
 		vk::Framebuffer Framebuffer;
 	};
 
-	class VulkanFramebuffer : public VulkanBindable, public FrameBuffer
+	class VulkanFrameBuffer : public FrameBuffer
 	{
 	public:
-		VulkanFramebuffer(const Ref<Renderpass> _Renderpass, bool Depth);
-		virtual ~VulkanFramebuffer();
+		VulkanFrameBuffer(const RenderpassLayout& _Layout);
+		virtual ~VulkanFrameBuffer();
+
 		virtual void Bind() override;
+		virtual void Unbind() override;
+
+		virtual const uint32& GetID() const override { return m_ID; }
+
+		const VkFramebuffer& GetFrameBuffer(const uint32& _Index) { return m_Framebuffers[_Index]; }
+		const vk::RenderPass& GetRenderpass() { return m_Renderpass; };
 
 	private:
-		virtual void VulkanCreate() override;
-		virtual void VulkanDestory() override;
-
-	public:
-		const Vector<VkFramebuffer>& GetFramebuffers() { return m_Framebuffers; }
-		const const VkFramebuffer& GetFramebuffer(const uint32& _Index) { return m_Framebuffers[_Index]; }
-		void CreateFramebuffers();
+		void InvalidateAttachments();
+		void CreateRenderpass();
+		void CreateFrameBuffers();
 
 	private:
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSurface> m_Surface;
 		Ref<VulkanSwapchain> m_Swapchain;
-		Ref<VulkanRenderpass> m_Renderpass;
+
+		RenderpassLayout m_Layout;
+		vk::RenderPass m_Renderpass;
+
+		Vector<vk::AttachmentDescription> m_Attachments;
+		Vector<vk::SubpassDependency> m_Dependencies;
+
+		Vector<vk::AttachmentReference> m_ColorReference;
+		Vector<vk::AttachmentReference> m_DepthReference;
+		Vector<vk::SubpassDescription> m_SubpassDesc;
 
 		Vector<VkFramebuffer> m_Framebuffers;
 		Vector<VkImageView> m_Views;
 		Vector<VkImage> m_Images;
-		bool m_CreateDepthImages;
+
+		uint32 m_ID;
 
 	public:
-		static Ref<VulkanFramebuffer> Make(const Ref<Renderpass> _Renderpass, bool Depth = true);
+		static Ref<VulkanFrameBuffer> Make(const RenderpassLayout& _Layout);
+	};
+
+	class VulkanFrameBufferCache
+	{
+	public:
+		void Add(const uint32& _ID, const Ref<VulkanFrameBuffer>& _FrameBuffer)
+		{ m_Cache[_ID] = _FrameBuffer; m_Count++; }
+
+		const Ref<VulkanFrameBuffer>& Get(const uint32& _ID)
+		{
+			auto it = m_Cache.find(_ID);
+			if (it != m_Cache.end())
+				return it->second;
+			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] Could not find FrameBuffer #" + std::to_string(_ID) + " in Cache!");
+			return nullptr;
+		}
+
+		bool Exists(const uint32& _ID) const
+		{ return m_Cache.find(_ID) != m_Cache.end(); }
+
+		const uint32& Count() const { return m_Count; }
+
+	public:
+		UnorderedMap<uint32, Ref<VulkanFrameBuffer>> m_Cache;
+		uint32 m_Count = 0;
 	};
 
 }

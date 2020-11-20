@@ -49,29 +49,30 @@ namespace Morpheus {
 		return *this;
 	}
 
-	Vector3& Vector3::Normalize()
+	Vector3& Vector3::Normalize(Vector3 _Left)
 	{
-		floatm magnitude = std::sqrt(x * x + y * y + z * z);
+
+		floatm magnitude = std::sqrt(_Left.x * _Left.x + _Left.y * _Left.y + _Left.z * _Left.z);
 
 		if (magnitude > 0.0f) {
 
 			floatm normal = 1.0f / magnitude;
 
-			x = x * normal;
-			y = y * normal;
-			z = z * normal;
+			_Left.x = _Left.x * normal;
+			_Left.y = _Left.y * normal;
+			_Left.z = _Left.z * normal;
 		}
 
-		return *this;
+		return _Left;
 	}
 
-	Vector3& Vector3::Cross(const Vector3& Other)
+	Vector3& Vector3::Cross(Vector3 _Left, const Vector3& _Right)
 	{
 		Vector3 cross;
 
-		cross.x = y * Other.z - z * Other.y;
-		cross.y = z * Other.x - x * Other.z;
-		cross.z = x * Other.y - y * Other.x;
+		cross.x = _Left.y * _Right.z - _Left.z * _Right.y;
+		cross.y = _Left.z * _Right.x - _Left.x * _Right.z;
+		cross.z = _Left.x * _Right.y - _Left.y * _Right.x;
 
 		return cross;
 	}
@@ -82,7 +83,7 @@ namespace Morpheus {
 		dot = x * Other.x + y * Other.y + z * Other.z;
 		return dot;
 	}
-
+	
 	floatm& Vector3::Magnitude()
 	{
 		floatm magnitude;
@@ -133,6 +134,11 @@ namespace Morpheus {
 	Vector3& operator*(Vector3 Left, const Vector3& Right)
 	{
 		return Left.Multiply(Right);
+	}
+
+	Vector3& operator*(Vector3 Left, const floatm& Right)
+	{
+		return Left.Multiply(Vector3(Right, Right, Right));
 	}
 
 	Vector3& operator/(Vector3 Left, const Vector3& Right)

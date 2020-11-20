@@ -59,6 +59,8 @@ namespace Morpheus {
 		glfwSetWindowUserPointer(m_MainWindow, &m_Data);
 		//SetVSync(true);
 
+		
+
 		// Set GLFW Callbacks
 		glfwSetWindowSizeCallback(m_MainWindow, [](GLFWwindow* window, int width, int height)
 		{

@@ -2,6 +2,8 @@
 
 #include "Morpheus/Core/Common.h"
 
+#include <fstream>
+
 namespace Morpheus {
 
 	struct FileLoader
@@ -22,6 +24,25 @@ namespace Morpheus {
 			delete[] data;
 			return result;
 		}
+
+
+		static Vector<float8> ReadFile(const String& _Filepath)
+		{
+			std::ifstream file(_Filepath, std::ios::ate | std::ios::binary);
+
+			if (!file.is_open())
+				MORP_CORE_ASSERT(MORP_ERROR, "[FILE UTILS] Failed to open File: " + _Filepath + "!");
+
+			uint32 fileSize = (uint32)file.tellg();
+			Vector<float8> buffer(fileSize);
+			file.seekg(0);
+			file.read(buffer.data(), fileSize);
+			file.close();
+
+			return buffer;
+		}
+
+
 	};
 
 }

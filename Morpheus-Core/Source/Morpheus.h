@@ -16,6 +16,11 @@
 
 // --- Renderer -------------------------------
 #include "Morpheus/Renderer/Renderer.h"
+
+#include "Morpheus/Renderer/Camera.h"
+#include "Morpheus/Renderer/RendererCamera/PerspectiveCamera.h"
+
+
 //#include "Morpheus/Renderer/RendererSystems/Renderer2D.h"
 // --------------------------------------------
 
@@ -27,7 +32,8 @@
 
 extern Morpheus::Application* CreateApplication();
 
-int main(int argc, char** argv)
+int main(int argc, char** argv
+)
 {
 	Morpheus::MorpheusLogger::Init();
 	MORP_CORE_SPECIAL("Initialized Log!");

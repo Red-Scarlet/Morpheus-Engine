@@ -6,14 +6,12 @@
 namespace Morpheus {
 
 	VulkanCommandSystem::VulkanCommandSystem()
-		: VulkanGlobal(VulkanGlobalTypes::VulkanCommand)
 	{
-		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-		m_Swapchain = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSwapchain>(VulkanGlobalTypes::VulkanSwapchain);
+		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
+		m_Swapchain = VulkanMemoryManager::GetInstance()->GetSwapchain();
 
 		VulkanCreate();
 		MORP_CORE_WARN("[VULKAN] Command System Was Created!");
-		SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanCommand));
 	}
 
 	VulkanCommandSystem::~VulkanCommandSystem()
@@ -45,16 +43,16 @@ namespace Morpheus {
 	vk::CommandBuffer VulkanCommandSystem::Allocate(const bool& _LevelFlag)
 	{
 		vk::Device Device = m_Device->GetLogicalDevice();
-		Vector<vk::CommandBuffer> Buffers;
+		Vector<vk::CommandBuffer> Buffers(1);
 
-		Buffers = Device.allocateCommandBuffers(
-			vk::CommandBufferAllocateInfo(
-				m_CommandPool,
-				vk::CommandBufferLevel::ePrimary,
-				1
-			)
-		);	
+		vk::CommandBufferAllocateInfo AllocateInfo = {};
+		{
+			AllocateInfo.commandPool = m_CommandPool;
+			AllocateInfo.level = vk::CommandBufferLevel::ePrimary;
+			AllocateInfo.commandBufferCount = 1;
+		}
 
+		Buffers = Device.allocateCommandBuffers(AllocateInfo);
 		return Buffers[0];
 	}
 
@@ -89,7 +87,7 @@ namespace Morpheus {
 	Ref<VulkanCommandSystem> VulkanCommandSystem::Make()
 	{
 		Ref<VulkanCommandSystem> s_VulkanCommand = CreateRef<VulkanCommandSystem>();
-		VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit(s_VulkanCommand);
+		VulkanMemoryManager::GetInstance()->SetCommandSystem(s_VulkanCommand);
 		return s_VulkanCommand;
 	}
 

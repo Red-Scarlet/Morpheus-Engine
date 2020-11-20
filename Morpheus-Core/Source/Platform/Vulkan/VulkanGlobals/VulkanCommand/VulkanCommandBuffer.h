@@ -5,15 +5,15 @@
 
 #include "Platform/Vulkan/VulkanResources/VulkanVertexBuffer.h"
 #include "Platform/Vulkan/VulkanResources/VulkanIndexBuffer.h"
-#include "Platform/Vulkan/VulkanResources/VulkanUniformBuffer.h"
-
-#include "Platform/Vulkan/VulkanResources/VulkanPipeline.h"
-#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
 
 #include "Platform/Vulkan/VulkanBindables/VulkanFramebuffer.h"
+#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
 #include "Platform/Vulkan/VulkanBindables/VulkanVertexArray.h"
 
 namespace Morpheus {
+
+	// TODO: Add Messaging System and optimizations
+	// TODO: Allow For multi shader and multiframebuffer bindings and split vaos
 
 	typedef Vector<vk::CommandBuffer> VulkanCommands;
 
@@ -21,20 +21,33 @@ namespace Morpheus {
 	{
 	public:
 		Vector4 ClearColor;
+
 		vk::RenderPass Renderpass;
 		vk::Framebuffer Framebuffer;
+
 		vk::Viewport Viewport;
 		vk::Rect2D Scissor;
+
 		vk::Pipeline Pipeline;
 		vk::PipelineLayout PipelineLayout;
 
-		uint32 FBOINDEX = 0;
-
+		Vector<vk::DescriptorSet> DescriptorSets;
 		Vector<uint32> VertexArrays;
 
 		vk::Buffer SourceBuffer;
 		vk::Buffer DestinationBuffer;
 		Vector<vk::BufferCopy> CopyRegion;
+
+		VkImage DestinationImage;
+		VkBufferImageCopy ImageRegion;
+
+		VkImageMemoryBarrier Barrier;
+		VkPipelineStageFlags SourceStage;
+		VkPipelineStageFlags DestinationStage;
+
+		bool RenderpassCheck = false;
+		bool FramebufferCheck = false;	// For multiframebuffer usage
+		bool ShaderCheck = false;		// For multishader usage
 	};
 
 	typedef Function<void(vk::CommandBuffer, VulkanCommandData)> ExecuteCommand;
@@ -49,25 +62,22 @@ namespace Morpheus {
 		void BeginBuffer();
 		void EndBuffer();
 
-		void Copy(const vk::Buffer& _SourceBuffer, const vk::Buffer& _DestinationBuffer, const Vector<vk::BufferCopy>& _CopyRegion);
-		void Function(ExecuteCommand _Command);
+		void CopyBuffer(const vk::Buffer& _SourceBuffer, const vk::Buffer& _DestinationBuffer, const Vector<vk::BufferCopy>& _CopyRegion);
+		void CopyImage(const VkBuffer& _SourceBuffer, const VkImage& _DestinationImage, const VkBufferImageCopy& _CopyRegion);
+		void BindBarrier(const VkImageMemoryBarrier& _Barrier, const VkPipelineStageFlags& _SourceStage, const VkPipelineStageFlags& _DestinationStage);
 
+		// Change to be built into the framebuffer
+		void SetClearColor(const Vector4& _Clearcolor);
 		void SetViewport(const vk::Viewport& _Viewport);
 		void SetScissor(const vk::Rect2D& _Scissor);
-		void SetClearColor(const Vector4& _Clearcolor);
 
-		void BindFramebuffer(const Ref<VulkanFramebuffer>& _Framebuffer, const uint32& _Index);
-		void BeginRenderpass(const Ref<VulkanRenderpass>& _Renderpass);
-		void EndRenderpass();
+		void BindFramebuffer(const Ref<VulkanFrameBuffer>& _Framebuffer, const uint32& _Index);
+		void BindShader(const Ref<VulkanShader>& _Shader);
 
-		void BindPipeline(const Ref<VulkanPipeline>& _Pipeline);
-
-		void SubmitVertexArray(const Ref<VulkanVertexArray>& _VertexArray);
+		void SubmitVertexArray(const uint32& _VertexArray);
 		void DrawIndexed();
 
 		void Compile(bool ClearFlag = true);
-
-		const VulkanCommandData& GetCommandData();
 
 	private:
 		Vector<ExecuteCommand> m_ExecutionStack;

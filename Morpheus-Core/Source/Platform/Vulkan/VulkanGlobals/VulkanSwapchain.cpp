@@ -6,14 +6,12 @@
 namespace Morpheus {
 
 	VulkanSwapchain::VulkanSwapchain()
-        : VulkanGlobal(VulkanGlobalTypes::VulkanSwapchain)
 	{
-        m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-        m_Surface = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanSurface>(VulkanGlobalTypes::VulkanSurface);
+        m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
+        m_Surface = VulkanMemoryManager::GetInstance()->GetSurface();
 
         VulkanCreate();
         MORP_CORE_WARN("[VULKAN] Swapchain Was Created!");
-        SetID(VulkanMemoryManager::GetInstance()->GetGlobalCache()->GetNextGlobalID(VulkanGlobalTypes::VulkanSwapchain));
 	}
 
 	VulkanSwapchain::~VulkanSwapchain()
@@ -97,7 +95,7 @@ namespace Morpheus {
 	Ref<VulkanSwapchain> VulkanSwapchain::Make()
 	{
         Ref<VulkanSwapchain> s_VulkanSwapchain = CreateRef<VulkanSwapchain>();
-        VulkanMemoryManager::GetInstance()->GetGlobalCache()->Submit(s_VulkanSwapchain);
+        VulkanMemoryManager::GetInstance()->SetSwapchain(s_VulkanSwapchain);
         return s_VulkanSwapchain;
 	}
 

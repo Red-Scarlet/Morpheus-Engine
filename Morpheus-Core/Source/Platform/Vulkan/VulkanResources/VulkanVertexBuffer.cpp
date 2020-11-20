@@ -6,22 +6,21 @@
 namespace Morpheus {
 
 	VulkanVertexBuffer::VulkanVertexBuffer(QuadVertex* _Data, const uint32& _Size)
-		: VulkanResource(VulkanResourceTypes::VulkanVertexBuffer), m_Data(_Data), m_Size(_Size)
+		: m_Data(_Data), m_Size(_Size)
 	{
-		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanCommandSystem>(VulkanGlobalTypes::VulkanCommand);
-		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanVertexBuffer));
+		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
+		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
 
 		VulkanCreate();
+		m_ID = VulkanMemoryManager::GetInstance()->GetVertexBufferCache().Count();
 		MORP_CORE_WARN("[VULKAN] VertexBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanVertexBuffer::VulkanVertexBuffer(const uint32& _Size)
-		: VulkanResource(VulkanResourceTypes::VulkanVertexBuffer), m_Data(nullptr), m_Size(_Size)
+		: m_Data(nullptr), m_Size(_Size)
 	{
-		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanCommandSystem>(VulkanGlobalTypes::VulkanCommand);
-		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanVertexBuffer));
+		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
+		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
 
 		MORP_CORE_WARN("[VULKAN] VertexBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
@@ -111,7 +110,7 @@ namespace Morpheus {
 		
 		VulkanCommandBuffer CommandExecutor(CommandBuffer);
 		CommandExecutor.BeginBuffer();
-		CommandExecutor.Copy(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
+		CommandExecutor.CopyBuffer(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
 		CommandExecutor.EndBuffer();
 		CommandExecutor.Compile(false);
 		
@@ -126,14 +125,15 @@ namespace Morpheus {
 	Ref<VulkanVertexBuffer> VulkanVertexBuffer::Make(QuadVertex* _Data, const uint32& _Size)
 	{
 		Ref<VulkanVertexBuffer> s_VulkanVertexBuffer = CreateRef<VulkanVertexBuffer>(_Data, _Size);
-		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit(s_VulkanVertexBuffer);
+		VulkanMemoryManager::GetInstance()->GetVertexBufferCache().Add(s_VulkanVertexBuffer->GetID(), s_VulkanVertexBuffer);
+
 		return s_VulkanVertexBuffer;
 	}
 
 	Ref<VulkanVertexBuffer> VulkanVertexBuffer::Make(const uint32& _Size)
 	{
 		Ref<VulkanVertexBuffer> s_VulkanVertexBuffer = CreateRef<VulkanVertexBuffer>(_Size);
-		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit(s_VulkanVertexBuffer);
+		VulkanMemoryManager::GetInstance()->GetVertexBufferCache().Add(s_VulkanVertexBuffer->GetID(), s_VulkanVertexBuffer);
 		return s_VulkanVertexBuffer;
 	}
 

@@ -6,13 +6,13 @@
 namespace Morpheus {
 
 	VulkanIndexBuffer::VulkanIndexBuffer(uint32* _Indices, const uint32& _Size)
-		: VulkanResource(VulkanResourceTypes::VulkanIndexBuffer), m_Data(_Indices), m_Size(_Size)
+		:  m_Data(_Indices), m_Size(_Size)
 	{
-		m_Device = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanDevice>(VulkanGlobalTypes::VulkanDevice);
-		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetGlobalCache()->Get<VulkanCommandSystem>(VulkanGlobalTypes::VulkanCommand);
-		SetID(VulkanMemoryManager::GetInstance()->GetResourceCache()->GetNextResourceID(VulkanResourceTypes::VulkanIndexBuffer));
+		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
+		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
 
 		VulkanCreate();
+		m_ID = VulkanMemoryManager::GetInstance()->GetIndexBufferCache().Count();
 		MORP_CORE_WARN("[VULKAN] IndexBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
 
@@ -95,7 +95,7 @@ namespace Morpheus {
 		
 		VulkanCommandBuffer CommandExecutor(CommandBuffer);
 		CommandExecutor.BeginBuffer();
-		CommandExecutor.Copy(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
+		CommandExecutor.CopyBuffer(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
 		CommandExecutor.EndBuffer();
 		CommandExecutor.Compile(false);
 		
@@ -110,7 +110,7 @@ namespace Morpheus {
 	Ref<VulkanIndexBuffer> VulkanIndexBuffer::Make(uint32* _Indices, const uint32& _Size)
 	{
 		Ref<VulkanIndexBuffer> s_VulkanIndexBuffer = CreateRef<VulkanIndexBuffer>(_Indices, _Size);
-		VulkanMemoryManager::GetInstance()->GetResourceCache()->Submit(s_VulkanIndexBuffer);
+		VulkanMemoryManager::GetInstance()->GetIndexBufferCache().Add(s_VulkanIndexBuffer->GetID(), s_VulkanIndexBuffer);
 		return s_VulkanIndexBuffer;
 	}
 

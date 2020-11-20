@@ -9,8 +9,10 @@ namespace Morpheus {
 	public:
 		virtual ~TextureBuffer() = default;
 
+		virtual const uint32& GetID() const = 0;
+
 	public:
-		static Ref<TextureBuffer> Create();
+		static Ref<TextureBuffer> Create(const String& _Filepath);
 
 	};
 

@@ -18,15 +18,16 @@ namespace Morpheus {
 		Vector3& Multiply(const Vector3& other);
 		Vector3& Divide(const Vector3& other);
 
-		Vector3& Normalize();
-		Vector3& Cross(const Vector3& Other);
-		floatm& Dot(const Vector3& Other);
+		static Vector3& Normalize(Vector3 _Left);
+		static Vector3& Cross(Vector3 _Left, const Vector3& _Right);
+		floatm& Dot(const Vector3& Right);
 		floatm& Magnitude();
 
 		friend Vector3& operator+(Vector3 Left, const Vector3& Right);
 		friend Vector3& operator-(Vector3 Left, const Vector3& Right);
 		friend Vector3& operator/(Vector3 Left, const Vector3& Right);
 		friend Vector3& operator*(Vector3 Left, const Vector3& Right);
+		friend Vector3& operator*(Vector3 Left, const floatm& Right);
 
 		bool operator==(const Vector3& Other);
 		bool operator!=(const Vector3& Other);

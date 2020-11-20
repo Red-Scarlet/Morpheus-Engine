@@ -29,10 +29,7 @@ namespace Morpheus {
 
 	void VulkanMemoryManager::Init()
 	{
-		m_Globals = CreateRef<VulkanGlobalCache>();
-		m_Resources = CreateRef<VulkanResourceCache>();
-		m_Bindables = CreateRef<VulkanBindableCache>();
-
+		m_VulkanBindingChain.Reset();
 		MORP_CORE_WARN("[VULKAN] VulkanMemoryManager Was Created!");
 	}
 
