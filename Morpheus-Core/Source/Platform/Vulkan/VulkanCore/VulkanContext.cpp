@@ -16,7 +16,7 @@ namespace Morpheus {
 		m_Device = VulkanDevice::Make();
 		m_Swapchain = VulkanSwapchain::Make();
 
-		m_CommandSystem = VulkanCommandSystem::Make();
+		m_CommandSystem = VulkanCommandAllocator::Make();
 		m_Queue = VulkanQueue::Make();
 	}
 

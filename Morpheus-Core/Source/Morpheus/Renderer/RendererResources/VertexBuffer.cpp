@@ -2,7 +2,7 @@
 #include "VertexBuffer.h"
 
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/VULKAN/VulkanResources/VulkanVertexBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanVertexBuffer.h"
 
 namespace Morpheus {
 

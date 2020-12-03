@@ -28,12 +28,14 @@ namespace Morpheus {
 			s_RenderData = new RenderData;
 	
 			RenderpassLayout RenderpassLayout = {
-				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_CLEAR, RenderpassAttachment::ATTACHMENT_STORE }
+				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassLoadAttachment::ATTACHMENT_CLEAR, RenderpassStoreAttachment::ATTACHMENT_STORE }
 			};
-			s_RenderData->FrameBuffer = FrameBuffer::Create(RenderpassLayout);
+			s_RenderData->Renderpass = Renderpass::Create(RenderpassLayout);
+			s_RenderData->FrameBuffer = FrameBuffer::Create(s_RenderData->Renderpass);
 
 			ShaderAttributeLayout ShaderLayoutData = {
 				{ ShaderAttributeType::Float2, "Position" },
+				{ ShaderAttributeType::Float2, "TexCoord" },
 				{ ShaderAttributeType::Float3, "Color" }
 			};
 
@@ -43,15 +45,14 @@ namespace Morpheus {
 				{ ShaderAttributeType::Mat4, "TransformMatrix" }
 			};
 
-			s_RenderData->Shader = Shader::Create(ShaderLayoutData, "Assets/uniform.vert.spv", "Assets/uniform.frag.spv");
-			s_RenderData->Shader->SetUniformDescription(UniformLayoutData);
+			s_RenderData->Shader = Shader::Create(ShaderLayoutData, UniformLayoutData, "Assets/uniform.vert.spv", "Assets/uniform.frag.spv");
 
 			QuadVertex Data[4] =
 			{
-				{ { 0.25f, 0.25f }, { 1.0f, 0.0f, 0.0f } },
-				{ { -0.25f, 0.25f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.25f, -0.25f }, { 0.0f, 0.0f, 1.0f } },
-				{ { 0.25f, -0.25f }, { 1.0f, 0.0f, 1.0f } }
+				{ { 0.25f, 0.25f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
+				{ { -0.25f, 0.25f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
+				{ { -0.25f, -0.25f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
+				{ { 0.25f, -0.25f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f } }
 			};
 
 			uint32 IndexBufferData[6] = { 0, 1, 2, 0, 2, 3 };
@@ -64,13 +65,13 @@ namespace Morpheus {
 				s_RenderData->VertexArrays[i] = VertexArray::Create();
 				s_RenderData->VertexArrays[i]->SetVertexBuffer(VertexBuffer::Create(Data, sizeof(Data) / sizeof(QuadVertex)));
 				s_RenderData->VertexArrays[i]->SetIndexBuffer(IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData) / sizeof(uint32)));
+				s_RenderData->VertexArrays[i]->SetTextureBuffer(TextureBuffer::Create("Assets/Textures/texture.jpg"));
 			}
 
-			s_RenderData->TextureBuffer = TextureBuffer::Create("Assets/Textures/texture.jpg");
 
-			s_RenderData->PositionMatrixs.resize(CraftSize);
-			for (uint32 i = 0; i < s_RenderData->PositionMatrixs.size(); i++)
-				s_RenderData->PositionMatrixs[i] = Matrix4::Translate(Vector3(i * 0.5f, 0.00f, 0.00f));
+			s_RenderData->PositionMatrix.resize(CraftSize);
+			for (uint32 i = 0; i < s_RenderData->PositionMatrix.size(); i++)
+				s_RenderData->PositionMatrix[i] = Matrix4::Translate(Vector3(i * 0.5f, 0.00f, 0.00f));
 		}
 	
 		static void Shutdown()
@@ -97,7 +98,7 @@ namespace Morpheus {
 				s_RenderData->Shader->Bind();
 				s_RenderData->Shader->SetMat4("ProjectionMatrix", s_RenderData->ProjectionMatrix);
 				s_RenderData->Shader->SetMat4("ViewMatrix", s_RenderData->ViewMatrix);
-				s_RenderData->Shader->SetMat4("TransformMatrix", s_RenderData->PositionMatrixs[i]);
+				s_RenderData->Shader->SetMat4("TransformMatrix", s_RenderData->PositionMatrix[i]);
 				s_RenderData->VertexArrays[i]->Bind();
 				RenderCommand::DrawIndexed(s_RenderData->VertexArrays[i]);
 			}
@@ -110,10 +111,11 @@ namespace Morpheus {
 		{
 		public:
 			Vector<Ref<VertexArray>> VertexArrays;
-			Vector<Matrix4> PositionMatrixs;
+			Vector<Matrix4> PositionMatrix;
 
 			Ref<TextureBuffer> TextureBuffer;
 
+			Ref<Renderpass> Renderpass;
 			Ref<FrameBuffer> FrameBuffer;
 			Ref<Shader> Shader;
 	

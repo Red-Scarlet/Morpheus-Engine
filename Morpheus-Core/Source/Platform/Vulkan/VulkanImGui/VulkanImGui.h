@@ -13,10 +13,10 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
 
+#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
 #include "Platform/Vulkan/VulkanBindables/VulkanFramebuffer.h"
 
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommandSystem.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommandAllocator.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanQueue.h"
 
 namespace Morpheus {
@@ -39,8 +39,9 @@ namespace Morpheus {
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
 
+		Ref<VulkanRenderpass> m_Renderpass;
 		Ref<VulkanFrameBuffer> m_Framebuffer;
-		Ref<VulkanCommandSystem> m_CommandSystem;
+		Ref<VulkanCommandAllocator> m_CommandSystem;
 		Ref<VulkanQueue> m_Queue;
 
 		VkDescriptorPool m_DescriptorPool;

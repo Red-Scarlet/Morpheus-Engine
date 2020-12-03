@@ -1,6 +1,10 @@
 #include "Morppch.h"
 #include "VulkanTextureBuffer.h"
 
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommand.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandList.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanExecutionStack.h"
+
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
 // TODO: FIX 
@@ -13,16 +17,32 @@ namespace Morpheus {
 	{
 		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
 		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
+		m_ID = VulkanMemoryManager::GetInstance()->GetTextureBufferCache().Count();
 
 		VulkanCreate();
-		m_ID = VulkanMemoryManager::GetInstance()->GetTextureBufferCache().Count();
-		MORP_CORE_WARN("[VULKAN] TextureBuffer #" + std::to_string(GetID()) + " Was Created!");
+		VULKAN_CORE_WARN("[VULKAN] TextureBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanTextureBuffer::~VulkanTextureBuffer()
 	{
 		VulkanDestory();
-		MORP_CORE_WARN("[VULKAN] TextureBuffer Was Destoryed!");
+		VULKAN_CORE_WARN("[VULKAN] TextureBuffer Was Destoryed!");
+	}
+
+	vk::WriteDescriptorSet VulkanTextureBuffer::UpdateDescriptorSet(const VkDescriptorSet& _DescriptorSet)
+	{
+		m_HasUpdated = true;
+
+		VkWriteDescriptorSet DescriptorWrite = {};
+		DescriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+		DescriptorWrite.dstSet = _DescriptorSet;
+		DescriptorWrite.dstBinding = 1;
+		DescriptorWrite.dstArrayElement = 0;
+		DescriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		DescriptorWrite.descriptorCount = 1;
+		DescriptorWrite.pImageInfo = &m_BufferInfo;
+
+		return DescriptorWrite;
 	}
 
 	void VulkanTextureBuffer::VulkanCreate()
@@ -121,9 +141,14 @@ namespace Morpheus {
 		auto __Count = __LastDot == std::string::npos ? m_Filepath.size() - __LastSlash : __LastDot - __LastSlash;
 		m_Name = m_Filepath.substr(__LastSlash, __Count);
 
-		MORP_CORE_WARN("[VULKAN] TextureLoaded: " + m_Name);
+		VULKAN_CORE_WARN("[VULKAN] TextureLoaded: " + m_Name);
 		
 		CreateImageView();
+		CreateSampler();
+
+		m_BufferInfo.imageView = m_ImageView;
+		m_BufferInfo.sampler = m_Sampler;
+		m_BufferInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	}
 
 	void VulkanTextureBuffer::VulkanDestory()
@@ -172,7 +197,7 @@ namespace Morpheus {
 			SamplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 			SamplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
 
-			SamplerInfo.anisotropyEnable = VK_TRUE;
+			SamplerInfo.anisotropyEnable = VK_FALSE;
 			SamplerInfo.maxAnisotropy = 16.0f;
 
 			SamplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
@@ -228,19 +253,23 @@ namespace Morpheus {
 			DestinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
 		} else MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] Unsupported layout transition!")
 
-		vk::CommandBuffer CommandBuffer = m_CommandSystem->Allocate();
-		VulkanCommandBuffer CommandExecutor(CommandBuffer);
-		CommandExecutor.BeginBuffer();
-		CommandExecutor.BindBarrier(Barrier, SourceStage, DestinationStage);
-		CommandExecutor.EndBuffer();
-		CommandExecutor.Compile(false);
+		Ref<VulkanCommandBuffer> CommandBuffer = VulkanCommandBuffer::Make(m_CommandSystem->Allocate());
+		Ref<VulkanExecutionStack> Executor = VulkanExecutionStack::Make();
+		Executor->AppendCommand(VulkanCommandList::BeginBuffer::Create(CommandBuffer));
 
-		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &CommandBuffer, 0, nullptr) };
+		Ref<CommandBindBarrier> BindBarrier = CommandBindBarrier::Create(CommandBuffer);
+		BindBarrier->PopulateData(Barrier, SourceStage, DestinationStage);
+		Executor->AppendCommand(BindBarrier);
+
+		Executor->AppendCommand(VulkanCommandList::EndBuffer::Create(CommandBuffer));
+		Executor->Compile();
+
+		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &vk::CommandBuffer(CommandBuffer->GetBuffer()), 0, nullptr) };
 		vk::Fence fence = Device.createFence(vk::FenceCreateInfo());
 		Queue.submit(SubmitInfos, fence);
 		Device.waitForFences(1, &fence, VK_TRUE, UINT_MAX);
 		Device.destroyFence(fence);
-		m_CommandSystem->Deallocate(CommandBuffer);
+		m_CommandSystem->Deallocate(CommandBuffer->GetBuffer());
 	}
 
 	void VulkanTextureBuffer::Submit(const VulkanBuffer& _Staging)
@@ -261,19 +290,23 @@ namespace Morpheus {
 			Region.imageExtent = { m_Width, m_Height, 1 };
 		}
 
-		vk::CommandBuffer CommandBuffer = m_CommandSystem->Allocate();
-		VulkanCommandBuffer CommandExecutor(CommandBuffer);
-		CommandExecutor.BeginBuffer();
-		CommandExecutor.CopyImage(_Staging.Buffer, m_VulkanImage.Image, Region);
-		CommandExecutor.EndBuffer();
-		CommandExecutor.Compile(false);
+		Ref<VulkanCommandBuffer> CommandBuffer = VulkanCommandBuffer::Make(m_CommandSystem->Allocate());
+		Ref<VulkanExecutionStack> Executor = VulkanExecutionStack::Make();
+		Executor->AppendCommand(VulkanCommandList::BeginBuffer::Create(CommandBuffer));
 
-		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &CommandBuffer, 0, nullptr) };
+		Ref<CommandCopyImage> CopyImage = CommandCopyImage::Create(CommandBuffer);
+		CopyImage->PopulateData(_Staging.Buffer, m_VulkanImage.Image, Region);
+		Executor->AppendCommand(CopyImage);
+
+		Executor->AppendCommand(VulkanCommandList::EndBuffer::Create(CommandBuffer));
+		Executor->Compile();
+
+		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &vk::CommandBuffer(CommandBuffer->GetBuffer()), 0, nullptr) };
 		vk::Fence fence = Device.createFence(vk::FenceCreateInfo());
 		Queue.submit(SubmitInfos, fence);
 		Device.waitForFences(1, &fence, VK_TRUE, UINT_MAX);
 		Device.destroyFence(fence);
-		m_CommandSystem->Deallocate(CommandBuffer);
+		m_CommandSystem->Deallocate(CommandBuffer->GetBuffer());
 	}
 
 	Ref<VulkanTextureBuffer> VulkanTextureBuffer::Make(const String& _Filename)

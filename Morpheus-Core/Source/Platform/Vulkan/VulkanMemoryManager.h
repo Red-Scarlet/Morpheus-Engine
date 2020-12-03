@@ -5,12 +5,13 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanSurface.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommandSystem.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommandAllocator.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanQueue.h"
 
 #include "Platform/Vulkan/VulkanResources/VulkanVertexBuffer.h"
 #include "Platform/Vulkan/VulkanResources/VulkanIndexBuffer.h"
 
+#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
 #include "Platform/Vulkan/VulkanBindables/VulkanBindingChain.h"
 #include "Platform/Vulkan/VulkanBindables/VulkanFramebuffer.h"
 #include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
@@ -33,7 +34,7 @@ namespace Morpheus {
 		void SetDevice(const Ref<VulkanDevice>& _Vulkan) { m_Device = _Vulkan; }
 		void SetSwapchain(const Ref<VulkanSwapchain>& _Vulkan) { m_Swapchain = _Vulkan; }
 
-		void SetCommandSystem(const Ref<VulkanCommandSystem>& _Vulkan) { m_CommandSystem = _Vulkan; }
+		void SetCommandSystem(const Ref<VulkanCommandAllocator>& _Vulkan) { m_CommandSystem = _Vulkan; }
 		void SetVulkanQueue(const Ref<VulkanQueue>& _Vulkan) { m_Queue = _Vulkan; }
 
 		const Ref<VulkanInstance>& GetVulkanInstance() { return m_Vulkan; }
@@ -41,13 +42,15 @@ namespace Morpheus {
 		const Ref<VulkanDevice>& GetDevice() { return m_Device; }
 		const Ref<VulkanSwapchain>& GetSwapchain() { return m_Swapchain; }
 
-		const Ref<VulkanCommandSystem>& GetCommandSystem() { return m_CommandSystem; }
+		const Ref<VulkanCommandAllocator>& GetCommandSystem() { return m_CommandSystem; }
 		const Ref<VulkanQueue>& GetQueue() { return m_Queue; }
 
 		VulkanVertexBufferCache& GetVertexBufferCache() { return m_VertexBufferCache; }
 		VulkanIndexBufferCache& GetIndexBufferCache() { return m_IndexBufferCache; }
+		VulkanUniformBufferCache& GetUniformBufferCache() { return m_UniformBufferCache; }
 		VulkanTextureBufferCache& GetTextureBufferCache() { return m_TextureBufferCache; }
 
+		VulkanRenderpassCache& GetRenderpassCache() { return m_RenderpassCache; }
 		VulkanFrameBufferCache& GetFrameBufferCache() { return m_FrameBufferCache; }
 		VulkanShaderCache& GetShaderCache() { return m_ShaderCache; }
 		VulkanVertexArrayCache& GetVertexArrayCache() { return m_VertexArrayCache; }
@@ -66,13 +69,15 @@ namespace Morpheus {
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
 
-		Ref<VulkanCommandSystem> m_CommandSystem;
+		Ref<VulkanCommandAllocator> m_CommandSystem;
 		Ref<VulkanQueue> m_Queue;
 
 		VulkanVertexBufferCache m_VertexBufferCache;
 		VulkanIndexBufferCache m_IndexBufferCache;
+		VulkanUniformBufferCache m_UniformBufferCache;
 		VulkanTextureBufferCache m_TextureBufferCache;
 
+		VulkanRenderpassCache m_RenderpassCache;
 		VulkanFrameBufferCache m_FrameBufferCache;
 		VulkanShaderCache m_ShaderCache;
 		VulkanVertexArrayCache m_VertexArrayCache;

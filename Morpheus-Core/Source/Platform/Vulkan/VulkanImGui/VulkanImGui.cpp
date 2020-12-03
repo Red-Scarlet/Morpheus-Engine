@@ -9,8 +9,6 @@
 #include <GLFW/glfw3.h>
 #include "Morpheus/Core/Application.h"
 
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
-
 namespace Morpheus {
 
 	VulkanImGui::VulkanImGui()
@@ -27,29 +25,27 @@ namespace Morpheus {
 	void VulkanImGui::Init()
 	{
 		RenderpassLayout RenderpassLayout = {
-				{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassAttachment::ATTACHMENT_LOAD, RenderpassAttachment::ATTACHMENT_STORE }
+			{ RenderpassTypes::ATTACHMENT_COLOR, RenderpassLoadAttachment::ATTACHMENT_LOAD, RenderpassStoreAttachment::ATTACHMENT_STORE }
 		};
-		m_Framebuffer = VulkanFrameBuffer::Make(RenderpassLayout);
+		m_Renderpass = VulkanRenderpass::Make(RenderpassLayout);
+		m_Framebuffer = VulkanFrameBuffer::Make(m_Renderpass);
 
 		m_CommandBuffers.resize(m_Queue->GetBufferCount());
-		VulkanCommands Buffers = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
+		Vector<VkCommandBuffer> Buffers = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
 		for (uint32 i = 0; i < Buffers.size(); i++)
 			m_CommandBuffers[i] = VkCommandBuffer(Buffers[i]);
 	
 		CreateDescriptorPool();
-
 		ImGui_ImplVulkan_InitInfo Info = {};
-		{
-			Info.Instance = m_Instance->GetInstance();
-			Info.PhysicalDevice = m_Device->GetPhysicalDevice();
-			Info.Device = m_Device->GetLogicalDevice();
-			Info.QueueFamily = m_Device->GetQueueFamilyIndex();
-			Info.Queue = m_Device->GetQueue();
-			Info.PipelineCache = nullptr;
-			Info.DescriptorPool = m_DescriptorPool;
-			Info.Allocator = nullptr;
-			Info.CheckVkResultFn = nullptr;
-		}
+		Info.Instance = m_Instance->GetInstance();
+		Info.PhysicalDevice = m_Device->GetPhysicalDevice();
+		Info.Device = m_Device->GetLogicalDevice();
+		Info.QueueFamily = m_Device->GetQueueFamilyIndex();
+		Info.Queue = m_Device->GetQueue();
+		Info.PipelineCache = nullptr;
+		Info.DescriptorPool = m_DescriptorPool;
+		Info.Allocator = nullptr;
+		Info.CheckVkResultFn = nullptr;
 		ImGui_ImplVulkan_Init(&Info, m_Framebuffer->GetRenderpass());
 
 		InitCommands();
@@ -64,22 +60,18 @@ namespace Morpheus {
 		VkCommandPool command_pool = nullptr;
 		VkCommandBuffer command_buffer = nullptr;
 		
-		VkCommandPoolCreateInfo PoolInfo{};
-		{
-			PoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-			PoolInfo.queueFamilyIndex = QueueFamilyIndices;
-		}
+		VkCommandPoolCreateInfo PoolInfo = {};
+		PoolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
+		PoolInfo.queueFamilyIndex = QueueFamilyIndices;
 		
 		VkResult Result = vkCreateCommandPool(m_Device->GetLogicalDevice(), &PoolInfo, nullptr, &command_pool);
 		MORP_CORE_ASSERT(Result, "Failed to create CommandPool!");
 		
 		VkCommandBufferAllocateInfo AllocInfo{};
-		{
-			AllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-			AllocInfo.commandPool = command_pool;
-			AllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-			AllocInfo.commandBufferCount = 1;
-		}
+		AllocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+		AllocInfo.commandPool = command_pool;
+		AllocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+		AllocInfo.commandBufferCount = 1;
 		
 		Result = vkAllocateCommandBuffers(m_Device->GetLogicalDevice(),
 			&AllocInfo, &command_buffer);
@@ -88,11 +80,9 @@ namespace Morpheus {
 
 		Result = vkResetCommandPool(m_Device->GetLogicalDevice(), command_pool, 0);
 		VkCommandBufferBeginInfo BeginInfo = {};
-		{
-			BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			BeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
-			Result = vkBeginCommandBuffer(command_buffer, &BeginInfo);
-		}	
+		BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		BeginInfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
+		Result = vkBeginCommandBuffer(command_buffer, &BeginInfo);
 		ImGui_ImplVulkan_CreateFontsTexture(command_buffer);
 		
 		VkSubmitInfo end_info = {};
@@ -109,34 +99,36 @@ namespace Morpheus {
 	void VulkanImGui::SetupCommands()
 	{
 		uint32 CurrentFrame = m_Queue->GetCurrentFrame();
-		VkCommandBuffer cmd = m_CommandBuffers[CurrentFrame];
-		{
-			Vector<VkClearValue> ClearValues =
-			{ VkClearValue({ 0.25f, 0.25f, 0.25f, 1.00f }) };
+		VkCommandBuffer& cmd = m_CommandBuffers[CurrentFrame];
+		
+		Vector<VkClearValue> ClearValues =
+		{ VkClearValue({ 0.25f, 0.25f, 0.25f, 1.00f }) };
 
-			vkResetCommandBuffer(cmd, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		vkResetCommandBuffer(cmd, VK_COMMAND_BUFFER_RESET_RELEASE_RESOURCES_BIT);
+		VkCommandBufferBeginInfo BeginInfo = {};
+		BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		BeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
+		vkBeginCommandBuffer(cmd, &BeginInfo);	
 
-			VkCommandBufferBeginInfo BeginInfo = {};
-			BeginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-			BeginInfo.flags = VK_COMMAND_BUFFER_USAGE_SIMULTANEOUS_USE_BIT;
-			vkBeginCommandBuffer(cmd, &BeginInfo);	
+		VkRenderPassBeginInfo RenderpassInfo = {};
+		RenderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+		RenderpassInfo.renderPass = m_Framebuffer->GetRenderpass();
+		RenderpassInfo.framebuffer = m_Framebuffer->GetFrameBuffer(CurrentFrame);
+		RenderpassInfo.renderArea.extent.width = m_Swapchain->GetExtent2D().width;
+		RenderpassInfo.renderArea.extent.height = m_Swapchain->GetExtent2D().height;
+		RenderpassInfo.clearValueCount = ClearValues.size();
+		RenderpassInfo.pClearValues = ClearValues.data();
+		
+		vkCmdBeginRenderPass(cmd, &RenderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
+		ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
+		vkCmdEndRenderPass(cmd);
 
-			VkRenderPassBeginInfo RenderpassInfo = {};
-			RenderpassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-			RenderpassInfo.renderPass = m_Framebuffer->GetRenderpass();
-			RenderpassInfo.framebuffer = m_Framebuffer->GetFrameBuffer(CurrentFrame);
-			RenderpassInfo.renderArea.extent.width = m_Swapchain->GetExtent2D().width;
-			RenderpassInfo.renderArea.extent.height = m_Swapchain->GetExtent2D().height;
-			RenderpassInfo.clearValueCount = ClearValues.size();
-			RenderpassInfo.pClearValues = ClearValues.data();
-			
-			vkCmdBeginRenderPass(cmd, &RenderpassInfo, VK_SUBPASS_CONTENTS_INLINE);
-			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), cmd);
-			vkCmdEndRenderPass(cmd);
-
-			vkEndCommandBuffer(cmd);
-		}
+		vkEndCommandBuffer(cmd);
 		m_Queue->Submit(cmd, QueueCommandFlags::DeleteCommand);
+
+		VkResult result = vkDeviceWaitIdle(m_Device->GetLogicalDevice());
+
+
 	}
 
 	void VulkanImGui::CreateDescriptorPool()

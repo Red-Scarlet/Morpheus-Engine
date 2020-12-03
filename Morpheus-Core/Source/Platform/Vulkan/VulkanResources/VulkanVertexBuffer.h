@@ -4,8 +4,7 @@
 #include "Platform/Vulkan/VulkanCommon.h"
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommandSystem.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommandAllocator.h"
 
 #include "Morpheus/Renderer/RendererResources/VertexBuffer.h"
 
@@ -34,7 +33,7 @@ namespace Morpheus {
 
 	private:
 		Ref<VulkanDevice> m_Device;
-		Ref<VulkanCommandSystem> m_CommandSystem;
+		Ref<VulkanCommandAllocator> m_CommandSystem;
 
 		VulkanBuffer m_VulkanBuffer;
 		QuadVertex* m_Data;

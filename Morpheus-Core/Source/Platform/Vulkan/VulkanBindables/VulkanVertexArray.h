@@ -3,6 +3,9 @@
 #include "Morpheus/Core/Common.h"
 #include "Platform/Vulkan/VulkanCommon.h"
 
+#include "Platform/Vulkan/VulkanResources/VulkanUniformBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanTextureBuffer.h"
+
 #include "Morpheus/Renderer/RendererBindables/VertexArray.h"
 
 namespace Morpheus {
@@ -13,30 +16,31 @@ namespace Morpheus {
 		VulkanVertexArray();
 		virtual ~VulkanVertexArray();
 
-		virtual void Bind() override;
+		virtual void Bind(const uint32& _Slot) override;
 		virtual void Unbind() override;
-
 		virtual const uint32& GetID() const override { return m_ID; }
 
 		virtual void SetVertexBuffer(const Ref<VertexBuffer>& _VertexBuffer) override;
 		virtual void SetIndexBuffer(const Ref<IndexBuffer>& _IndexBuffer) override;
-		virtual void SetUniformBuffer(const uint32& _UniformBufferID) override;
+		virtual void SetTextureBuffer(const Ref<TextureBuffer>& _TextureBuffer) override;
 
 		virtual const uint32& GetVertexBufferID() const override { return m_VertexBuffer->GetID(); }
 		virtual const uint32& GetIndexBufferID() const override { return m_IndexBuffer->GetID(); }
-		virtual const uint32& GetUniformBufferID() const override { return m_UniformBufferID; }
+		virtual const uint32& GetUniformBufferID() const override { return m_UniformBuffer->GetID(); }
+		virtual const uint32& GetTextureBufferID() const override { return m_TextureBuffer->GetID(); }
 
-		virtual const Boolean& CheckCompiled() const { return m_Compiled; }
-		virtual void SetCompiled(const Boolean& _Value) { m_Compiled = _Value; }
+		virtual const Boolean& CheckCompiled() const override { return m_Compiled; }
+		virtual void SetCompiled(const Boolean& _Value) override { m_Compiled = true; }
 
 	private:
 		Ref<VertexBuffer> m_VertexBuffer;
 		Ref<IndexBuffer> m_IndexBuffer;
-		uint32 m_UniformBufferID;
-
-		Boolean m_Compiled = false;
-
+		Ref<TextureBuffer> m_TextureBuffer;
+		Ref<VulkanUniformBuffer> m_UniformBuffer;
+		Boolean m_Compiled = true;
 		uint32 m_ID;
+
+		Boolean m_ShaderCompiled = false;
 
 	public:
 		static Ref<VulkanVertexArray> Make();

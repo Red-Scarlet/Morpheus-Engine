@@ -84,9 +84,6 @@
     <ClInclude Include="Source\Morpheus\Core\Common.h">
       <Filter>Source\Morpheus\Core</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Morpheus\Core\EngineMessageSystem.h">
-      <Filter>Source\Morpheus\Core</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h">
       <Filter>Source\Morpheus\Core</Filter>
     </ClInclude>
@@ -213,18 +210,6 @@
     <ClInclude Include="Source\Platform\GLFW\WindowsWindow.h">
       <Filter>Source\Platform\GLFW</Filter>
     </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanBindingChain.h">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanFramebuffer.h">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.h">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.h">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClInclude>
     <ClInclude Include="Source\Platform\Vulkan\VulkanCommon.h">
       <Filter>Source\Platform\Vulkan</Filter>
     </ClInclude>
@@ -236,12 +221,6 @@
     </ClInclude>
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.h">
       <Filter>Source\Platform\Vulkan\VulkanCore</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandBuffer.h">
-      <Filter>Source\Platform\Vulkan\VulkanGlobals\VulkanCommand</Filter>
-    </ClInclude>
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandSystem.h">
-      <Filter>Source\Platform\Vulkan\VulkanGlobals</Filter>
     </ClInclude>
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.h">
       <Filter>Source\Platform\Vulkan\VulkanGlobals</Filter>
@@ -294,12 +273,25 @@
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\MaterialComponent.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\LightComponent.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Spatial.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanRenderpass.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\Renderpass.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanFrameBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanBindingChain.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptor.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommand.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanExecutionStack.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandList.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandAllocator.h">
+      <Filter>Source\Platform\Vulkan\VulkanGlobals</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Morpheus\SceneGraph\SceneGraph.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererSystems\RendererSimple2D.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp">
-      <Filter>Source\Morpheus\Core</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Morpheus\Core\EngineMessageSystem.cpp">
       <Filter>Source\Morpheus\Core</Filter>
     </ClCompile>
     <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp">
@@ -383,15 +375,6 @@
     <ClCompile Include="Source\Platform\GLFW\WindowsWindow.cpp">
       <Filter>Source\Platform\GLFW</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanFramebuffer.cpp">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.cpp">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.cpp">
-      <Filter>Source\Platform\Vulkan\VulkanBindables</Filter>
-    </ClCompile>
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.cpp">
       <Filter>Source\Platform\Vulkan\VulkanCore</Filter>
     </ClCompile>
@@ -400,12 +383,6 @@
     </ClCompile>
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.cpp">
       <Filter>Source\Platform\Vulkan\VulkanCore</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandBuffer.cpp">
-      <Filter>Source\Platform\Vulkan\VulkanGlobals\VulkanCommand</Filter>
-    </ClCompile>
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandSystem.cpp">
-      <Filter>Source\Platform\Vulkan\VulkanGlobals</Filter>
     </ClCompile>
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.cpp">
       <Filter>Source\Platform\Vulkan\VulkanGlobals</Filter>
@@ -441,5 +418,18 @@
       <Filter>Vendor\STB\Include</Filter>
     </ClCompile>
     <ClCompile Include="Source\Morpheus\SceneGraph\EntityCS\Coordinator.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanRenderpass.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanFrameBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptor.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\Renderpass.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommand.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanExecutionStack.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandList.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandAllocator.cpp">
+      <Filter>Source\Platform\Vulkan\VulkanGlobals</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

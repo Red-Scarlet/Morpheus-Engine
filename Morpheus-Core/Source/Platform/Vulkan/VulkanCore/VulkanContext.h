@@ -7,7 +7,7 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
 
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommandSystem.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommandAllocator.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanQueue.h"
 
 #include "Platform/Vulkan/VulkanCore/VulkanValidation.h"
@@ -27,7 +27,7 @@ namespace Morpheus {
 
 		Ref<VulkanDevice> m_Device;
 		Ref<VulkanSwapchain> m_Swapchain;
-		Ref<VulkanCommandSystem> m_CommandSystem;
+		Ref<VulkanCommandAllocator> m_CommandSystem;
 		Ref<VulkanQueue> m_Queue;
 
 	};

@@ -1,6 +1,10 @@
 #include "Morppch.h"
 #include "VulkanVertexBuffer.h"
 
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommand.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandList.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanExecutionStack.h"
+
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
@@ -13,7 +17,7 @@ namespace Morpheus {
 
 		VulkanCreate();
 		m_ID = VulkanMemoryManager::GetInstance()->GetVertexBufferCache().Count();
-		MORP_CORE_WARN("[VULKAN] VertexBuffer #" + std::to_string(GetID()) + " Was Created!");
+		VULKAN_CORE_WARN("[VULKAN] VertexBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanVertexBuffer::VulkanVertexBuffer(const uint32& _Size)
@@ -22,13 +26,13 @@ namespace Morpheus {
 		m_Device = VulkanMemoryManager::GetInstance()->GetDevice();
 		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
 
-		MORP_CORE_WARN("[VULKAN] VertexBuffer #" + std::to_string(GetID()) + " Was Created!");
+		VULKAN_CORE_WARN("[VULKAN] VertexBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanVertexBuffer::~VulkanVertexBuffer()
 	{
 		VulkanDestory();
-		MORP_CORE_WARN("[VULKAN] VertexBuffer Was Destoryed!");
+		VULKAN_CORE_WARN("[VULKAN] VertexBuffer Was Destoryed!");
 	}
 
 	void VulkanVertexBuffer::VulkanCreate()
@@ -105,21 +109,25 @@ namespace Morpheus {
 		vk::Queue Queue = m_Device->GetQueue();
 		uint32 BufferSize = m_Size * sizeof(QuadVertex);
 
-		vk::CommandBuffer CommandBuffer = m_CommandSystem->Allocate();
-		Vector<vk::BufferCopy> CopyRegions = { vk::BufferCopy(0, 0, BufferSize) };
+		Ref<VulkanCommandBuffer> CommandBuffer = VulkanCommandBuffer::Make(m_CommandSystem->Allocate());
+		Vector<VkBufferCopy> CopyRegions = { vk::BufferCopy(0, 0, BufferSize) };
 		
-		VulkanCommandBuffer CommandExecutor(CommandBuffer);
-		CommandExecutor.BeginBuffer();
-		CommandExecutor.CopyBuffer(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
-		CommandExecutor.EndBuffer();
-		CommandExecutor.Compile(false);
+		Ref<VulkanExecutionStack> Executor = VulkanExecutionStack::Make();
+		Executor->AppendCommand(CommandBeginBuffer::Create(CommandBuffer));
+
+		Ref<CommandCopyBuffer> CopyBuffer = CommandCopyBuffer::Create(CommandBuffer);
+		CopyBuffer->PopulateData(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
+		Executor->AppendCommand(CopyBuffer);
+
+		Executor->AppendCommand(CommandEndBuffer::Create(CommandBuffer));
+		Executor->Compile();
 		
-		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &CommandBuffer, 0, nullptr) };
+		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &vk::CommandBuffer(CommandBuffer->GetBuffer()), 0, nullptr) };
 		vk::Fence fence = Device.createFence(vk::FenceCreateInfo());
 		Queue.submit(SubmitInfos, fence);
 		Device.waitForFences(1, &fence, VK_TRUE, UINT_MAX);
 		Device.destroyFence(fence);
-		m_CommandSystem->Deallocate(CommandBuffer);
+		m_CommandSystem->Deallocate(CommandBuffer->GetBuffer());
 	}
 
 	Ref<VulkanVertexBuffer> VulkanVertexBuffer::Make(QuadVertex* _Data, const uint32& _Size)

@@ -106,24 +106,21 @@ namespace Morpheus {
 	{
 	public:
 		virtual ~Shader() = default;
-
-		virtual void Bind() = 0;
-		virtual void Unbind() = 0;
-
 		virtual const uint32& GetID() const = 0;
 
-		virtual void SetUniformDescription(const ShaderAttributeLayout& _Layout) = 0;
-		virtual void SetLayout(const ShaderAttributeLayout& _Layout) = 0;
-		virtual const ShaderAttributeLayout& GetLayout() = 0;
+		virtual void Bind(const uint32& _Slot = 0) = 0;
+		virtual void Unbind() = 0;
 
-		virtual void SetInt(const String& _Name, const uint32& _Value) = 0;
-		virtual void SetFloat(const String& _Name, const float32& _Value) = 0;
-		virtual void SetFloat3(const String& _Name, const Vector3& _Value) = 0;
-		virtual void SetFloat4(const String& _Name, const Vector4& _Value) = 0;
-		virtual void SetMat4(const String& _Name, const Matrix4& _Matrix) = 0;
+		virtual void SetInt(const String& _Name, const uint32& _Value, const Boolean& _Flags = false) = 0;
+		virtual void SetFloat(const String& _Name, const float32& _Value, const Boolean& _Flags = false) = 0;
+		virtual void SetFloat3(const String& _Name, const Vector3& _Value, const Boolean& _Flags = false) = 0;
+		virtual void SetFloat4(const String& _Name, const Vector4& _Value, const Boolean& _Flags = false) = 0;
+		virtual void SetMat4(const String& _Name, const Matrix4& _Matrix, const Boolean& _Flags = false) = 0;
+		virtual void SetSampler(const String& _Name, const uint32& _Value, const Boolean& _Flags = false) = 0;
 
 	public:
-		static Ref<Shader> Create(const ShaderAttributeLayout& _Layout, const String& _VertexPath, const String& _FragmentPath);
+		static Ref<Shader> Create(const ShaderAttributeLayout& _ShaderLayout, const ShaderAttributeLayout& _UniformLayout,
+			const String& _VertexPath, const String& _FragmentPath);
 	};
 
 }

@@ -4,9 +4,9 @@
 #include "Morpheus/Renderer/RendererCore/RendererAPI.h"
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanQueue.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommandSystem.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
-
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommandAllocator.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommand.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanExecutionStack.h"
 
 namespace Morpheus {
 
@@ -18,24 +18,23 @@ namespace Morpheus {
 		virtual void SetClearColor(const Vector4& _ClearColor) override;
 		virtual void Clear() override;
 
-		virtual void DrawIndexed(const Ref<VertexArray>& _VertexArray) override;
-		
+		virtual void DrawIndexed(const Ref<VertexArray>& _VertexArray) override;	
 		virtual void Flush() override;
 
 	private:
-		void SetupCommands();
+		void BuildPrimary();
+		void BuildSecondary();
 
 	private:
 		Ref<VulkanQueue> m_Queue;
-		Ref<VulkanCommandSystem> m_CommandSystem;
-		//UnorderedMap<uint32, VulkanCommands> m_Commands;
+		Ref<VulkanCommandAllocator> m_CommandSystem;
 
-
-		Vector<uint32> m_VertexArrays;
-		VulkanCommands m_Commands;
-		Boolean m_Compilation = false;
+		Ref<VulkanExecutionStack> m_CommandExecutor;
+		Ref<VulkanCommandBuffer> m_CommandBuffers[2];
+		UnorderedMap<uint32, Ref<VulkanCommandBuffer>> m_SecondaryCommandBuffers;
 
 		Vector4 m_ClearColor = { 0.25f, 0.25f, 0.25f, 1.00f };
+		Boolean m_CompileRequired = false;
 	};
 
 

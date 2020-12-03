@@ -8,6 +8,7 @@
 
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandList.h"
 
 namespace Morpheus {
 
@@ -15,7 +16,11 @@ namespace Morpheus {
 	{
 		m_Queue = VulkanMemoryManager::GetInstance()->GetQueue();
 		m_CommandSystem = VulkanMemoryManager::GetInstance()->GetCommandSystem();
-		m_Commands = m_CommandSystem->BatchAllocate(m_Queue->GetBufferCount());
+
+		m_CommandExecutor = VulkanExecutionStack::Make();
+		m_CommandBuffers[0] = VulkanCommandBuffer::Make(m_CommandSystem->Allocate());
+		m_CommandBuffers[1] = VulkanCommandBuffer::Make(m_CommandSystem->Allocate());
+		m_CompileRequired = true;
 	}
 
 	void VulkanRendererAPI::Shutdown()
@@ -34,28 +39,97 @@ namespace Morpheus {
 	void VulkanRendererAPI::DrawIndexed(const Ref<VertexArray>& _VertexArray)
 	{
 		VulkanBindingChain& Chain = VulkanMemoryManager::GetInstance()->GetBindingChain();
+		uint32 VertexArrayID = Chain.GetVertexArrayID();
+		
+		if (VertexArrayID == _VertexArray->GetID()) {
+			bool IsCommandNew = false;
+			if(_VertexArray->CheckCompiled())
+				return;
+				
+			Ref<VulkanCommandBuffer> Command;
+			auto& It = m_SecondaryCommandBuffers.find(VertexArrayID);
+			if (It != m_SecondaryCommandBuffers.end())				
+				Command = It->second;
+			else {
+				Command = VulkanCommandBuffer::Make(m_CommandSystem->Allocate(true));
+				IsCommandNew = true;
+			}
 
-		uint32 ShaderID = Chain.GetShaderID();
-		if (ShaderID == uint32_max)
-			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No Shader is binded!");
-		Ref<VulkanShader> Shader = VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID);
+			uint32 FrameBufferID = Chain.GetFrameBufferID();
+			if (FrameBufferID == uint32_max)
+				MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No FrameBuffer is binded!");
+			Ref<VulkanFrameBuffer> FrameBuffer = VulkanMemoryManager::GetInstance()->GetFrameBufferCache().Get(FrameBufferID);
+		
+			uint32 ShaderID = Chain.GetShaderID();
+			if (ShaderID == uint32_max)
+				MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No Shader is binded!");
+			Ref<VulkanShader> Shader = VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID);
+		
+			Ref<VulkanSwapchain> Swapchain = VulkanMemoryManager::GetInstance()->GetSwapchain();
+			VkViewport Viewport = Swapchain->GetViewport();
+			VkRect2D Scissor = Swapchain->GetRenderArea();
 
-		if (Chain.GetVertexArrayID() == _VertexArray->GetID()) {
-			m_VertexArrays.emplace_back(_VertexArray->GetID());
-			Shader->CompileUniform(_VertexArray->GetUniformBufferID());
-		}	
+			// Get Vulkan Data
+			VkDescriptorSet DescriptorSet = VulkanMemoryManager::GetInstance()->GetUniformBufferCache().Get(_VertexArray->GetUniformBufferID())->GetDescriptorSet();
+			VkBuffer VertexBuffer = VulkanMemoryManager::GetInstance()->GetVertexBufferCache().Get(_VertexArray->GetVertexBufferID())->GetBuffer();
+			VkBuffer IndexBuffer = VulkanMemoryManager::GetInstance()->GetIndexBufferCache().Get(_VertexArray->GetIndexBufferID())->GetBuffer();
+			uint32 IndexCount = VulkanMemoryManager::GetInstance()->GetIndexBufferCache().Get(_VertexArray->GetIndexBufferID())->GetCount();
+		
+			Ref<CommandBeginBuffer> BeginBuffer = CommandBeginBuffer::Create(Command, true);
+			BeginBuffer->PopulateData(FrameBuffer->GetRenderpass());
+			m_CommandExecutor->AppendCommand(BeginBuffer);
+			
+			Ref<CommandSetViewport> SetViewport = CommandSetViewport::Create(Command);
+			SetViewport->PopulateData(Viewport);
+			m_CommandExecutor->AppendCommand(SetViewport);
+			
+			Ref<CommandSetScissor> SetScissor = CommandSetScissor::Create(Command);
+			SetScissor->PopulateData(Scissor);
+			m_CommandExecutor->AppendCommand(SetScissor);
+
+			Ref<CommandBindPipeline> BindPipeline = CommandBindPipeline::Create(Command);
+			BindPipeline->PopulateData(Shader->GetPipeline());
+			m_CommandExecutor->AppendCommand(BindPipeline);
+
+			Ref<CommandBindVertexBuffer> BindVertexBuffer = CommandBindVertexBuffer::Create(Command);
+			BindVertexBuffer->PopulateData(VertexBuffer);
+			m_CommandExecutor->AppendCommand(BindVertexBuffer);
+
+			Ref<CommandBindIndexBuffer> BindIndexBuffer = CommandBindIndexBuffer::Create(Command);
+			BindIndexBuffer->PopulateData(IndexBuffer);
+			m_CommandExecutor->AppendCommand(BindIndexBuffer);
+
+			Ref<CommandBindDescriptorSet> BindDescriptorSet = CommandBindDescriptorSet::Create(Command);
+			BindDescriptorSet->PopulateData(Shader->GetPipelineLayout(), DescriptorSet);
+			m_CommandExecutor->AppendCommand(BindDescriptorSet);
+
+			Ref<CommandDrawIndexed> DrawIndexed = CommandDrawIndexed::Create(Command);
+			DrawIndexed->PopulateData(IndexCount);
+			m_CommandExecutor->AppendCommand(DrawIndexed);
+
+			m_CommandExecutor->AppendCommand(CommandEndBuffer::Create(Command));
+
+			m_CommandExecutor->Compile();
+			m_CommandExecutor->Reset();
+
+			if (IsCommandNew)
+				m_SecondaryCommandBuffers[VertexArrayID] = Command;
+
+			_VertexArray->SetCompiled(true);
+			m_CompileRequired = true;
+		}
 	}
 
 	void VulkanRendererAPI::Flush()
 	{
-		if (!m_Compilation)
-			SetupCommands();
+		if (m_CompileRequired)
+			BuildPrimary();
 
 		uint32 _FrameIndex = m_Queue->GetCurrentFrame();
-		m_Queue->Submit(m_Commands[_FrameIndex], QueueCommandFlags::DeleteCommand);
+		m_Queue->Submit(m_CommandBuffers[_FrameIndex]->GetBuffer(), QueueCommandFlags::DeleteCommand);
 	}
 
-	void VulkanRendererAPI::SetupCommands()
+	void VulkanRendererAPI::BuildPrimary()
 	{
 		VulkanBindingChain& Chain = VulkanMemoryManager::GetInstance()->GetBindingChain();
 
@@ -64,35 +138,48 @@ namespace Morpheus {
 			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No FrameBuffer is binded!");
 		Ref<VulkanFrameBuffer> FrameBuffer = VulkanMemoryManager::GetInstance()->GetFrameBufferCache().Get(FrameBufferID);
 
-		uint32 ShaderID = Chain.GetShaderID();
-		if (ShaderID == uint32_max)
-			MORP_CORE_ASSERT(MORP_ERROR, "[VULKAN] No Shader is binded!");
-		Ref<VulkanShader> Shader = VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID);
-
-		for (uint32 i = 0; i < m_Queue->GetBufferCount(); i++)
-		{
+		for (uint32 i = 0; i < m_Queue->GetBufferCount(); i++) {
 			Ref<VulkanSwapchain> Swapchain = VulkanMemoryManager::GetInstance()->GetSwapchain();
-			vk::Viewport Viewport = Swapchain->GetViewport();
-			vk::Rect2D RenderArea = Swapchain->GetRenderArea();
+			VkViewport Viewport = Swapchain->GetViewport();
+			VkRect2D Scissor = Swapchain->GetRenderArea();
 
-			VulkanCommandBuffer BufferExecutor(m_Commands[i]);
-			BufferExecutor.ResetBuffer();
-			BufferExecutor.BeginBuffer();
-			BufferExecutor.SetClearColor(m_ClearColor);
-			BufferExecutor.BindFramebuffer(FrameBuffer, i);
-			BufferExecutor.SetViewport(Viewport);
-			BufferExecutor.SetScissor(RenderArea);
-			BufferExecutor.BindShader(Shader);
+			m_CommandExecutor->AppendCommand(CommandResetBuffer::Create(m_CommandBuffers[i]));
+			m_CommandExecutor->AppendCommand(CommandBeginBuffer::Create(m_CommandBuffers[i]));
 
-			for (uint32 j = 0; j < m_VertexArrays.size(); j++) 
-				BufferExecutor.SubmitVertexArray(m_VertexArrays[j]);
+			Ref<CommandSetClearColor> SetClearColor = CommandSetClearColor::Create(m_CommandBuffers[i]);
+			SetClearColor->PopulateData(m_ClearColor);
+			m_CommandExecutor->AppendCommand(SetClearColor);
 
-			BufferExecutor.DrawIndexed();
-			BufferExecutor.EndBuffer();
-			BufferExecutor.Compile();
+			Ref<CommandBeginRenderpass> BeginRenderpass = CommandBeginRenderpass::Create(m_CommandBuffers[i]);
+			BeginRenderpass->PopulateData(FrameBuffer->GetRenderpass(), FrameBuffer->GetFrameBuffer(i), Scissor);
+			m_CommandExecutor->AppendCommand(BeginRenderpass);
+			
+			//Ref<CommandSetViewport> SetViewport = CommandSetViewport::Create(m_CommandBuffers[i]);
+			//SetViewport->PopulateData(Viewport);
+			//m_CommandExecutor->AppendCommand(SetViewport);
+			//
+			//Ref<CommandSetScissor> SetScissor = CommandSetScissor::Create(m_CommandBuffers[i]);
+			//SetScissor->PopulateData(Scissor);
+			//m_CommandExecutor->AppendCommand(SetScissor);
+
+			Ref<CommandExecuteCommandBuffers> ExecuteCommandBuffers = CommandExecuteCommandBuffers::Create(m_CommandBuffers[i]);
+			for (auto it = m_SecondaryCommandBuffers.begin(); it != m_SecondaryCommandBuffers.end(); ++it)
+				ExecuteCommandBuffers->PopulateData(it->second);
+			m_CommandExecutor->AppendCommand(ExecuteCommandBuffers);
+
+			m_CommandExecutor->AppendCommand(CommandEndRenderpass::Create(m_CommandBuffers[i]));
+			m_CommandExecutor->AppendCommand(CommandEndBuffer::Create(m_CommandBuffers[i]));
+			m_CommandExecutor->Compile();
+
+			m_CommandExecutor->Reset();
 		}
 
-		m_Compilation = true;
+		m_CompileRequired = false;
+		MORP_CORE_TRACE("[VULKAN] RendererAPI Primary CommandBuffer Compiled!");
+	}
+
+	void VulkanRendererAPI::BuildSecondary()
+	{
 	}
 
 }

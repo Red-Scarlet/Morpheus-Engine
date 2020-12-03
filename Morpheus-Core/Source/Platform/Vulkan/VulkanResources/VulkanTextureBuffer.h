@@ -3,8 +3,7 @@
 #include "Platform/Vulkan/VulkanCommon.h"
 
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommandSystem.h"
-#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandBuffer.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommandAllocator.h"
 
 #include "Morpheus/Renderer/RendererResources/TextureBuffer.h"
 
@@ -20,6 +19,10 @@ namespace Morpheus {
 		virtual ~VulkanTextureBuffer();
 		virtual const uint32& GetID() const override { return m_ID; }
 
+		vk::WriteDescriptorSet UpdateDescriptorSet(const VkDescriptorSet& _DescriptorSet);
+
+		const Boolean& HasUpdated() const { return m_HasUpdated; }
+
 	private:
 		void VulkanCreate();
 		void VulkanDestory();
@@ -32,17 +35,20 @@ namespace Morpheus {
 
 	private:
 		Ref<VulkanDevice> m_Device;
-		Ref<VulkanCommandSystem> m_CommandSystem;
+		Ref<VulkanCommandAllocator> m_CommandSystem;
 
 		VulkanImage m_VulkanImage;
 		VkImageView m_ImageView;
 		VkSampler m_Sampler;
+		VkDescriptorImageInfo m_BufferInfo;
 
 		uint32 m_Width, m_Height;
 		TextureEnum m_InternalFormat, m_DataFormat;	 
 
 		String m_Filepath, m_Name;
 		uint32 m_ID;
+
+		Boolean m_HasUpdated = false;
 
 	public:
 		static Ref<VulkanTextureBuffer> Make(const String& _Filepath);

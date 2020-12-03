@@ -1,6 +1,10 @@
 #include "Morppch.h"
 #include "VulkanIndexBuffer.h"
 
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommand.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanCommandList.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanCommand/VulkanExecutionStack.h"
+
 #include "Platform/Vulkan/VulkanMemoryManager.h"
 
 namespace Morpheus {
@@ -13,13 +17,13 @@ namespace Morpheus {
 
 		VulkanCreate();
 		m_ID = VulkanMemoryManager::GetInstance()->GetIndexBufferCache().Count();
-		MORP_CORE_WARN("[VULKAN] IndexBuffer #" + std::to_string(GetID()) + " Was Created!");
+		VULKAN_CORE_WARN("[VULKAN] IndexBuffer #" + std::to_string(GetID()) + " Was Created!");
 	}
 
 	VulkanIndexBuffer::~VulkanIndexBuffer()
 	{
 		VulkanDestory();
-		MORP_CORE_WARN("[VULKAN] IndexBuffer Was Destoryed!");
+		VULKAN_CORE_WARN("[VULKAN] IndexBuffer Was Destoryed!");
 	}
 
 	void VulkanIndexBuffer::VulkanCreate()
@@ -90,21 +94,25 @@ namespace Morpheus {
 
 		uint32 BufferSize = m_Size * sizeof(uint32);
 		
-		vk::CommandBuffer CommandBuffer = m_CommandSystem->Allocate();
-		Vector<vk::BufferCopy> CopyRegions = { vk::BufferCopy(0, 0, BufferSize) };
+		Ref<VulkanCommandBuffer> CommandBuffer = VulkanCommandBuffer::Make(m_CommandSystem->Allocate());
+		Vector<VkBufferCopy> CopyRegions = { vk::BufferCopy(0, 0, BufferSize) };
 		
-		VulkanCommandBuffer CommandExecutor(CommandBuffer);
-		CommandExecutor.BeginBuffer();
-		CommandExecutor.CopyBuffer(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
-		CommandExecutor.EndBuffer();
-		CommandExecutor.Compile(false);
+		Ref<VulkanExecutionStack> Executor = VulkanExecutionStack::Make();
+		Executor->AppendCommand(VulkanCommandList::BeginBuffer::Create(CommandBuffer));
+
+		Ref<CommandCopyBuffer> CopyBuffer = CommandCopyBuffer::Create(CommandBuffer);
+		CopyBuffer->PopulateData(_Staging.Buffer, m_VulkanBuffer.Buffer, CopyRegions);
+		Executor->AppendCommand(CopyBuffer);
+
+		Executor->AppendCommand(VulkanCommandList::EndBuffer::Create(CommandBuffer));
+		Executor->Compile();
 		
-		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &CommandBuffer, 0, nullptr) };
+		Vector<vk::SubmitInfo> SubmitInfos = { vk::SubmitInfo(0, nullptr, nullptr, 1, &vk::CommandBuffer(CommandBuffer->GetBuffer()), 0, nullptr) };
 		vk::Fence fence = Device.createFence(vk::FenceCreateInfo());
 		Queue.submit(SubmitInfos, fence);
 		Device.waitForFences(1, &fence, VK_TRUE, UINT_MAX);
 		Device.destroyFence(fence);
-		m_CommandSystem->Deallocate(CommandBuffer);
+		m_CommandSystem->Deallocate(CommandBuffer->GetBuffer());
 	}
 
 	Ref<VulkanIndexBuffer> VulkanIndexBuffer::Make(uint32* _Indices, const uint32& _Size)

@@ -6,36 +6,26 @@
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSurface.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
+#include "Platform/Vulkan/VulkanResources/VulkanRenderpass.h"
 
 #include "Morpheus/Renderer/RendererBindables/FrameBuffer.h"
 
 namespace Morpheus {
 
-	struct VulkanSwapchainBuffer
-	{
-	public:
-		vk::Image Image;
-		std::array<vk::ImageView, 2> Views;
-		vk::Framebuffer Framebuffer;
-	};
-
 	class VulkanFrameBuffer : public FrameBuffer
 	{
 	public:
-		VulkanFrameBuffer(const RenderpassLayout& _Layout);
+		VulkanFrameBuffer(const Ref<Renderpass>& _Renderpass);
 		virtual ~VulkanFrameBuffer();
-
-		virtual void Bind() override;
-		virtual void Unbind() override;
-
 		virtual const uint32& GetID() const override { return m_ID; }
 
+		virtual void Bind(const uint32& _Slot) override;
+		virtual void Unbind() override;
+
 		const VkFramebuffer& GetFrameBuffer(const uint32& _Index) { return m_Framebuffers[_Index]; }
-		const vk::RenderPass& GetRenderpass() { return m_Renderpass; };
+		const VkRenderPass& GetRenderpass() { return m_Renderpass->GetRenderpass(); };
 
 	private:
-		void InvalidateAttachments();
-		void CreateRenderpass();
 		void CreateFrameBuffers();
 
 	private:
@@ -43,16 +33,7 @@ namespace Morpheus {
 		Ref<VulkanSurface> m_Surface;
 		Ref<VulkanSwapchain> m_Swapchain;
 
-		RenderpassLayout m_Layout;
-		vk::RenderPass m_Renderpass;
-
-		Vector<vk::AttachmentDescription> m_Attachments;
-		Vector<vk::SubpassDependency> m_Dependencies;
-
-		Vector<vk::AttachmentReference> m_ColorReference;
-		Vector<vk::AttachmentReference> m_DepthReference;
-		Vector<vk::SubpassDescription> m_SubpassDesc;
-
+		Ref<VulkanRenderpass> m_Renderpass;
 		Vector<VkFramebuffer> m_Framebuffers;
 		Vector<VkImageView> m_Views;
 		Vector<VkImage> m_Images;
@@ -60,7 +41,7 @@ namespace Morpheus {
 		uint32 m_ID;
 
 	public:
-		static Ref<VulkanFrameBuffer> Make(const RenderpassLayout& _Layout);
+		static Ref<VulkanFrameBuffer> Make(const Ref<Renderpass>& _Renderpass);
 	};
 
 	class VulkanFrameBufferCache

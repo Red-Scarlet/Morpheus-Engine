@@ -3,154 +3,84 @@
 #include "Morpheus/Core/Common.h"
 #include "Platform/Vulkan/VulkanCommon.h"
 
-#include "Morpheus/Renderer/RendererBindables/Shader.h"
-#include "Platform/Vulkan/VulkanBindables/VulkanFramebuffer.h"
 #include "Platform/Vulkan/VulkanGlobals/VulkanDevice.h"
+#include "Platform/Vulkan/VulkanGlobals/VulkanSwapchain.h"
+#include "Platform/Vulkan/VulkanResources/VulkanDescriptor.h"
+#include "Platform/Vulkan/VulkanResources/VulkanUniformBuffer.h"
+#include "Platform/Vulkan/VulkanResources/VulkanTextureBuffer.h"
 
-#include <unordered_map>
-
-#define SHADER_MAX_DESCRIPTOR_POOLSIZE 16
+#include "Morpheus/Renderer/RendererBindables/Shader.h"
 
 namespace Morpheus {
 
-	struct VulkanUniformBuffer
-	{
-	public:
-		VulkanBuffer Buffer;	// TODO BUILD THE SIZE INTO VULKANBUFFER
-		uint32 Size = 0;
-		uint32 DescriptorIndex = 0;
-	};
-
-	class VulkanUniformMessage
-	{
-	public:
-		Vector<uint8> Data;
-		
-	public:
-		template<typename DataType>
-		friend VulkanUniformMessage& operator<< (VulkanUniformMessage& _Message, const DataType& _Data)
-		{
-			static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
-			
-			uint32 i = _Message.Data.size();
-			_Message.Data.resize(_Message.Data.size() + sizeof(DataType));
-			std::memcpy(_Message.Data.data() + i, &_Data, sizeof(DataType));
-			
-			return _Message;
-		}
-
-		template<typename DataType>
-		friend VulkanUniformMessage& operator>> (VulkanUniformMessage& _Message, DataType& _Data)
-		{
-			static_assert(std::is_standard_layout<DataType>::value, "Data is too complex to be pushed into vector");
-			
-			uint32 i = _Message.Data.size() - sizeof(DataType);
-			std::memcpy(&_Data, _Message.Data.data() + i, sizeof(DataType));
-			_Message.Data.resize(i);
-
-			return _Message;
-		}
-	};
-
 	class VulkanShader : public Shader
 	{
-	public:
-		VulkanShader(const ShaderAttributeLayout& _Layout, const String& _VertexPath, const String& _FragmentPath);
+	public:		
+		VulkanShader(const ShaderAttributeLayout& _ShaderLayout, const ShaderAttributeLayout& _UniformLayout,
+			const String& _VertexPath, const String& _FragmentPath);
 		virtual ~VulkanShader();
-		
-		virtual void Bind() override;
-		virtual void Unbind() override;
-
 		virtual const uint32& GetID() const override { return m_ID; }
 
-		virtual void SetUniformDescription(const ShaderAttributeLayout& _Layout) override { m_UniformLayout = _Layout; }
-		virtual void SetLayout(const ShaderAttributeLayout& _Layout) override { m_Layout = _Layout; }
-		virtual const ShaderAttributeLayout& GetLayout() override { return m_Layout; };
-		
-		virtual void SetInt(const String& _Name, const uint32& _Value) override;
-		virtual void SetFloat(const String& _Name, const float32& _Value) override;
-		virtual void SetFloat3(const String& _Name, const Vector3& _Value) override;
-		virtual void SetFloat4(const String& _Name, const Vector4& _Value) override;
-		virtual void SetMat4(const String& _Name, const Matrix4& _Matrix) override;
+		virtual void Bind(const uint32& _Slot) override;
+		virtual void Unbind() override;
+
+		virtual void SetInt(const String& _Name, const uint32& _Value, const Boolean& _Flags) override;
+		virtual void SetFloat(const String& _Name, const float32& _Value, const Boolean& _Flags) override;
+		virtual void SetFloat3(const String& _Name, const Vector3& _Value, const Boolean& _Flags) override;
+		virtual void SetFloat4(const String& _Name, const Vector4& _Value, const Boolean& _Flags) override;
+		virtual void SetMat4(const String& _Name, const Matrix4& _Matrix, const Boolean& _Flags) override;
+		virtual void SetSampler(const String& _Name, const uint32& _Value, const Boolean& _Flags) override;
+
+		void VulkanCompile(const uint32& _Index);
+
+	public:
+		void UpdateTextureBuffer(const Ref<VulkanTextureBuffer>& _TextureBuffer, const uint32& _Index);
+		void UpdateUniformBuffer(const Ref<VulkanUniformBuffer>& _UniformBuffer);
+		void DeallocateUniformBuffer(const Ref<VulkanUniformBuffer>& _UniformBuffer);
+		Ref<VulkanUniformBuffer> AllocateUniformBuffer(const uint32& _Index);
 
 		const vk::Pipeline& GetPipeline() { return m_Pipeline; };
 		const vk::PipelineLayout& GetPipelineLayout() { return m_PipelineLayout; };
-		const vk::DescriptorSet& GetDescriptorSet(const uint32& _Index) { return m_DescriptorSets[_Index]; }
-		const uint32& GetDescriptorCount() 
-		{ 
-			return m_DescriptorSets.size(); 
-		}
-
-	public:
-		void SetupPipeline(const uint32& _FrameBufferID);
-		uint32 SetupUniform();
-
-		void CompileUniform(const uint32& _Index);
-
+		
 	private:
-		void UploadUniformInt(const String& _Name, const int32& _Int);
-		void UploadUniformFloat(const String& _Name, const float32& _Float);
-		void UploadUniformFloat2(const String& _Name, const Vector2& _Float2);
-		void UploadUniformFloat3(const String& _Name, const Vector3& _Float3);
-		void UploadUniformFloat4(const String& _Name, const Vector4& _Float4);
-		void UploadUniformMat4(const String& _Name, const Matrix4& _Matrix);
+		void VulkanCreate();
+		void VulkanDestory();
 
-		void CreateShader();
-		void CreateDescriptorLayout();
-		void CreatePipeline(const uint32& _FrameBufferID);
-		void DestoryDescriptorLayout();
-		void DestoryPipeline();
-
-		void UpdateDescriptorSet(const VulkanUniformBuffer& _Buffer);
-
-		void CreateUniformBuffer();
-		void UpdateUniformBuffer(const uint32& _Index);
-		void DestoryUniformBuffer();
-
-		void ExpandDescriptorArray();
-		void AllocateDescriptorSet();
+		void PipelineCreate(const uint32& _FrameBufferID);
+		void PipelineDestory();
 
 	private:
 		Ref<VulkanDevice> m_Device;
-		Ref<VulkanSwapchain> m_Swapchain;
 
-		// Shader
-		vk::ShaderModule m_VertModule;
-		vk::ShaderModule m_FragModule;
+		// Shader Module
 		String m_VertexFile;
 		String m_FragmentFile;
+		vk::ShaderModule m_VertModule;
+		vk::ShaderModule m_FragModule;
 
-		// NewDescriptorSet Arch
-		vk::DescriptorSetLayout m_DescriptorLayout;
+		// Descriptor Set
+		Vector<Vector<vk::WriteDescriptorSet>> m_DescriptorWrites;
+		Ref<VulkanDescriptor> m_Descriptor;
+		uint32 m_UniformBufferCount = 0;
 
-		Vector<vk::DescriptorPool> m_DescriptorArray;
-		Vector<vk::DescriptorSet> m_DescriptorSets;
-		uint32 m_DescriptorCount = 0;
-		uint32 m_DescriptorSize = 0;
-
-		// Pipeline
+		// Pipeline Split into Segments to combind into one shader call the rasteriatation shader
 		vk::Pipeline m_Pipeline;
 		vk::PipelineCache m_PipelineCache;
 		vk::PipelineLayout m_PipelineLayout;
 		vk::PipelineVertexInputStateCreateInfo m_InputState;
 		Boolean m_PipelineCreated = false;
-		
-		// Uniform
-		Vector<VulkanUniformBuffer> m_UniformBuffers;
-		uint32 m_UniformCount = 0;
 
 		// ExtraUtils
-		ShaderAttributeLayout m_Layout;
+		ShaderAttributeLayout m_ShaderLayout;
 		ShaderAttributeLayout m_UniformLayout;
 
-		uint32 m_MessageStack = 0;
 		mutable UnorderedMap<String, AnyData> m_UniformCache;
 
-		
 		uint32 m_ID;
 
 	public:
-		static Ref<VulkanShader> Make(const ShaderAttributeLayout& _Layout, const String& _VertexPath, const String& _FragmentPath);
+		static Ref<VulkanShader> Make(const ShaderAttributeLayout& _ShaderLayout, const ShaderAttributeLayout& _UniformLayout,
+			const String& _VertexPath, const String& _FragmentPath);
 	};
 
 	class VulkanShaderCache

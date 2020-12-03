@@ -138,7 +138,6 @@
     <ClInclude Include="Source\Morpheus.h" />
     <ClInclude Include="Source\Morpheus\Core\Application.h" />
     <ClInclude Include="Source\Morpheus\Core\Common.h" />
-    <ClInclude Include="Source\Morpheus\Core\EngineMessageSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\Input.h" />
     <ClInclude Include="Source\Morpheus\Core\LayerSystem.h" />
@@ -168,8 +167,10 @@
     <ClInclude Include="Source\Morpheus\Renderer\RendererCore\RenderCommand.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererCore\RendererAPI.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\Renderpass.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\TextureBuffer.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\VertexBuffer.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererSystems\RendererSimple2D.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\CameraComponent.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\LightComponent.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\MaterialComponent.h" />
@@ -187,6 +188,7 @@
     <ClInclude Include="Source\Morpheus\SceneGraph\EntityCS\System.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\EntityCS\SystemManager.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Scene.h" />
+    <ClInclude Include="Source\Morpheus\SceneGraph\SceneGraph.h" />
     <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h" />
     <ClInclude Include="Source\Morpheus\Utilities\FileLoader.h" />
     <ClInclude Include="Source\Morpheus\Utilities\KeyCodes.h" />
@@ -200,15 +202,17 @@
     <ClInclude Include="Source\Platform\GLFW\WindowsInput.h" />
     <ClInclude Include="Source\Platform\GLFW\WindowsWindow.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanBindingChain.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanFramebuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanFrameBuffer.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCommon.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandSystem.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommand.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandAllocator.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandList.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanExecutionStack.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanQueue.h" />
@@ -216,14 +220,16 @@
     <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSwapchain.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGui.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanMemoryManager.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptor.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanRenderpass.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanTextureBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.h" />
     <ClInclude Include="Vendor\STB\Include\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
-    <ClCompile Include="Source\Morpheus\Core\EngineMessageSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\LayerSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\Window.cpp" />
@@ -243,6 +249,7 @@
     <ClCompile Include="Source\Morpheus\Renderer\RendererCore\RenderCommand.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererCore\RendererAPI.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\Renderpass.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\TextureBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\VertexBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\SceneGraph\EntityCS\Coordinator.cpp" />
@@ -254,14 +261,16 @@
     </ClCompile>
     <ClCompile Include="Source\Platform\GLFW\WindowsInput.cpp" />
     <ClCompile Include="Source\Platform\GLFW\WindowsWindow.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanFramebuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanFrameBuffer.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandSystem.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommand.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandAllocator.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandList.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanExecutionStack.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanQueue.cpp" />
@@ -269,8 +278,11 @@
     <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSwapchain.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGui.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanMemoryManager.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptor.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanRenderpass.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanTextureBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.cpp" />
     <ClCompile Include="Vendor\STB\Include\stb_image.cpp" />
   </ItemGroup>

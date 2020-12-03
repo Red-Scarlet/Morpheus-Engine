@@ -4,8 +4,6 @@
 
 namespace Morpheus {
 
-	// Access FBO
-
 	class VulkanBindingChain
 	{
 	public:

@@ -1,58 +1,67 @@
 #include "Morppch.h"
 #include "VulkanVertexArray.h"
 
-#include "Platform/Vulkan/VulkanResources/VulkanVertexBuffer.h"
-#include "Platform/Vulkan/VulkanResources/VulkanIndexBuffer.h"
-
-#include "Platform/Vulkan/VulkanBindables/VulkanShader.h"
 #include "Platform/Vulkan/VulkanMemoryManager.h"
-
-#include "VulkanBindingChain.h"
 
 namespace Morpheus {
 
 	VulkanVertexArray::VulkanVertexArray()
 	{
-		m_UniformBufferID = uint32_max;
 		m_ID = VulkanMemoryManager::GetInstance()->GetVertexArrayCache().Count();
-		MORP_CORE_WARN("[VULKAN] VertexArray #" + std::to_string(GetID()) + " was Created!");
+		VULKAN_CORE_WARN("[VULKAN] VertexArray #" + std::to_string(GetID()) + " was Created!");
 	}
 
 	VulkanVertexArray::~VulkanVertexArray()
 	{
-		MORP_CORE_WARN("[VULKAN] VertexArray Was Destoryed!");
+		VULKAN_CORE_WARN("[VULKAN] VertexArray Was Destoryed!");
 	}
 
-	void VulkanVertexArray::Bind()
+	void VulkanVertexArray::Bind(const uint32& _Slot)
 	{
 		VulkanBindingChain& Chain = VulkanMemoryManager::GetInstance()->GetBindingChain();
-		Chain.SetVertexArray(m_ID);
 
+		// Check to see if there is a shader bound.
 		uint32 ShaderID = Chain.GetShaderID();
-		if (ShaderID != uint32_max)
-			if(m_UniformBufferID == uint32_max)
-				SetUniformBuffer(VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID)->SetupUniform());
+		if (ShaderID != uint32_max) {
+			Ref<VulkanShader> Shader = VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID);
+			if(m_UniformBuffer == nullptr)
+				m_UniformBuffer = Shader->AllocateUniformBuffer(m_ID);
+			Shader->UpdateUniformBuffer(m_UniformBuffer);
+			Shader->UpdateTextureBuffer(std::dynamic_pointer_cast<VulkanTextureBuffer>(m_TextureBuffer), m_ID);
+			if (m_ShaderCompiled == false) { Shader->VulkanCompile(m_ID); m_ShaderCompiled = true; m_Compiled = false; }
+		}
+		Chain.SetVertexArray(m_ID);
 	}
 
 	void VulkanVertexArray::Unbind()
 	{
 		VulkanBindingChain& Chain = VulkanMemoryManager::GetInstance()->GetBindingChain();
+
+		// Check to see if there is a shader bound.
+		uint32 ShaderID = Chain.GetShaderID();
+		if (ShaderID != uint32_max) {
+			VulkanMemoryManager::GetInstance()->GetShaderCache().Get(ShaderID)->DeallocateUniformBuffer(m_UniformBuffer);
+		}
+
 		Chain.SetVertexArray(uint32_max);
 	}
 
 	void VulkanVertexArray::SetVertexBuffer(const Ref<VertexBuffer>& _VertexBuffer)
 	{
 		m_VertexBuffer = _VertexBuffer;
+		m_Compiled = false;
 	}
 
 	void VulkanVertexArray::SetIndexBuffer(const Ref<IndexBuffer>& _IndexBuffer)
 	{
 		m_IndexBuffer = _IndexBuffer;
+		m_Compiled = false;
 	}
 
-	void VulkanVertexArray::SetUniformBuffer(const uint32& _UniformBufferID)
+	void VulkanVertexArray::SetTextureBuffer(const Ref<TextureBuffer>& _TextureBuffer)
 	{
-		m_UniformBufferID = _UniformBufferID;
+		m_TextureBuffer = _TextureBuffer;
+		m_Compiled = false;
 	}
 
 	Ref<VulkanVertexArray> VulkanVertexArray::Make()
@@ -63,4 +72,3 @@ namespace Morpheus {
 	}
 
 }
-
