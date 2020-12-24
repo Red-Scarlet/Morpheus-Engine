@@ -54,20 +54,20 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>..\bin\Debug-windows-x86_64\Morpheus-Core\</OutDir>
-    <IntDir>..\bin-int\Debug-windows-x86_64\Morpheus-Core\</IntDir>
+    <OutDir>..\Morpheus-Bin\Debug-windows-x86_64\Morpheus-Core\</OutDir>
+    <IntDir>..\Morpheus-Bin-Int\Debug-windows-x86_64\Morpheus-Core\</IntDir>
     <TargetName>Morpheus-Core</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>..\bin\Release-windows-x86_64\Morpheus-Core\</OutDir>
-    <IntDir>..\bin-int\Release-windows-x86_64\Morpheus-Core\</IntDir>
+    <OutDir>..\Morpheus-Bin\Release-windows-x86_64\Morpheus-Core\</OutDir>
+    <IntDir>..\Morpheus-Bin-Int\Release-windows-x86_64\Morpheus-Core\</IntDir>
     <TargetName>Morpheus-Core</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
-    <OutDir>..\bin\Dist-windows-x86_64\Morpheus-Core\</OutDir>
-    <IntDir>..\bin-int\Dist-windows-x86_64\Morpheus-Core\</IntDir>
+    <OutDir>..\Morpheus-Bin\Dist-windows-x86_64\Morpheus-Core\</OutDir>
+    <IntDir>..\Morpheus-Bin-Int\Dist-windows-x86_64\Morpheus-Core\</IntDir>
     <TargetName>Morpheus-Core</TargetName>
     <TargetExt>.lib</TargetExt>
   </PropertyGroup>
@@ -77,13 +77,15 @@
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GLFW_INCLUDE_VULKAN;MORP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;Vendor\STB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;Vendor\GLM;Vendor\STB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -96,7 +98,7 @@
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GLFW_INCLUDE_VULKAN;MORP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;Vendor\STB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;Vendor\GLM;Vendor\STB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -118,7 +120,7 @@
       <PrecompiledHeaderFile>Morppch.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;MORP_PLATFORM_WINDOWS;GLFW_INCLUDE_NONE;GLFW_INCLUDE_VULKAN;MORP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;Vendor\STB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>Source;Vendor\GLFW\include;Vendor\VULKAN\Include;Vendor\IMGUI;Vendor\GLM;Vendor\STB;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -137,8 +139,9 @@
   <ItemGroup>
     <ClInclude Include="Source\Morpheus.h" />
     <ClInclude Include="Source\Morpheus\Core\Application.h" />
+    <ClInclude Include="Source\Morpheus\Core\ApplicationBase.h" />
+    <ClInclude Include="Source\Morpheus\Core\ApplicationUnit.h" />
     <ClInclude Include="Source\Morpheus\Core\Common.h" />
-    <ClInclude Include="Source\Morpheus\Core\FunctionSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\Input.h" />
     <ClInclude Include="Source\Morpheus\Core\LayerSystem.h" />
     <ClInclude Include="Source\Morpheus\Core\Window.h" />
@@ -147,7 +150,6 @@
     <ClInclude Include="Source\Morpheus\Events\KeyEvent.h" />
     <ClInclude Include="Source\Morpheus\Events\MouseEvent.h" />
     <ClInclude Include="Source\Morpheus\ImGui\ImGuiLayer.h" />
-    <ClInclude Include="Source\Morpheus\Mathematics\Boolean2.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Mathematics.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\MathematicsFunc.h" />
     <ClInclude Include="Source\Morpheus\Mathematics\Matrix4.h" />
@@ -169,8 +171,8 @@
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\Renderpass.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\TextureBuffer.h" />
+    <ClInclude Include="Source\Morpheus\Renderer\RendererResources\UniformBuffer.h" />
     <ClInclude Include="Source\Morpheus\Renderer\RendererResources\VertexBuffer.h" />
-    <ClInclude Include="Source\Morpheus\Renderer\RendererSystems\RendererSimple2D.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\CameraComponent.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\LightComponent.h" />
     <ClInclude Include="Source\Morpheus\SceneGraph\Components\MaterialComponent.h" />
@@ -191,55 +193,425 @@
     <ClInclude Include="Source\Morpheus\SceneGraph\SceneGraph.h" />
     <ClInclude Include="Source\Morpheus\Utilities\DeltaTime.h" />
     <ClInclude Include="Source\Morpheus\Utilities\FileLoader.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\Instrumentor.h" />
     <ClInclude Include="Source\Morpheus\Utilities\KeyCodes.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\MorpheusIOS.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\MultithreadedLog.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MorpheusLogger.h" />
     <ClInclude Include="Source\Morpheus\Utilities\MouseButtonCodes.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\ThreadCacheArray.h" />
+    <ClInclude Include="Source\Morpheus\Utilities\ThreadCache.h" />
     <ClInclude Include="Source\Morpheus\Utilities\ThreadPool.h" />
-    <ClInclude Include="Source\Morpheus\Utilities\TimerClass.h" />
     <ClInclude Include="Source\Morppch.h" />
     <ClInclude Include="Source\Platform\GLFW\WindowsInput.h" />
     <ClInclude Include="Source\Platform\GLFW\WindowsWindow.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanBindingChain.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanFrameBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommand\VulkanCommandBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommand\VulkanCommandPool.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCommand\VulkanInstructions.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCommon.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanContext.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanCache.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanCommand.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanImage.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanInstance.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanQueue.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanUnit.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanResource.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanSurface.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanSwapchain.h" />
     <ClInclude Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommand.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandAllocator.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandList.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanExecutionStack.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanQueue.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSurface.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSwapchain.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGui.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanMemoryManager.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptor.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanRenderpass.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanTextureBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.h" />
-    <ClInclude Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanRendererAPI.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResource\VulkanIndexBuffer.h" />
+    <ClInclude Include="Source\Platform\Vulkan\VulkanResource\VulkanVertexBuffer.h" />
+    <ClInclude Include="Vendor\GLM\glm\common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\_features.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\_fixes.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\_noise.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\_swizzle.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\_swizzle_func.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\_vectorize.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\compute_common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\compute_vector_relational.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_common.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_common_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_exponential.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_exponential_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_geometric.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_geometric_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_integer.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_integer_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_matrix.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_matrix_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_packing.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_packing_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_trigonometric.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_trigonometric_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_vector_relational.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\func_vector_relational_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\qualifier.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\setup.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_float.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_half.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_half.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat2x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat2x2.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat2x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat2x3.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat2x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat2x4.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat3x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat3x2.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat3x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat3x3.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat3x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat3x4.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x2.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x3.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x4.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_mat4x4_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_quat.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_quat.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_quat_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec1.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec2.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec3.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec4.inl" />
+    <ClInclude Include="Vendor\GLM\glm\detail\type_vec4_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\exponential.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_clip_space.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_clip_space.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_common.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double2x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double2x2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double2x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double2x3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double2x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double2x4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double3x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double3x2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double3x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double3x3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double3x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double3x4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double4x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double4x2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double4x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double4x3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double4x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_double4x4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float2x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float2x2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float2x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float2x3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float2x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float2x4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float3x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float3x2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float3x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float3x3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float3x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float3x4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float4x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float4x2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float4x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float4x3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float4x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_float4x4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_projection.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_projection.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_relational.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_relational.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_transform.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\matrix_transform.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_common.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_common_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_double.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_double_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_exponential.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_exponential.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_float.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_float_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_geometric.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_geometric.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_relational.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_relational.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_transform.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_transform.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_trigonometric.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\quaternion_trigonometric.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_common.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_constants.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_constants.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_int_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_integer.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_integer.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_packing.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_packing.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_relational.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_relational.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_uint_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_ulp.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\scalar_ulp.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool1_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_bool4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_common.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double1_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_double4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float1_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_float4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int1_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int1_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int2_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int3_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_int4_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_integer.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_integer.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_packing.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_packing.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_relational.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_relational.inl" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint1_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint1_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint2_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint2_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint3_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint3_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint4_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_uint4_sized.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_ulp.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\ext\vector_ulp.inl" />
+    <ClInclude Include="Vendor\GLM\glm\fwd.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\geometric.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\glm.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\bitfield.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\bitfield.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\color_space.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\color_space.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\constants.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\constants.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\epsilon.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\epsilon.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\integer.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\integer.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_access.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_access.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_integer.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_inverse.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_inverse.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_transform.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\matrix_transform.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\noise.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\noise.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\packing.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\packing.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\quaternion.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\quaternion.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\quaternion_simd.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\random.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\random.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\reciprocal.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\reciprocal.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\round.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\round.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\type_aligned.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\type_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\type_precision.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\type_ptr.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\type_ptr.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\ulp.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\ulp.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtc\vec1.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\associated_min_max.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\associated_min_max.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\bit.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\bit.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\closest_point.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\closest_point.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\color_encoding.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\color_encoding.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\color_space.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\color_space.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\color_space_YCoCg.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\color_space_YCoCg.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\common.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\common.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\compatibility.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\compatibility.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\component_wise.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\component_wise.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\dual_quaternion.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\dual_quaternion.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\easing.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\easing.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\euler_angles.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\euler_angles.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\extend.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\extend.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\extended_min_max.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\extended_min_max.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\exterior_product.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\exterior_product.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\fast_exponential.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\fast_exponential.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\fast_square_root.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\fast_square_root.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\fast_trigonometry.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\fast_trigonometry.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\float_notmalize.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\functions.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\functions.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\gradient_paint.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\gradient_paint.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\handed_coordinate_space.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\handed_coordinate_space.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\hash.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\hash.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\integer.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\integer.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\intersect.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\intersect.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\io.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\io.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\log_base.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\log_base.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_cross_product.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_cross_product.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_decompose.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_decompose.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_factorisation.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_factorisation.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_interpolation.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_interpolation.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_major_storage.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_major_storage.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_operation.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_operation.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_query.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_query.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_transform_2d.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\matrix_transform_2d.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\mixed_product.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\mixed_product.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\norm.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\norm.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\normal.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\normal.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\normalize_dot.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\normalize_dot.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\number_precision.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\number_precision.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\optimum_pow.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\optimum_pow.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\orthonormalize.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\orthonormalize.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\perpendicular.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\perpendicular.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\polar_coordinates.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\polar_coordinates.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\projection.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\projection.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\quaternion.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\quaternion.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\range.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\raw_data.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\raw_data.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\rotate_normalized_axis.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\rotate_normalized_axis.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\rotate_vector.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\rotate_vector.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\scalar_multiplication.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\scalar_relational.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\scalar_relational.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\spline.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\spline.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\std_based_type.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\std_based_type.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\string_cast.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\string_cast.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\texture.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\texture.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\transform.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\transform.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\transform2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\transform2.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\type_aligned.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\type_aligned.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\type_trait.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\type_trait.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\vec_swizzle.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\vector_angle.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\vector_angle.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\vector_query.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\vector_query.inl" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\wrap.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\gtx\wrap.inl" />
+    <ClInclude Include="Vendor\GLM\glm\integer.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat2x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat2x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat2x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat3x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat3x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat3x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat4x2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat4x3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\mat4x4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\matrix.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\packing.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\trigonometric.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\vec2.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\vec3.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\vec4.hpp" />
+    <ClInclude Include="Vendor\GLM\glm\vector_relational.hpp" />
     <ClInclude Include="Vendor\STB\Include\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\Morpheus\Core\Application.cpp" />
-    <ClCompile Include="Source\Morpheus\Core\FunctionSystem.cpp" />
+    <ClCompile Include="Source\Morpheus\Core\ApplicationUnit.cpp" />
     <ClCompile Include="Source\Morpheus\Core\LayerSystem.cpp" />
     <ClCompile Include="Source\Morpheus\Core\Window.cpp" />
     <ClCompile Include="Source\Morpheus\ImGui\ImGuiBuild.cpp" />
     <ClCompile Include="Source\Morpheus\ImGui\ImGuiLayer.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Matrix4.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Quaternion.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Vector2.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Vector3.cpp" />
-    <ClCompile Include="Source\Morpheus\Mathematics\Vector4.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\Renderer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererBindables\FrameBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererBindables\Shader.cpp" />
@@ -251,39 +623,31 @@
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\IndexBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\Renderpass.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\TextureBuffer.cpp" />
+    <ClCompile Include="Source\Morpheus\Renderer\RendererResources\UniformBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\Renderer\RendererResources\VertexBuffer.cpp" />
     <ClCompile Include="Source\Morpheus\SceneGraph\EntityCS\Coordinator.cpp" />
-    <ClCompile Include="Source\Morpheus\Utilities\MorpheusIOS.cpp" />
     <ClCompile Include="Source\Morpheus\Utilities\MorpheusLogger.cpp" />
-    <ClCompile Include="Source\Morpheus\Utilities\TimerClass.cpp" />
+    <ClCompile Include="Source\Morpheus\Utilities\ThreadPool.cpp" />
     <ClCompile Include="Source\Morppch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Source\Platform\GLFW\WindowsInput.cpp" />
     <ClCompile Include="Source\Platform\GLFW\WindowsWindow.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanFrameBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanShader.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanBindables\VulkanVertexArray.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanContext.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanRendererAPI.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCommand\VulkanCommandBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCommand\VulkanCommandPool.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCommand\VulkanInstructions.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanContext.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanResource.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanSwapchain.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanDevice.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanInstance.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanQueue.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanSurface.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanUnit.cpp" />
     <ClCompile Include="Source\Platform\Vulkan\VulkanCore\VulkanValidation.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommand.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommandAllocator.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanCommandList.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanCommand\VulkanExecutionStack.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanDevice.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanInstance.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanQueue.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSurface.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanGlobals\VulkanSwapchain.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanImGui\VulkanImGui.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanMemoryManager.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanDescriptor.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanIndexBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanRenderpass.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanTextureBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanUniformBuffer.cpp" />
-    <ClCompile Include="Source\Platform\Vulkan\VulkanResources\VulkanVertexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanRendererAPI.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResource\VulkanIndexBuffer.cpp" />
+    <ClCompile Include="Source\Platform\Vulkan\VulkanResource\VulkanVertexBuffer.cpp" />
     <ClCompile Include="Vendor\STB\Include\stb_image.cpp" />
   </ItemGroup>
   <ItemGroup>

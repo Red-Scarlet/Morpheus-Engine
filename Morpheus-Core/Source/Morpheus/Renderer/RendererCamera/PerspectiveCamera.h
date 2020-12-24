@@ -28,8 +28,8 @@ namespace Morpheus {
 		Vector3 m_Position = { 0.0f, 0.0f, 0.0f };
 		Vector3 m_Rotation = { 0.0f, 0.0f, 0.0f };
 
-		float32 m_FOV;
-		float32 m_AspectRatio;
+		float32 m_FOV = 0.0f;
+		float32 m_AspectRatio = 0.0f;
 	};
 
 }

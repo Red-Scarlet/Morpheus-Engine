@@ -1,11 +1,10 @@
 #include "Morppch.h"
 #include "Application.h"
 
-#include <thread>
 #include "Morpheus/Utilities/DeltaTime.h"
-#include <GLFW/glfw3.h>
-
 #include "Morpheus/Renderer/Renderer.h"
+
+#include <GLFW/glfw3.h>
 
 namespace Morpheus {
 
@@ -14,51 +13,106 @@ namespace Morpheus {
 
 	Application::Application()
 	{
-		s_Instance = this;
+		MORP_PROFILE_FUNCTION();
 
-		WindowProps WindowProperties;
-		WindowProperties.Title = "Morpheus Engine Version: 0.2.0";
-		m_Window = Window::Create(WindowProperties);
-		m_Window->SetEventCallback(MORP_BIND_EVENT_FN(Application::OnEvent));
+		{
+			MORP_PROFILE_SCOPE("Applicaton::Application()->WindowInit");
 
-		m_Graphics = GraphicsContext::Create();
-		m_Graphics->Init();
+			s_Instance = this;
+			WindowProps WindowProperties;
+			WindowProperties.Title = "Morpheus Engine";
+			m_Window = Window::Create(WindowProperties);
+		}
+	
+		std::stringstream ss;
+		ss << std::this_thread::get_id();
+		MORP_CORE_SPECIAL("[APPLICATION] ThreadID: " + ss.str());
+
+		Init();
+	}
+
+	void Application::Init()
+	{
+		MORP_PROFILE_FUNCTION();
+
+		{			
+			MORP_PROFILE_SCOPE("Applicaton::Application()->WindowInit");
+			m_Window->SetEventCallback(MORP_BIND_EVENT_FN(Application::OnEvent));
+		}
+
+		{
+			MORP_PROFILE_SCOPE("Applicaton::Application()->ThreadPoolInit");
+			m_ProcessorThreads = std::thread::hardware_concurrency() - 1;
+			m_ThreadPool = ThreadPool::Create(m_ProcessorThreads);
+		}
+		
+		{
+			MORP_PROFILE_SCOPE("Applicaton::Application()->GraphicsInit");
+			m_Graphics = GraphicsContext::Create();
+			m_Graphics->Init();
+		}
+
+		{
+			MORP_PROFILE_SCOPE("Applicaton::Application()->ApplicationThreadsInit");
+
+			while (m_Units.size() != m_ProcessorThreads) {
+				m_Units.push_back(ApplicationUnit::Create(m_Units.size()));
+				m_Units[m_Units.size() - 1]->SetGraphicsContext(m_Graphics);
+				m_Units[m_Units.size() - 1]->Init();
+			}
+		}
+
 		Renderer::Init();
-
-		m_ImGuiLayer = new ImGuiLayer();
-		PushOverlay(m_ImGuiLayer);
-
-		MORP_CORE_TRACE("[APPLICATION] Num. Threads: " + std::to_string(std::thread::hardware_concurrency()));
-		m_ThreadPool = new ThreadPool(std::thread::hardware_concurrency());
 	}
 
 	void Application::Run()
 	{
+		MORP_PROFILE_FUNCTION();
+
+		DeltaTime Delta = 0;
+		float32 Time = 0;
+
+		MORP_CORE_INFO("[APPLICATION] Running...!");
+
+		for (Ref<ApplicationUnit>& unit : m_Units)
+			m_ThreadPool->Enqueue([unit] { unit->Run(); });
+
 		while (m_Running)
 		{
-			float64 time = (float64)glfwGetTime();
-			DeltaTime Delta = time - m_LastFrameTime;
+			Time = (float32)glfwGetTime();
+			Delta = Time - m_LastFrameTime;
+			m_LastFrameTime = Time;
 
-			if (m_FrameLock == 0.00f || (Delta >= (1.00f / m_FrameLock))) {
-				m_LastFrameTime = time;
+			Update(Delta);
+			Render();
 
-				Update(Delta);
-				Render();
+			#ifdef MORP_DEBUG
+			m_Window->SetTitle("Morpheus Engine: CPU: " + ToString(Delta * 1000) + " ms");
+			#endif
 
-				m_Window->OnUpdate();
-			}
+			m_Window->OnUpdate();
 		}
+
+		for (Ref<ApplicationUnit> unit : m_Units)
+			unit->Stop();
+
+		m_ThreadPool->Stop();
 	}
 
 	void Application::Stop()
 	{
-		Renderer::Shutdown();
-		m_Graphics->Destory();
+		MORP_PROFILE_FUNCTION();
+
 		m_Running = false;
+	
+		Renderer::Shutdown();
+		m_Graphics->Shutdown();
 	}
 
 	void Application::OnEvent(Event& e)
 	{
+		MORP_PROFILE_FUNCTION();
+
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
@@ -69,46 +123,56 @@ namespace Morpheus {
 
 	void Application::PushLayer(Layer* layer)
 	{
+		MORP_PROFILE_FUNCTION();
+
 		m_LayerContainer.PushLayer(layer);
 		layer->OnAttach();
 	}
 
 	void Application::PushOverlay(Layer* overlay)
 	{
+		MORP_PROFILE_FUNCTION();
+
 		m_LayerContainer.PushOverlay(overlay);
 		overlay->OnAttach();
 	}
 
-	void Application::PushFunction(Function<void()> _Func)
-	{
-		m_FunctionSystem.PushFunction(_Func);
-	}
-
 	void Application::Render()
 	{
-		if (!m_Minimized) 
-			for (Layer* layer : m_LayerContainer) 
-				layer->OnRender();
-			
-		m_ImGuiLayer->Begin();
-		for (Layer* layer : m_LayerContainer)
-			layer->OnImGuiRender();
-		m_ImGuiLayer->End();
+		MORP_PROFILE_FUNCTION();
 
-		m_Graphics->End();
+		if (!m_Minimized) {
+
+			{
+				MORP_PROFILE_SCOPE("Application::Render OnLayer");
+				for (Layer* layer : m_LayerContainer)
+					layer->OnRender();
+			}
+
+			#ifdef MORP_DEBUG
+			{
+				//MORP_PROFILE_SCOPE("Application::Render OnImGui");
+				//m_ImGuiLayer->Begin();
+				//for (Layer* layer : m_LayerContainer)
+				//	layer->OnImGuiRender();
+				//m_ImGuiLayer->End();
+			}
+			#endif
+		}
 	}
 
 	void Application::Update(const DeltaTime& _Delta)
 	{
+		MORP_PROFILE_FUNCTION();
+
 		for (Layer* layer : m_LayerContainer)
 			layer->OnUpdate(_Delta);
-		for (Function<void()> Func : m_FunctionSystem)
-			m_ThreadPool->enqueue(Func);
-		m_FunctionSystem.Reset();
 	}
 
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
+		MORP_PROFILE_FUNCTION();
+
 		m_Running = false;
 		return true;
 	}
@@ -120,8 +184,6 @@ namespace Morpheus {
 			return false;
 		}
 		m_Minimized = false;
-		//Renderer::OnWindowResize(e.GetWidth(), e.GetHeight());
-
 		return false;
 	}
 

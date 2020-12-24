@@ -2,13 +2,12 @@
 
 #include "Morpheus/Core/Common.h"
 #include "Morpheus/Mathematics/Mathematics.h"
+#include "Morpheus/Renderer/RendererResources/Renderpass.h"
 
 namespace Morpheus {
 
 	enum class ShaderAttributeType : uint32
-	{
-		None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool
-	};
+	{ None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool };
 
 	static uint32 ShaderAttributeTypeSize(ShaderAttributeType _Type)
 	{
@@ -108,7 +107,7 @@ namespace Morpheus {
 		virtual ~Shader() = default;
 		virtual const uint32& GetID() const = 0;
 
-		virtual void Bind(const uint32& _Slot = 0) = 0;
+		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
 
 		virtual void SetInt(const String& _Name, const uint32& _Value, const Boolean& _Flags = false) = 0;
@@ -116,10 +115,9 @@ namespace Morpheus {
 		virtual void SetFloat3(const String& _Name, const Vector3& _Value, const Boolean& _Flags = false) = 0;
 		virtual void SetFloat4(const String& _Name, const Vector4& _Value, const Boolean& _Flags = false) = 0;
 		virtual void SetMat4(const String& _Name, const Matrix4& _Matrix, const Boolean& _Flags = false) = 0;
-		virtual void SetSampler(const String& _Name, const uint32& _Value, const Boolean& _Flags = false) = 0;
 
 	public:
-		static Ref<Shader> Create(const ShaderAttributeLayout& _ShaderLayout, const ShaderAttributeLayout& _UniformLayout,
+		static Ref<Shader> Create(const Ref<Renderpass>& _Renderpass, const ShaderAttributeLayout& _ShaderLayout,
 			const String& _VertexPath, const String& _FragmentPath);
 	};
 

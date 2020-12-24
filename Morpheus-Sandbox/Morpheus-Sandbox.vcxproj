@@ -55,22 +55,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>..\bin\Debug-windows-x86_64\Morpheus-Sandbox\</OutDir>
-    <IntDir>..\bin-int\Debug-windows-x86_64\Morpheus-Sandbox\</IntDir>
+    <OutDir>..\Morpheus-Bin\Debug-windows-x86_64\Morpheus-Sandbox\</OutDir>
+    <IntDir>..\Morpheus-Bin-Int\Debug-windows-x86_64\Morpheus-Sandbox\</IntDir>
     <TargetName>Morpheus-Sandbox</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Release-windows-x86_64\Morpheus-Sandbox\</OutDir>
-    <IntDir>..\bin-int\Release-windows-x86_64\Morpheus-Sandbox\</IntDir>
+    <OutDir>..\Morpheus-Bin\Release-windows-x86_64\Morpheus-Sandbox\</OutDir>
+    <IntDir>..\Morpheus-Bin-Int\Release-windows-x86_64\Morpheus-Sandbox\</IntDir>
     <TargetName>Morpheus-Sandbox</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Dist|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>..\bin\Dist-windows-x86_64\Morpheus-Sandbox\</OutDir>
-    <IntDir>..\bin-int\Dist-windows-x86_64\Morpheus-Sandbox\</IntDir>
+    <OutDir>..\Morpheus-Bin\Dist-windows-x86_64\Morpheus-Sandbox\</OutDir>
+    <IntDir>..\Morpheus-Bin-Int\Dist-windows-x86_64\Morpheus-Sandbox\</IntDir>
     <TargetName>Morpheus-Sandbox</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
@@ -79,13 +79,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MORP_PLATFORM_WINDOWS;MORP_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\GLM;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions</EnableEnhancedInstructionSet>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -97,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MORP_PLATFORM_WINDOWS;MORP_RELEASE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\GLM;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -118,7 +120,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>MORP_PLATFORM_WINDOWS;MORP_DIST;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\Morpheus-Core\Source;..\Morpheus-Core\Vendor;..\Morpheus-Core\Vendor\VULKAN\Include;..\Morpheus-Core\Vendor\GLM;..\Morpheus-Core\Vendor\IMGUI;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>

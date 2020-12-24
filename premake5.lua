@@ -21,12 +21,14 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Morpheus-Core/Vendor/GLFW/include"
 IncludeDir["VULKAN"] = "Morpheus-Core/Vendor/VULKAN/Include"
 IncludeDir["IMGUI"] = "Morpheus-Core/Vendor/IMGUI"
+IncludeDir["GLM"] = "Morpheus-Core/Vendor/GLM"
 IncludeDir["STB"] = "Morpheus-Core/Vendor/STB"
 
 group "Dependencies"
 	include "Morpheus-Core/Vendor/GLFW"
 	include "Morpheus-Core/Vendor/VULKAN"
 	include "Morpheus-Core/Vendor/IMGUI"
+	include "Morpheus-Core/Vendor/GLM"
 	include "Morpheus-Core/Vendor/STB"
 
 group ""
@@ -38,8 +40,8 @@ project "Morpheus-Core"
 	cppdialect "C++17"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("Morpheus-Bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("Morpheus-Bin-Int/" .. outputdir .. "/%{prj.name}")
 
 	pchheader "Morppch.h"
 	pchsource "Morpheus-Core/Source/Morppch.cpp"
@@ -49,7 +51,9 @@ project "Morpheus-Core"
 		"%{prj.name}/Source/**.h",
 		"%{prj.name}/Source/**.cpp",
 		"%{prj.name}/Vendor/STB/**.h",
-		"%{prj.name}/Vendor/STB/**.cpp"
+		"%{prj.name}/Vendor/STB/**.cpp",
+		"%{prj.name}/Vendor/GLM/glm/**.hpp",
+		"%{prj.name}/Vendor/GLM/glm/**.inl"
 	}
 
 	defines
@@ -64,6 +68,7 @@ project "Morpheus-Core"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.VULKAN}",
 		"%{IncludeDir.IMGUI}",
+		"%{IncludeDir.GLM}",
 		"%{IncludeDir.STB}"
 	}
 
@@ -106,8 +111,8 @@ project "Morpheus-Sandbox"
 	cppdialect "C++17"
 	staticruntime "on"
 
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
+	targetdir ("Morpheus-Bin/" .. outputdir .. "/%{prj.name}")
+	objdir ("Morpheus-Bin-Int/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
@@ -121,6 +126,7 @@ project "Morpheus-Sandbox"
 		"Morpheus-Core/Source",
 		"Morpheus-Core/Vendor",
 		"%{IncludeDir.VULKAN}",
+		"%{IncludeDir.GLM}",
 		"%{IncludeDir.IMGUI}"
 	}
 

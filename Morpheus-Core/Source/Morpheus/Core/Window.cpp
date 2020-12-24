@@ -8,7 +8,6 @@ namespace Morpheus {
 	Scope<Window> Window::Create(const WindowProps& props)
 	{
 		return CreateScope<WindowsWindow>(props);
-		return nullptr;
 	}
 
 }

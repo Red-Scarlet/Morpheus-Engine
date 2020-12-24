@@ -5,38 +5,56 @@
 
 namespace Morpheus {
 
+	enum class RenderpassAttachmentLayout : uint8
+	{
+		ATTACHMENT_COLOR_OPTIMAL,
+		ATTACHMENT_DEPTH_STENCIL_OPTIMAL,
+		ATTACHMENT_DEPTH_STENCIL_READ,
+		ATTACHMENT_SHADER_READ
+	};
+
+	enum class RenderpassFormat : uint8
+	{
+		ATTACHMENT_DEFAULT,
+		ATTACHMENT_R8G8B8A8,
+		ATTACHMENT_R32G32B32A32,
+		ATTACHMENT_D32
+	};
 	
-	enum class RenderpassLoadAttachment : uint8
+	enum class RenderpassLoad : uint8
 	{
 		ATTACHMENT_LOAD,
 		ATTACHMENT_CLEAR,
 		ATTACHMENT_DONTCARE
 	};
 
-	enum class RenderpassStoreAttachment : uint8
+	enum class RenderpassStore : uint8
 	{
 		ATTACHMENT_STORE,
 		ATTACHMENT_DONTCARE
 	};
 
-	enum class RenderpassTypes : uint8
+	enum class RenderpassImage : uint8
 	{
-		ATTACHMENT_COLOR,
-		ATTACHMENT_DEPTH
+		ATTACHMENT_PRESENT,
+		ATTACHMENT_UNDEFINED
 	};
 
 	struct RenderpassElement
 	{
-		RenderpassTypes Type;
-		RenderpassLoadAttachment LoadAttachment;
-		RenderpassStoreAttachment StoreAttachment;
+	public:
+		RenderpassElement() = default;
 
-		RenderpassElement() {}
-		RenderpassElement(RenderpassTypes _Types, RenderpassLoadAttachment _LoadAttachment, RenderpassStoreAttachment _StoreAttachment)
-			: Type(_Types), LoadAttachment(_LoadAttachment), StoreAttachment(_StoreAttachment)
-		{
-		}
+		uint32 Attachment = 0;
+		RenderpassAttachmentLayout Layout = RenderpassAttachmentLayout::ATTACHMENT_COLOR_OPTIMAL;
 
+		RenderpassFormat Format = RenderpassFormat::ATTACHMENT_DEFAULT;
+		RenderpassLoad Load = RenderpassLoad::ATTACHMENT_CLEAR;
+		RenderpassStore Store = RenderpassStore::ATTACHMENT_STORE;
+		RenderpassImage Initial = RenderpassImage::ATTACHMENT_UNDEFINED;
+		RenderpassImage Final = RenderpassImage::ATTACHMENT_PRESENT;
+
+		RenderpassElement* Next = nullptr;
 	};
 
 	class RenderpassLayout

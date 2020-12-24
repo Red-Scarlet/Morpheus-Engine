@@ -11,9 +11,9 @@ namespace Morpheus {
 		virtual ~Camera() = default;
 
 	public:
-		const Matrix4& GetProjectionMatrix() const
+		const Matrix4& GetProjectionMatrix()
 		{ return m_ProjectionMatrix; }
-		const Matrix4& GetViewMatrix() const
+		const Matrix4& GetViewMatrix()
 		{ return m_ViewMatrix; }
 
 		virtual const Vector3& GetPosition() = 0;
@@ -23,12 +23,12 @@ namespace Morpheus {
 		virtual void SetRotation(const Vector3& _Rotation) = 0;
 
 	protected:
-		inline void SetProjectionMatrix(const Matrix4& _Matrix) { m_ProjectionMatrix = _Matrix; }
-		inline void SetViewMatrix(const Matrix4& _Matrix) { m_ViewMatrix = _Matrix; }
+		void SetProjectionMatrix(const Matrix4& _Matrix) { m_ProjectionMatrix = _Matrix; }
+		void SetViewMatrix(const Matrix4& _Matrix) { m_ViewMatrix = _Matrix; }
 
 	private:
-		Matrix4 m_ProjectionMatrix;
-		Matrix4 m_ViewMatrix;
+		Matrix4 m_ProjectionMatrix = Matrix4(0.0f);
+		Matrix4 m_ViewMatrix = Matrix4(0.0f);
 	};
 
 }

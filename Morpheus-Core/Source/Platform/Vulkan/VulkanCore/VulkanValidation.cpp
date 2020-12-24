@@ -1,15 +1,14 @@
+ // MORHPEUS VULKAN BACKEND - VERSION 1.3 [130920]
 #include "Morppch.h"
 #include "VulkanValidation.h"
+#include "VulkanInstance.h"
 
-#include "Platform/Vulkan/VulkanGlobals/VulkanInstance.h"
-#include "Platform/Vulkan/VulkanMemoryManager.h"
-
-namespace Morpheus {
+namespace Morpheus { namespace Vulkan {
 
 	static VKAPI_ATTR VkBool32 VKAPI_CALL DebugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType,
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData)
 	{
-		MORP_CORE_ERROR("[VULKAN] Validation Layer: " + String(pCallbackData->pMessage));
+		VULKAN_CORE_ERROR("[VULKAN] Validation Layer: " + String(pCallbackData->pMessage));
 		return VK_FALSE;
 	}
 
@@ -17,13 +16,12 @@ namespace Morpheus {
 	{
 		if (!CheckValidationSupport())
 			MORP_CORE_ASSERT(true, "Vulkan Validation Layers not available!");
-		MORP_CORE_WARN("[VULKAN] Validation Layer was Created!");
+		VULKAN_CORE_WARN("[VULKAN] Validation Layer was Created!");
 	}
 
 	VulkanValidation::~VulkanValidation()
 	{
-		Ref<VulkanInstance> Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
-		DestroyDebugMessenger(Instance->GetInstance(), m_DebugMessenger, nullptr);
+		DestroyDebugMessenger(VulkanInstance::GetInstance()->GetVulkanInstance(), m_DebugMessenger, nullptr);
 	}
 
 	bool VulkanValidation::CheckValidationSupport()
@@ -54,8 +52,7 @@ namespace Morpheus {
 		VkDebugUtilsMessengerCreateInfoEXT createInfo;
 		PopulateDebugMessenger(createInfo);
 
-		Ref<VulkanInstance> Instance = VulkanMemoryManager::GetInstance()->GetVulkanInstance();
-		VkResult result = CreateDebugMessenger(Instance->GetInstance(), &createInfo, nullptr, &m_DebugMessenger);
+		VkResult result = CreateDebugMessenger(VulkanInstance::GetInstance()->GetVulkanInstance(), &createInfo, nullptr, &m_DebugMessenger);
 		MORP_CORE_ASSERT(result, "Vulkan Instance Error!");
 	}
 
@@ -68,7 +65,7 @@ namespace Morpheus {
 		CreateInfo.pfnUserCallback = DebugCallback;
 	}
 
-	VkResult VulkanValidation::CreateDebugMessenger(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
+	VkResult VulkanValidation::CreateDebugMessenger(const VkInstance& instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo,
 		const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger)
 	{
 		auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
@@ -77,11 +74,16 @@ namespace Morpheus {
 		else return VK_ERROR_EXTENSION_NOT_PRESENT;
 	}
 
-	void VulkanValidation::DestroyDebugMessenger(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+	void VulkanValidation::DestroyDebugMessenger(const VkInstance& instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
 		auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
 		if (func != nullptr) {
 			func(instance, debugMessenger, pAllocator);
 		}
 	}
 
-}
+	Ref<VulkanValidation> VulkanValidation::Create()
+	{
+		return CreateRef<VulkanValidation>();
+	}
+
+}}

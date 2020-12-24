@@ -1,37 +1,10 @@
 #pragma once
 
-#include <iostream>
 #include "Morpheus/Core/Common.h"
+#include <glm/glm.hpp>
 
 namespace Morpheus {
 
-	struct Vector2
-	{
-	public:
-		floatm x, y;
-
-		Vector2();
-		Vector2(const floatm& X, const floatm& Y);
-
-		Vector2& Add(const Vector2& other);
-		Vector2& Subtract(const Vector2& other);
-		Vector2& Multiply(const Vector2& other);
-		Vector2& Divide(const Vector2& other);
-
-		friend Vector2& operator+(Vector2 Left, const Vector2& Right);
-		friend Vector2& operator-(Vector2 Left, const Vector2& Right);
-		friend Vector2& operator/(Vector2 Left, const Vector2& Right);
-		friend Vector2& operator*(Vector2 Left, const Vector2& Right);
-
-		bool operator==(const Vector2& Other);
-		bool operator!=(const Vector2& Other);
-
-		Vector2& operator+=(const Vector2& Other);
-		Vector2& operator-=(const Vector2& Other);
-		Vector2& operator*=(const Vector2& Other);
-		Vector2& operator/=(const Vector2& Other);
-
-		friend std::ostream& operator<<(std::ostream& Stream, const Vector2& Vector);
-	};
+	using Vector2 = glm::vec2;
 
 }

@@ -1,6 +1,5 @@
 #define ENTRYPOINT
 #include <Morpheus.h>
-
 #include <IMGUI/imgui.h>
 
 class ExampleLayer : public Morpheus::Layer
@@ -26,6 +25,8 @@ public:
 
 	virtual void OnUpdate(const Morpheus::DeltaTime& _Delta) override
 	{
+		MORP_PROFILE_FUNCTION();
+
 		float CurrentSpeed = m_CameraSpeed * _Delta;
 
 		if (Morpheus::Input::IsKeyPressed(MORP_KEY_W))
@@ -34,20 +35,30 @@ public:
 			m_CameraPos -= CurrentSpeed * m_CameraFront;
 
 		if (Morpheus::Input::IsKeyPressed(MORP_KEY_A))
-			m_CameraPos -= Morpheus::Vector3::Normalize(Morpheus::Vector3::Cross(m_CameraFront, m_CameraUp)) * CurrentSpeed;
+			m_CameraPos -= glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * CurrentSpeed;
 		else if (Morpheus::Input::IsKeyPressed(MORP_KEY_D))
-			m_CameraPos += Morpheus::Vector3::Normalize(Morpheus::Vector3::Cross(m_CameraFront, m_CameraUp)) * CurrentSpeed;
+			m_CameraPos += glm::normalize(glm::cross(m_CameraFront, m_CameraUp)) * CurrentSpeed;
 
 		m_Camera.SetPosition(m_CameraPos);
 		m_Camera.SetView(m_CameraPos, m_CameraFront, m_CameraUp);
-
 		m_CurrentDeltaTime = _Delta;
 	}
 
 	virtual void OnRender() override 
 	{		
-		Morpheus::Renderer::BeginScene(m_Camera);
-		Morpheus::Renderer::EndScene();
+		MORP_PROFILE_FUNCTION();
+
+		//{
+		//	MORP_PROFILE_SCOPE("Renderer::BeginScene");
+		//	Morpheus::Renderer::BeginScene(m_Camera);
+		//}
+		//
+		//{
+		//	MORP_PROFILE_SCOPE("Renderer::EndScene");
+		//	Morpheus::Renderer::EndScene();
+		//}
+
+		//m_Stats = Morpheus::RenderCommand::GetRendererStats();
 	}
 
 	virtual void OnEvent(Morpheus::Event& _Event) override
@@ -58,13 +69,19 @@ public:
 
 	virtual void OnImGuiRender() override
 	{
-		ImGui::Begin("DebugUtils");
-		ImGui::Text("CPU Frametime: %f ms", m_CurrentDeltaTime);
-		ImGui::Text("CPU Framerate: %f fps", 1.00f / m_CurrentDeltaTime);
-		ImGui::End();
-
-		//VK IMAGE FROM FBO
-		//ImGui::Image((void*)m_textureID, ImVec2{ 1280, 720}, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		//MORP_PROFILE_FUNCTION();
+		//
+		////VK IMAGE FROM FBO
+		//ImGui::Begin("DebugUtils");
+		//ImGui::Text("Renderer: %s", m_Stats.GPU.c_str());
+		//ImGui::Text("CPU Frametime: %f s", m_CurrentDeltaTime);
+		//ImGui::Text("CPU Frametime: %f ms", m_CurrentDeltaTime * 1000);
+		//ImGui::Text("CPU Framerate: %f fps", 1.00f / m_CurrentDeltaTime);
+		//ImGui::Separator();
+		//ImGui::Text("Total VRAM: %d", m_Stats.VRAM);
+		//ImGui::Text("Shared VRAM: %d", m_Stats.SHARED_RAM);
+		//ImGui::Text("Used VRAM: %d", m_Stats.USED_VRAM);
+		//ImGui::End();
 	}
 
 
@@ -100,7 +117,7 @@ public:
 		front.y = -sin(Morpheus::ToRadians(m_Pitch));
 		front.z = sin(Morpheus::ToRadians(m_Yaw)) * cos(Morpheus::ToRadians(m_Pitch));
 
-		m_CameraFront = Morpheus::Vector3::Normalize(front);
+		m_CameraFront = glm::normalize(front);
 		
 		return false;
 	}
@@ -108,8 +125,9 @@ public:
 private:
 	Morpheus::PerspectiveCamera m_Camera;
 	Morpheus::Vector3 m_CameraPos = { 0.0f, 0.0f, 0.0f };
-	Morpheus::Vector3 m_CameraFront = { 0.0f, 0.0f, 1.0f };
+	Morpheus::Vector3 m_CameraFront = { 0.0f, 0.0f, -1.0f };
 	Morpheus::Vector3 m_CameraUp = { 0.0f, 1.0f, 0.0f };
+	Morpheus::RendererAPI::RendererStats m_Stats;
 
 	bool m_FirstMouse = true;
 	float m_CameraSpeed = 0.0f;

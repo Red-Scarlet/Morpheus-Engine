@@ -12,13 +12,14 @@ namespace Morpheus {
 		virtual ~WindowsWindow();
 
 		void OnUpdate() override;
+		virtual void SetTitle(const String& _Title) override;
 
 		inline const uint32& GetWidth() const override { return m_Data.Width; }
 		inline const uint32& GetHeight() const override { return m_Data.Height; }
 		inline const uint32& GetRate() const override { return m_Data.Rate; }
 
 		// Window attributes
-		inline void SetEventCallback(const EventCallbackFn& callback) override { m_Data.EventCallback = callback; }
+		inline void SetEventCallback(const EventCallbackFn& callback) override { MORP_PROFILE_FUNCTION(); m_Data.EventCallback = callback; }
 		void SetVSync(bool enabled) override;
 		bool IsVSync() const override;
 

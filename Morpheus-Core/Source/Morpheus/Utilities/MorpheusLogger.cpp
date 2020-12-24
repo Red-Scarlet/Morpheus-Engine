@@ -3,6 +3,6 @@
 
 namespace Morpheus {
 
-    Log* MorpheusLogger::s_SystemLogger = nullptr;
+    Log MorpheusLogger::s_SystemLogger;
 
 }

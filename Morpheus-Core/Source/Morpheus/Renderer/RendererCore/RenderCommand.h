@@ -19,14 +19,14 @@ namespace Morpheus {
 			s_RendererAPI->Shutdown();
 		}
 
+		inline static void Flush()
+		{
+			s_RendererAPI->Flush();
+		}
+
 		inline static void SetClearColor(const Vector4& _ClearColor)
 		{
 			s_RendererAPI->SetClearColor(_ClearColor);
-		}
-
-		inline static void Clear()
-		{
-			s_RendererAPI->Clear();
 		}
 
 		inline static void DrawIndexed(const Ref<VertexArray>& _VertexArray)
@@ -34,9 +34,9 @@ namespace Morpheus {
 			s_RendererAPI->DrawIndexed(_VertexArray);
 		}
 
-		inline static void Flush()
+		inline static RendererAPI::RendererStats GetRendererStats()
 		{
-			s_RendererAPI->Flush();
+			return s_RendererAPI->GetRendererStats();
 		}
 
 	private:

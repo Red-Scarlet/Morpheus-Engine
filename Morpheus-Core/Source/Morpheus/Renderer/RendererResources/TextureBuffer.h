@@ -8,7 +8,6 @@ namespace Morpheus {
 	{
 	public:
 		virtual ~TextureBuffer() = default;
-
 		virtual const uint32& GetID() const = 0;
 
 	public:

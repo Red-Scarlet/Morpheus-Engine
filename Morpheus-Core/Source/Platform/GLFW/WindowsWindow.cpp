@@ -16,7 +16,6 @@ namespace Morpheus {
 		String Message = "[GLFW] " + String(description);
 		MORP_CORE_ERROR(Message);
 		MORP_CORE_ASSERT(MORP_ERROR, "[GLFW] ERROR CALLBACK!");
-
 	}
 
 	WindowsWindow::WindowsWindow(const WindowProps& props)
@@ -31,144 +30,173 @@ namespace Morpheus {
 
 	void WindowsWindow::Init(const WindowProps& props)
 	{
-		m_Data.Title = props.Title;
-		m_Data.Width = props.Width;
-		m_Data.Height = props.Height;
-		m_Data.Rate = props.Rate;
+		MORP_PROFILE_FUNCTION();
 
-		//MORP_CORE_INFO("{0}, Creating Window: ({1} x {2} @ {3}Hz)", props.Title, props.Width, props.Height, props.Rate);
-
-		if (!s_GLFWInitialized)
 		{
-			// TODO: glfwTerminate on system shutdown
-			int success = glfwInit();
-			MORP_CORE_ASSERT(!success, "Could not intialize GLFW!");
-			glfwSetErrorCallback(GLFWErrorCallback);
-			s_GLFWInitialized = true;
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->GLFWInit()");
+			m_Data.Title = props.Title;
+			m_Data.Width = props.Width;
+			m_Data.Height = props.Height;
+			m_Data.Rate = props.Rate;
+
+			if (!s_GLFWInitialized)
+			{
+				// TODO: glfwTerminate on system shutdown
+				int success = glfwInit();
+				MORP_CORE_ASSERT(!success, "Could not intialize GLFW!");
+				glfwSetErrorCallback(GLFWErrorCallback);
+				s_GLFWInitialized = true;
+			}
 		}
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-		//if (Renderer::GetAPI() == RendererAPI::API::Vulkan)
-		//	glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		//glfwWindowHint(GLFW_VISIBLE, GLFW_TRUE);
-
-		m_MainWindow = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
-
-		glfwSetWindowUserPointer(m_MainWindow, &m_Data);
-		//SetVSync(true);
-
-		
-
-		// Set GLFW Callbacks
-		glfwSetWindowSizeCallback(m_MainWindow, [](GLFWwindow* window, int width, int height)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			data.Width = width;
-			data.Height = height;
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->GLFWCreate()");
+			glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+			glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+			m_MainWindow = glfwCreateWindow((int)props.Width, (int)props.Height, m_Data.Title.c_str(), nullptr, nullptr);
+			glfwSetWindowUserPointer(m_MainWindow, &m_Data);
+		}
 
-			WindowResizeEvent event(width, height);
-			data.EventCallback(event);
-		});
-
-		glfwSetWindowCloseCallback(m_MainWindow, [](GLFWwindow* window)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-			WindowCloseEvent event;
-
-			data.EventCallback(event);
-		});
-
-		glfwSetKeyCallback(m_MainWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-			switch (action)
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowSizeCallback()");
+			glfwSetWindowSizeCallback(m_MainWindow, [](GLFWwindow* window, int width, int height)
 			{
-			case GLFW_PRESS:
-			{
-				KeyPressedEvent event(key, 0);
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				data.Width = width;
+				data.Height = height;
+
+				WindowResizeEvent event(width, height);
 				data.EventCallback(event);
-				break;
-			}
-			case GLFW_RELEASE:
-			{
-				KeyReleasedEvent event(key);
-				data.EventCallback(event);
-				break;
-			}
-			case GLFW_REPEAT:
-			{
-				KeyPressedEvent event(key, 1);
-				data.EventCallback(event);
-				break;
-			}
-			}	
-		});
+			});
+		}
 
-		glfwSetCharCallback(m_MainWindow, [](GLFWwindow* window, unsigned int keycode)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowCloseCallback()");
+			glfwSetWindowCloseCallback(m_MainWindow, [](GLFWwindow* window)
+			{
 
-			KeyTypedEvent event(keycode);
-			data.EventCallback(event);
-		});
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+				WindowCloseEvent event;
 
-		glfwSetMouseButtonCallback(m_MainWindow, [](GLFWwindow* window, int button, int action, int mods)
+				data.EventCallback(event);
+			});
+		}
+
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowKeyCallback()");
+			glfwSetKeyCallback(m_MainWindow, [](GLFWwindow* window, int key, int scancode, int action, int mods)
+			{
+
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				switch (action)
+				{
+				case GLFW_PRESS:
+				{
+					KeyPressedEvent event(key, 0);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					KeyReleasedEvent event(key);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_REPEAT:
+				{
+					KeyPressedEvent event(key, 1);
+					data.EventCallback(event);
+					break;
+				}
+				}
+			});
+		}
+
+		{
 			
-			switch (action)
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowCharCallback()");
+			glfwSetCharCallback(m_MainWindow, [](GLFWwindow* window, unsigned int keycode)
 			{
-			case GLFW_PRESS:
-			{
-				MouseButtonPressedEvent event(button);
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				KeyTypedEvent event(keycode);
 				data.EventCallback(event);
-				break;
-			}
-			case GLFW_RELEASE:
+			});
+		}
+
+		{
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowMouseButtonCallback()");
+			glfwSetMouseButtonCallback(m_MainWindow, [](GLFWwindow* window, int button, int action, int mods)
 			{
-				MouseButtonReleasedEvent event(button);
+
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				switch (action)
+				{
+				case GLFW_PRESS:
+				{
+					MouseButtonPressedEvent event(button);
+					data.EventCallback(event);
+					break;
+				}
+				case GLFW_RELEASE:
+				{
+					MouseButtonReleasedEvent event(button);
+					data.EventCallback(event);
+					break;
+				}
+				}
+			});
+		}
+
+		{
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowScrollCallback()");
+			glfwSetScrollCallback(m_MainWindow, [](GLFWwindow* window, double xOffset, double yOffset)
+			{
+
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+
+				MouseScrolledEvent event((float)xOffset, (float)yOffset);
 				data.EventCallback(event);
-				break;
-			}
-			}
-		});
+			});
+		}
 
-		glfwSetScrollCallback(m_MainWindow, [](GLFWwindow* window, double xOffset, double yOffset)
 		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
+			MORP_PROFILE_SCOPE("WindowsWindow::Init->WindowCursorPosCallback()");
+			glfwSetCursorPosCallback(m_MainWindow, [](GLFWwindow* window, double xPos, double yPos)
+			{			
 
-			MouseScrolledEvent event((float)xOffset, (float)yOffset);
-			data.EventCallback(event);
-		});
+				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 
-		glfwSetCursorPosCallback(m_MainWindow, [](GLFWwindow* window, double xPos, double yPos)
-		{
-			WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
-
-			MouseMovedEvent event((float)xPos, (float)yPos);
-			data.EventCallback(event);
-		});
-
+				MouseMovedEvent event((float)xPos, (float)yPos);
+				data.EventCallback(event);
+			});
+		}
 	}
 
 	void WindowsWindow::Shutdown()
 	{
+		MORP_PROFILE_FUNCTION();
 		glfwDestroyWindow(m_MainWindow);
 	}
 
 	void WindowsWindow::OnUpdate()
 	{
+		MORP_PROFILE_FUNCTION();
 		glfwPollEvents();
+	}
+
+	void WindowsWindow::SetTitle(const String& _Title)
+	{
+		MORP_PROFILE_FUNCTION();
+
+		glfwSetWindowTitle(m_MainWindow, _Title.c_str());
+		m_Data.Title = _Title;
 	}
 
 	void WindowsWindow::SetVSync(bool enabled)
 	{
-		//m_MainContext->SwapInterval(enabled);
-		//m_Data.VSync = enabled;
-		//CC_CORE_INFO("OpenGL: VSync {0}", enabled);
 	}
 
 	bool WindowsWindow::IsVSync() const
@@ -178,18 +206,6 @@ namespace Morpheus {
 
 	void WindowsWindow::SetFullscreen(bool enabled)
 	{
-		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-
-		m_PrevWidth = m_Data.Width;
-		m_PrevHeight = m_Data.Height;
-
-		if(enabled) 
-			glfwSetWindowMonitor(m_MainWindow, glfwGetPrimaryMonitor(), 0, 0, (1920), (1080), mode->refreshRate);
-		else 
-			glfwSetWindowMonitor(m_MainWindow, nullptr, 0, 0, (int)m_PrevWidth, (int)m_PrevHeight, mode->refreshRate);
-
-		m_Data.Fullscreen = enabled;
-		//CC_CORE_INFO("OpenGL: Fullscreen {0}", enabled);
 	}
 
 	bool WindowsWindow::IsFullscreen() const
@@ -199,13 +215,9 @@ namespace Morpheus {
 
 	void WindowsWindow::SetMouseActive(bool enabled)
 	{		
-		if(enabled)
-			glfwSetInputMode(m_MainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		else
-			glfwSetInputMode(m_MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
+		if(enabled) glfwSetInputMode(m_MainWindow, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		else glfwSetInputMode(m_MainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		m_Data.Mouse = enabled;
-		//CC_CORE_INFO("OpenGL: Mouse {0}", enabled);
 	}
 
 	bool WindowsWindow::IsMouseActive() const

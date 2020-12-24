@@ -11,8 +11,12 @@
 #include <bitset>
 #include <queue>
 #include <array>
+#include <ostream>
+#include <map>
+#include <tuple>
 
 #include "Morpheus/Utilities/MorpheusLogger.h"
+#include "Morpheus/Utilities/Instrumentor.h"
 
 #ifdef MORP_PLATFORM_WINDOWS
 #endif
@@ -20,6 +24,7 @@
 #define MORP_CORE_ASSERTS
 
 #define MORP_ERROR true
+
 #ifdef MORP_CORE_ASSERTS
 	#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); }}
 #else
@@ -45,14 +50,19 @@ namespace Morpheus {
 	constexpr Ref<T> CreateRef(Args&& ... args)
 	{ return std::make_shared<T>(std::forward<Args>(args)...); }
 
+	template<typename T>
+	using ParentRef = std::enable_shared_from_this<T>;
+
 	template<typename T, typename ... Args>
 	constexpr Ref<T> CastRef(Args&& ... args)
 	{ return std::dynamic_pointer_cast<T>(std::forward<Args>(args)...); }
 
 	using AnyData = std::any;
-	template<typename T>
-	inline T AnyCast(const AnyData& _Data)
-	{ return std::any_cast<T>(_Data); }
+	template<typename T, typename... Args>
+	constexpr T AnyCast(Args&&... args)
+	{ 
+		return std::any_cast<T>(std::forward<Args>(args)...); 
+	}
 
 	template <typename T1, typename T2>
 	struct offset_of_impl 
@@ -70,6 +80,27 @@ namespace Morpheus {
 	{ return offset_of_impl<T1, T2>::offset(member); }
 
 	template<typename T>
+	constexpr inline T operator~ (T a) { return static_cast<T>(~static_cast<std::underlying_type<T>::type>(a)); }
+
+	template<typename T>
+	constexpr inline T operator| (T a, T b) { return static_cast<T>(static_cast<std::underlying_type<T>::type>(a) | static_cast<std::underlying_type<T>::type>(b)); }
+
+	template<typename T>
+	constexpr inline T operator& (T a, T b) { return static_cast<T>(static_cast<std::underlying_type<T>::type>(a) & static_cast<std::underlying_type<T>::type>(b)); }
+
+	template<typename T>
+	constexpr inline T operator^ (T a, T b) { return static_cast<T>(static_cast<std::underlying_type<T>::type>(a) ^ static_cast<std::underlying_type<T>::type>(b)); }
+
+	template<typename T>
+	constexpr inline T& operator|= (T& a, T b) { return reinterpret_cast<T&>(reinterpret_cast<std::underlying_type<T>::type&>(a) |= static_cast<std::underlying_type<T>::type>(b)); }
+
+	template<typename T>
+	constexpr inline T& operator&= (T& a, T b) { return reinterpret_cast<T&>(reinterpret_cast<std::underlying_type<T>::type&>(a) &= static_cast<std::underlying_type<T>::type>(b)); }
+
+	template<typename T>
+	constexpr inline T& operator^= (T& a, T b) { return reinterpret_cast<T&>(reinterpret_cast<std::underlying_type<T>::type&>(a) ^= static_cast<std::underlying_type<T>::type>(b)); }
+
+	template<typename T>
 	using Function = std::function<T>;
 
 	template<typename T>
@@ -77,6 +108,32 @@ namespace Morpheus {
 
 	template<typename T>
 	using Vector = std::vector<T>;
+
+	template<typename K, typename T>
+	using Map = std::map<K, T>;
+
+	template<typename... Types>
+	using Tuple = std::tuple<Types...>;
+
+	template <typename T>
+	Vector<T> operator+(const Vector<T>& A, const Vector<T>& B)
+	{
+		Vector<T> C;
+		C.reserve(A.size() + B.size());
+		C.insert(C.end(), A.begin(), A.end());
+		C.insert(C.end(), B.begin(), B.end());
+		return C;
+	}
+
+	template <typename T>
+	Vector<T>& operator+=(Vector<T>& A, const Vector<T>& B)
+	{
+		A.reserve(A.size() + B.size());
+		A.insert(A.end(), B.begin(), B.end());
+		return A;
+	}
+
+	using ThreadID = std::thread::id;
 
 	template<typename T, std::size_t length>
 	using Array = std::array<T, length>;
@@ -101,6 +158,17 @@ namespace Morpheus {
 
 	using String = std::string;
 	using Ostream = std::ostream;
+
+	template<typename... Args>
+	constexpr String ToString(Args&&... args)
+	{ return std::to_string(std::forward<Args>(args)...); }
+
+	template<typename Args>
+	constexpr String GetString(Args&& args)
+	{ 
+		String str = args;
+		return str;
+	}
 
 	typedef std::uint64_t uint64;
 	typedef std::uint32_t uint32;
@@ -127,7 +195,24 @@ namespace Morpheus {
 
 	typedef std::nullptr_t undefined32;
 	typedef void* Memory32;
+	
+	template<typename Args>
+	constexpr String ReadAddress(Args&& args)
+	{
+		std::stringstream ReadStream;
+		ReadStream << std::forward<Args>(args);
+		return ReadStream.str();
+	}
+
+	//template<typename... Args>
+	//constexpr String ReadAddress(Args&&... args)
+	//{ 
+	//	String s = ToString(std::to_address(std::forward<Args>(args)...));
+	//	return s;
+	//}
+
 }
+
 
 #define uint64_max std::numeric_limits<Morpheus::uint64>::max()
 #define uint32_max std::numeric_limits<Morpheus::uint32>::max()

@@ -1,7 +1,7 @@
 #include "Morppch.h"
 #include "RendererAPI.h"
 
-#include "Platform/VULKAN/VulkanCore/VulkanRendererAPI.h"
+#include "Platform/Vulkan/VulkanRendererAPI.h"
 
 namespace Morpheus {
 
@@ -12,7 +12,7 @@ namespace Morpheus {
 		switch (s_RenderAPI)
 		{
 			case RendererAPI::API::None:    MORP_CORE_ASSERT(true, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return CreateScope<VulkanRendererAPI>();
+			case RendererAPI::API::Vulkan:  return CreateScope<Vulkan::VulkanRendererAPI>();
 		}
 
 		MORP_CORE_ASSERT(true, "Unknown RendererAPI!");

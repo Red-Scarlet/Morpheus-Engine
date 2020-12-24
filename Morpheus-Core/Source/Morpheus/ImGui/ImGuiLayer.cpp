@@ -47,11 +47,10 @@ namespace Morpheus {
 
 		Application& app = Application::Get();
 		GLFWwindow* window = static_cast<GLFWwindow*>(app.GetWindow().GetNativeWindow());
-		// Setup Platform/Renderer bindings
 		ImGui_ImplGlfw_InitForVulkan(window, true);
 
-		m_VulkanImGui = new VulkanImGui();
-		m_VulkanImGui->Init();
+		//m_VulkanImGui = new VulkanImGui();
+		//m_VulkanImGui->Init();
 	}
 
 	void ImGuiLayer::OnDetach()
@@ -75,7 +74,7 @@ namespace Morpheus {
 		io.DisplaySize = ImVec2((float)app.GetWindow().GetWidth(), (float)app.GetWindow().GetHeight());
 
 		ImGui::Render();
-		m_VulkanImGui->SetupCommands();
+		//m_VulkanImGui->SetupCommands();
 
 		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
 		{
@@ -83,6 +82,7 @@ namespace Morpheus {
 			ImGui::UpdatePlatformWindows();
 			ImGui::RenderPlatformWindowsDefault();
 			glfwMakeContextCurrent(backup_current_context);
-		}		
+		}
+
 	}
 }

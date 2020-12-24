@@ -33,26 +33,13 @@ namespace Morpheus {
 
 	float WindowsInput::GetMouseXImpl()
 	{
-		/*
-			UPDATE TO C++17 for latest feature
-
-			auto[x, y] = GetMousePositionImpl();
-			return x;
-		*/
-
 		auto [x, y] = GetMousePositionImpl();
 		return x;
-
-		//auto v = GetMousePositionImpl();
-		//return std::get<0>(v);
 	}
 
 	float WindowsInput::GetMouseYImpl()
 	{
 		auto [x, y] = GetMousePositionImpl();
 		return y;
-
-		//auto v = GetMousePositionImpl();
-		//return std::get<1>(v);
 	}
 }

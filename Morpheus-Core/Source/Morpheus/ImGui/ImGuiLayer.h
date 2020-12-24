@@ -6,7 +6,7 @@
 #include "Morpheus/Events/KeyEvent.h"
 #include "Morpheus/Events/MouseEvent.h"
 
-#include "Platform/Vulkan/VulkanImGui/VulkanImGui.h"
+//#include "Platform/Vulkan/VulkanCore/VulkanImGui.h"
 
 namespace Morpheus {
 
@@ -24,7 +24,7 @@ namespace Morpheus {
 
 	private:
 		float32 m_Time = 0.0f;
-		VulkanImGui* m_VulkanImGui = nullptr;
+		//VulkanImGui* m_VulkanImGui = nullptr;
 	};
 
 }

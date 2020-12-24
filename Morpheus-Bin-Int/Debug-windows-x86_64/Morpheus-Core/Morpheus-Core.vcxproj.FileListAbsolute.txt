@@ -1,0 +1,4 @@
+B:\Projects\Visual Studio\Morpheus-Engine\bin\Debug-windows-x86_64\Morpheus-Core\Morpheus-Core.pdb
+B:\Projects\Visual Studio\Morpheus-Engine\bin-int\Debug-windows-x86_64\Morpheus-Core\Morpheus-Core.pdb
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Bin\Debug-windows-x86_64\Morpheus-Core\Morpheus-Core.pdb
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Bin-Int\Debug-windows-x86_64\Morpheus-Core\Morpheus-Core.pdb

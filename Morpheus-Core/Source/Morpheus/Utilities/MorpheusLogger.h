@@ -1,6 +1,7 @@
 #pragma once
 
-#include "MorpheusIOS.h"
+#include "MultithreadedLog.h"
+#include "Morpheus/Utilities/Instrumentor.h"
 
 namespace Morpheus {
 
@@ -25,54 +26,43 @@ namespace Morpheus {
 	class MorpheusLogger
 	{
 	public:
-		static void Init()
-		{
-			s_SystemLogger = new Log();
-		}
-
-		static void Shutdown()
-		{
-			delete s_SystemLogger;
-		}
-
 		static void LogError(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§12" << _Message << std::endl;
-			//std::cout << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§12" << _Message << std::endl;
 		}
 
 		static void LogWarn(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§14" << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§14" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 		static void LogInfo(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§15" << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§15" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 		static void LogTrace(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§09" << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§09" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 		static void LogSpecial(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§13" << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§13" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 		static void LogSpecialOverride(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§02" << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§02" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 		static void LogNormal(const std::string& _Message)
 		{
-			(*s_SystemLogger) << "§07" << "[MORPHEUS] " << _Message << std::endl;
+			s_SystemLogger << "§07" << "[MORPHEUS] " << _Message << std::endl;
 		}
 
 	private:
-		static Log* s_SystemLogger;
+		static Log s_SystemLogger;
 	};
 
 }

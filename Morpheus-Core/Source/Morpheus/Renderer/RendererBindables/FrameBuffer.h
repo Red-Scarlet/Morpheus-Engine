@@ -11,10 +11,11 @@ namespace Morpheus {
 	public:
 		virtual ~FrameBuffer() = default;
 
-		virtual void Bind(const uint32& _Slot = 0) = 0;
+		virtual void Bind() = 0;
 		virtual void Unbind() = 0;
 
 		virtual const uint32& GetID() const = 0;
+		virtual void* GetImage() = 0;
 
 	public:
 		static Ref<FrameBuffer> Create(const Ref<Renderpass>& _Renderpass);

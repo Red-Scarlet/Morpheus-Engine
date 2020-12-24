@@ -6,8 +6,16 @@
 #include "Morpheus/Core/Input.h"
 // --------------------------------------------
 
+// --- Event ----------------------------------
+#include "Morpheus/Events/Event.h"
+#include "Morpheus/Events/KeyEvent.h"
+#include "Morpheus/Events/MouseEvent.h"
+#include "Morpheus/Events/ApplicationEvent.h"
+// --------------------------------------------
+
 // --- Utils ----------------------------------
 #include "Morpheus/Utilities/MorpheusLogger.h"
+#include "Morpheus/Utilities/Instrumentor.h"
 // --------------------------------------------
 
 // --- Math -----------------------------------
@@ -16,11 +24,8 @@
 
 // --- Renderer -------------------------------
 #include "Morpheus/Renderer/Renderer.h"
-
 #include "Morpheus/Renderer/Camera.h"
 #include "Morpheus/Renderer/RendererCamera/PerspectiveCamera.h"
-
-
 //#include "Morpheus/Renderer/RendererSystems/Renderer2D.h"
 // --------------------------------------------
 
@@ -29,27 +34,23 @@
 #ifdef ENTRYPOINT
 
 #ifdef MORP_PLATFORM_WINDOWS
-
 extern Morpheus::Application* CreateApplication();
-
-int main(int argc, char** argv
-)
+int main(int argc, char** argv)
 {
-	Morpheus::MorpheusLogger::Init();
-	MORP_CORE_SPECIAL("Initialized Log!");
-	MORP_CORE_SPECIAL("Entrypoint Initialized!");
-	MORP_CORE_SPECIAL_2("Engine Version: Aquamarine - Early Development");
-
+	MORP_PROFILE_BEGIN_SESSION("Startup", "MorpheusProfile-Startup.json");
 	auto app = CreateApplication();
+	MORP_PROFILE_END_SESSION();
 
+	MORP_PROFILE_BEGIN_SESSION("Runtime", "MorpheusProfile-Runtime.json");
 	app->Run();
-	app->Stop();
+	MORP_PROFILE_END_SESSION();
 
-	Morpheus::MorpheusLogger::Shutdown();
+	MORP_PROFILE_BEGIN_SESSION("Shutdown", "MorpheusProfile-Shutdown.json");
+	app->Stop();
+	MORP_PROFILE_END_SESSION();
+
 	delete app;
 }
-
 #endif
-
 #endif
 // --------------------------------------------
