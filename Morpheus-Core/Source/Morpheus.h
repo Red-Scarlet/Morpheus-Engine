@@ -1,6 +1,7 @@
 #pragma once
 
 // --- Core -----------------------------------
+#include "Morpheus/Core/Common.h"
 #include "Morpheus/Core/Application.h"
 #include "Morpheus/Core/LayerSystem.h"
 #include "Morpheus/Core/Input.h"
@@ -25,8 +26,7 @@
 // --- Renderer -------------------------------
 #include "Morpheus/Renderer/Renderer.h"
 #include "Morpheus/Renderer/Camera.h"
-#include "Morpheus/Renderer/RendererCamera/PerspectiveCamera.h"
-//#include "Morpheus/Renderer/RendererSystems/Renderer2D.h"
+#include "Morpheus/Renderer/RendererCameras/PerspectiveCamera.h"
 // --------------------------------------------
 
 // --- Entry Point ----------------------------
@@ -35,7 +35,17 @@
 
 #ifdef MORP_PLATFORM_WINDOWS
 extern Morpheus::Application* CreateApplication();
+
+#ifdef MORP_DIST
+int CALLBACK WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR     lpCmdLine,
+	_In_ int       nCmdShow
+)
+#else
 int main(int argc, char** argv)
+#endif
 {
 	MORP_PROFILE_BEGIN_SESSION("Startup", "MorpheusProfile-Startup.json");
 	auto app = CreateApplication();
@@ -50,7 +60,7 @@ int main(int argc, char** argv)
 	MORP_PROFILE_END_SESSION();
 
 	delete app;
-}
+	}
 #endif
 #endif
 // --------------------------------------------

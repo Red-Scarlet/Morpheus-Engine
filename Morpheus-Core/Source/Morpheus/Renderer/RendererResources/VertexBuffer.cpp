@@ -1,23 +1,37 @@
 #include "Morppch.h"
 #include "VertexBuffer.h"
 
-#include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/Vulkan/VulkanResource/VulkanVertexBuffer.h"
+#include "Morpheus/ResourceManager/ResourceCommand.h"
+#include "Morpheus/Renderer/RendererComponents/RendererAllocationInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererDeallocationInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererResourceInfo.h"
 
 namespace Morpheus {
 
-	Ref<VertexBuffer> VertexBuffer::Create(QuadVertex* _Data, const uint32& _Size)
+	VertexBuffer::VertexBuffer(float* _Vertices, const uint32& _Size)
 	{
-		using namespace Vulkan;
+		m_Resource = ResourceCommand::CreateResource();
 
-		switch (RendererAPI::GetAPI())
-		{
-			case RendererAPI::API::None:    MORP_CORE_ASSERT(MORP_ERROR, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return VulkanVertexBuffer::Make(_Data, _Size);
-		}
+		RendererResourceInfo ResourceInfo = {};
+		ResourceCommand::AddComponent<RendererResourceInfo>(m_Resource, ResourceInfo);
 
-		MORP_CORE_ASSERT(MORP_ERROR, "Unknown RendererAPI!");
-		return nullptr;
+		RendererAllocationInfo AllocInfo = {};
+		AllocInfo.Type = RendererResourceTypes::RENDERER_VERTEX_BUFFER;
+		AllocInfo.Data = RendererBufferData(_Vertices, _Size);
+		ResourceCommand::AddComponent<RendererAllocationInfo>(m_Resource, AllocInfo);
+	}
+
+	VertexBuffer::~VertexBuffer()
+	{
+		RendererDeallocationInfo DeallocInfo = {};
+		DeallocInfo.Type = RendererResourceTypes::RENDERER_VERTEX_BUFFER;
+		DeallocInfo.Flags = RendererResourceFlags::RENDERER_REMOVE_RESOURCE;
+		ResourceCommand::AddComponent<RendererDeallocationInfo>(m_Resource, DeallocInfo);
+	}
+
+	Ref<VertexBuffer> VertexBuffer::Create(float* _Vertices, const uint32& _Size)
+	{
+		return CreateRef<VertexBuffer>(_Vertices, _Size);
 	}
 
 }

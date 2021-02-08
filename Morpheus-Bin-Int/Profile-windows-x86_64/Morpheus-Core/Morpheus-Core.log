@@ -1,0 +1,57 @@
+﻿  Application.cpp
+  ResourceUnit.cpp
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Utilities\ThreadPool.h(42,5): warning C4996: 'std::result_of<Morpheus::Application::Init::<lambda_01c3e64e9429555604178a38672379e9> (void)>': warning STL4014: std::result_of and std::result_of_t are deprecated in C++17. They are superseded by std::invoke_result and std::invoke_result_t. You can define _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. (compiling source file Source\Morpheus\Core\Application.cpp)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include\type_traits(1716,1): message : see declaration of 'std::result_of<_Callable(_Args...)>' (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Core\Application.cpp(67): message : see reference to function template instantiation 'std::future<void> Morpheus::ThreadPool::Enqueue<Morpheus::Application::Init::<lambda_01c3e64e9429555604178a38672379e9>,>(F &&)' being compiled
+          with
+          [
+              F=Morpheus::Application::Init::<lambda_01c3e64e9429555604178a38672379e9>
+          ]
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(38,1): warning C4267: 'argument': conversion from 'size_t' to 'const unsigned int', possible loss of data (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(31): message : while compiling class template member function 'void Morpheus::ResourceComponentArray<T>::RemoveComponent(const Morpheus::Resource &)'
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(62): message : see reference to function template instantiation 'void Morpheus::ResourceComponentArray<T>::RemoveComponent(const Morpheus::Resource &)' being compiled
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include\type_traits(468): message : see reference to class template instantiation 'Morpheus::ResourceComponentArray<T>' being compiled
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include\memory(950): message : see reference to class template instantiation 'std::is_convertible<_Yty *,_Ty *>' being compiled
+          with
+          [
+              _Yty=Morpheus::ResourceComponentArray<Morpheus::RendererPackageInfo>,
+              _Ty=Morpheus::IResourceComponentArray
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include\type_traits(631): message : see reference to class template instantiation 'std::_SP_pointer_compatible<Morpheus::ResourceComponentArray<T>,Morpheus::IResourceComponentArray>' being compiled
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentManager.h(18): message : see reference to class template instantiation 'std::is_constructible<std::shared_ptr<Morpheus::IResourceComponentArray>,std::shared_ptr<Morpheus::ResourceComponentArray<T>>>' being compiled
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(38): message : see reference to variable template 'const bool conjunction_v<std::is_constructible<char const * const,char const * &>,std::is_constructible<std::shared_ptr<Morpheus::IResourceComponentArray>,std::shared_ptr<Morpheus::ResourceComponentArray<Morpheus::RendererPackageInfo> > > >' being compiled (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceCoordinator.h(25): message : see reference to function template instantiation 'void Morpheus::ResourceComponentManager::RegisterComponent<T>(void)' being compiled
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceCommand.h(42): message : see reference to function template instantiation 'void Morpheus::ResourceCoordinator::RegisterComponent<T>(void)' being compiled
+          with
+          [
+              T=Morpheus::RendererPackageInfo
+          ] (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Renderer\Renderer.h(25): message : see reference to function template instantiation 'void Morpheus::ResourceCommand::RegisterComponent<Morpheus::RendererPackageInfo>(void)' being compiled (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(39,1): warning C4267: '=': conversion from 'size_t' to 'unsigned int', possible loss of data (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(40,1): warning C4267: 'argument': conversion from 'size_t' to 'const unsigned int', possible loss of data (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\ResourceManager\ResourceComponentArray.h(43,1): warning C4267: 'argument': conversion from 'size_t' to 'const unsigned int', possible loss of data (compiling source file Source\Morpheus\Core\Application.cpp)
+  Morpheus-Core.vcxproj -> B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\..\Morpheus-Bin\Profile-windows-x86_64\Morpheus-Core\Morpheus-Core.lib

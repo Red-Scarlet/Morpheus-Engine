@@ -12,6 +12,8 @@
 #include <list>
 #include <conio.h>
 
+#include "Morppch.h"
+
 namespace Morpheus {
 
     class Log
@@ -223,7 +225,7 @@ namespace Morpheus {
 
         void Color(int color)
         {
-            //SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
+            SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), color);
         }
 
         void flush()

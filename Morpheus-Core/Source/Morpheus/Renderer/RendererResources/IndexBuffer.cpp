@@ -1,23 +1,37 @@
 #include "Morppch.h"
 #include "IndexBuffer.h"
 
-#include "Morpheus/Renderer/RendererCore/RendererAPI.h"
-#include "Platform/Vulkan/VulkanResource/VulkanIndexBuffer.h"
+#include "Morpheus/ResourceManager/ResourceCommand.h"
+#include "Morpheus/Renderer/RendererComponents/RendererAllocationInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererDeallocationInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererResourceInfo.h"
 
 namespace Morpheus {
 
+	IndexBuffer::IndexBuffer(uint32* _Indices, const uint32& _Size)
+	{
+		m_Resource = ResourceCommand::CreateResource();
+
+		RendererResourceInfo ResourceInfo = {};
+		ResourceCommand::AddComponent<RendererResourceInfo>(m_Resource, ResourceInfo);
+
+		RendererAllocationInfo AllocInfo = {};
+		AllocInfo.Type = RendererResourceTypes::RENDERER_INDEX_BUFFER;
+		AllocInfo.Data = RendererBufferData(_Indices, _Size);
+		ResourceCommand::AddComponent<RendererAllocationInfo>(m_Resource, AllocInfo);
+	}
+
+	IndexBuffer::~IndexBuffer()
+	{
+		RendererDeallocationInfo DeallocInfo = {};
+		DeallocInfo.Type = RendererResourceTypes::RENDERER_INDEX_BUFFER;
+		DeallocInfo.Flags = RendererResourceFlags::RENDERER_REMOVE_RESOURCE;
+		ResourceCommand::AddComponent<RendererDeallocationInfo>(m_Resource, DeallocInfo);
+	}
+
 	Ref<IndexBuffer> IndexBuffer::Create(uint32* _Indices, const uint32& _Size)
 	{
-		using namespace Vulkan;
-
-		switch (RendererAPI::GetAPI())
-		{
-			case RendererAPI::API::None:    MORP_CORE_ASSERT(MORP_ERROR, "RendererAPI::None is currently not supported!"); return nullptr;
-			case RendererAPI::API::Vulkan:  return VulkanIndexBuffer::Make(_Indices, _Size);
-		}
-
-		MORP_CORE_ASSERT(MORP_ERROR, "Unknown RendererAPI!");
-		return nullptr;
+		return CreateRef<IndexBuffer>(_Indices, _Size);
 	}
 
 }

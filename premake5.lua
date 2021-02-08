@@ -5,6 +5,7 @@ workspace "Morpheus-Engine"
 	configurations
 	{
 		"Debug",
+		"Profile",
 		"Release",
 		"Dist"
 	}
@@ -90,23 +91,31 @@ project "Morpheus-Core"
 		}
 
 	filter "configurations:Debug"
-		defines "MORP_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		defines "MORP_DEBUG"
+
+	filter "configurations:Profile"
+		runtime "Debug"
+		symbols "on"
+		defines
+		{ 
+			"MORP_DEBUG",
+			"MORP_PROFILE"
+		}
 
 	filter "configurations:Release"
-		defines "MORP_RELEASE"
 		runtime "Release"
 		optimize "on"
+		defines "MORP_RELEASE"
 
 	filter "configurations:Dist"
-		defines "MORP_DIST"
 		runtime "Release"
 		optimize "on"
+		defines "MORP_DIST"
 
 project "Morpheus-Sandbox"
 	location "Morpheus-Sandbox"
-	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
 	staticruntime "on"
@@ -137,23 +146,35 @@ project "Morpheus-Sandbox"
 
 	filter "system:windows"
 		systemversion "latest"
-
 		defines 
 		{
 			"MORP_PLATFORM_WINDOWS"
 		}
 
-	filter "configurations:Debug"
-		defines "MORP_DEBUG"
+	filter "configurations:Debug"		
+		kind "ConsoleApp"
 		runtime "Debug"
 		symbols "on"
+		defines "MORP_DEBUG"
+
+	filter "configurations:Profile"
+		kind "ConsoleApp"
+		runtime "Debug"
+		symbols "on"
+		defines
+		{ 
+			"MORP_DEBUG",
+			"MORP_PROFILE"
+		}
 
 	filter "configurations:Release"
-		defines "MORP_RELEASE"
+		kind "ConsoleApp"
 		runtime "Release"
 		optimize "on"
+		defines "MORP_RELEASE"
 
 	filter "configurations:Dist"
-		defines "MORP_DIST"
+		kind "WindowedApp"
 		runtime "Release"
-		optimize "on"
+		optimize "on"		
+		defines "MORP_DIST"

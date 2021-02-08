@@ -6,32 +6,35 @@
 
 namespace Morpheus { namespace Vulkan {
 
+	// TODO: Add the ability to reissue commandbuffer, however reset them before.
 	class VulkanCommandPool
 	{
 	public:
-		VulkanCommandPool(const Ref<VulkanDevice>& _Device, const uint32& _Max, const bool& _IsSecondary);
-		~VulkanCommandPool();
-
-		const VkCommandBuffer& GetCommandBuffer();
+		VulkanCommandPool(const uint32& _PrimaryBuffer, const uint32& _SecondaryBuffer);
+		virtual ~VulkanCommandPool();
+		const VkCommandBuffer& GetCommandBuffer(const bool& _SecondaryBuffer);
 
 	private:
+		void VulkanDestroy();
+
 		void Expand();
-		void Allocate();
-		void Deallocate(const uint32& _Index);
-		uint32 CheckBufferAvailability();
+		void AllocatePrimary();
+		void AllocateSecondary();
+		void DeallocatePrimary(const uint32& _Index);
+		void DeallocateSecondary(const uint32& _Index);
+		uint32 CheckBufferAvailability(const bool& _SecondaryBuffer);
 
 	private:
 		Ref<VulkanDevice> m_Device;
-		uint32 m_AllocationMax;
-		uint32 m_AllocationCount;
-		bool m_IsSecondary;
-
+		uint32 m_PrimaryMax, m_SecondaryMax;
+		uint32 m_PrimaryCount, m_SecondaryCount;
 		Vector<VkCommandPool> m_Pools;
-		Vector<Tuple<VkCommandBuffer, uint32, bool>> m_CommandBuffers;
+		Vector<Tuple<VkCommandBuffer, bool>> m_PrimaryBuffers;
+		Vector<Tuple<VkCommandBuffer, bool>> m_SecondaryBuffers;
 
 	public:
-		static Ref<VulkanCommandPool> Create(const Ref<VulkanDevice>& _Device,
-			const uint32& _Max = 2, const bool& _IsSecondaryBuffers = false);
+		static Ref<VulkanCommandPool> Create(const uint32& _PrimaryBuffer = 32, const uint32& _SecondaryBuffer = 64);
+		static void Destroy(const Ref<VulkanCommandPool>& _Pool);
 	};
 
 }}

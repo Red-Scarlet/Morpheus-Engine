@@ -4,19 +4,18 @@
 namespace Morpheus {
 
 	ThreadPool::ThreadPool(const uint32& _Threads)
+        : m_NumThreads(_Threads)
 	{
-        MORP_CORE_TRACE("[THREADPOOL] Num. Threads: " + ToString(_Threads));
-
-		Start(_Threads);
+        MORP_CORE_TRACE("[THREADPOOL] Num. Threads: " + ToString(m_NumThreads));
 	}
 
     ThreadPool::~ThreadPool()
     {
     }
 
-    void ThreadPool::Start(const uint32& _Threads)
+    void ThreadPool::Start()
     {
-        for (size_t i = 0; i < _Threads; ++i)
+        for (size_t i = 0; i < m_NumThreads; ++i)
             m_Threads.emplace_back([this] {
             for (;;) 
             {

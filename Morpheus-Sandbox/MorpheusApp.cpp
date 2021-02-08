@@ -16,7 +16,7 @@ public:
 	}
 
 	virtual void OnAttach() override 
-	{	
+	{
 	}
 
 	virtual void OnDetach() override 
@@ -48,17 +48,8 @@ public:
 	{		
 		MORP_PROFILE_FUNCTION();
 
-		//{
-		//	MORP_PROFILE_SCOPE("Renderer::BeginScene");
-		//	Morpheus::Renderer::BeginScene(m_Camera);
-		//}
-		//
-		//{
-		//	MORP_PROFILE_SCOPE("Renderer::EndScene");
-		//	Morpheus::Renderer::EndScene();
-		//}
-
-		//m_Stats = Morpheus::RenderCommand::GetRendererStats();
+		//Morpheus::Renderer::BeginScene();
+		Morpheus::Renderer::EndScene();
 	}
 
 	virtual void OnEvent(Morpheus::Event& _Event) override
@@ -127,8 +118,8 @@ private:
 	Morpheus::Vector3 m_CameraPos = { 0.0f, 0.0f, 0.0f };
 	Morpheus::Vector3 m_CameraFront = { 0.0f, 0.0f, -1.0f };
 	Morpheus::Vector3 m_CameraUp = { 0.0f, 1.0f, 0.0f };
-	Morpheus::RendererAPI::RendererStats m_Stats;
 
+	bool m_Startup = true;
 	bool m_FirstMouse = true;
 	float m_CameraSpeed = 0.0f;
 	float m_Yaw = -90.0f;

@@ -1,0 +1,12 @@
+DUE:	07:01:2021 THURSDAY
+
+TODO:	Improve Find Avaliable Unit Algorthim (FAUA).
+TODO:	Build the FAUA Into Unit Cache Mu-Singleton.
+
+TODO:	Improve the ResourceDispatcher Indexing System.
+TODO:	Make Engine File that contain various datatypes
+TODO:	Make Platform File that contain conversion between engine datatypes
+
+TODO:	Make Deconstructor for VulkanAPI ResourceDispatcher
+
+TODO:	Change Renderpass Dependentices

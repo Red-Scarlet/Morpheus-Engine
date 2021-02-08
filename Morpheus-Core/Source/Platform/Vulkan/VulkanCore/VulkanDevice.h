@@ -1,7 +1,7 @@
 #pragma once
 #include "Morpheus/Core/Common.h"
 #include "Platform/Vulkan/VulkanCommon.h"
-#include "Platform/Vulkan/VulkanCore/VulkanCache.h"
+#include "Platform/Vulkan/VulkanCache.h"
 #include "Platform/Vulkan/VulkanCore/VulkanQueue.h"
 #include "Platform/Vulkan/VulkanCore/VulkanSwapchain.h"
 
@@ -17,11 +17,9 @@ namespace Morpheus { namespace Vulkan {
 		VulkanDevice(const VkInstance& _Instance, const VkSurfaceKHR& _Surface);
 		virtual ~VulkanDevice();
 
-		// Declear Functinos
 		void CreateSwapchain();
-		void SayHelloWorldOnThread();
-
 		uint32 FindMemoryType(const uint32& _TypeFilter, const VkMemoryPropertyFlags& _Properties);
+		VkFormat FindFormatType(const Vector<VkFormat>& _Formats, const VkImageTiling& _Tiling, const VkFormatFeatureFlags& _Features);
 		const VkDevice& GetLogical() { MORP_PROFILE_FUNCTION(); return m_lDevice; };
 		const uint32& GetQueueIndices(const QueueType& _QueueType);
 		const Ref<VulkanQueue> GetQueue(const QueueType& _QueueType);
@@ -48,7 +46,7 @@ namespace Morpheus { namespace Vulkan {
 
 	public:
 		static Ref<VulkanDevice> Create(const VkInstance& _Instance, const VkSurfaceKHR& _Surface);
-		static Ref<VulkanDevice> Destroy();
+		static void Destroy(const Ref<VulkanDevice>& _Device);
 	};
 
 }}

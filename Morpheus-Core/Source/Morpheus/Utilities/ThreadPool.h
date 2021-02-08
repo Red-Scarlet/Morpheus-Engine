@@ -23,7 +23,7 @@ namespace Morpheus {
         auto Enqueue(F&& f, Args&&... args)->std::future<typename std::result_of<F(Args...)>::type>;
 
     public:
-        void Start(const uint32& _Threads);
+        void Start();
         void Stop();
 
     private:
@@ -32,7 +32,7 @@ namespace Morpheus {
         std::mutex m_QueueMutex;
         std::queue<Task> m_Tasks;
         bool m_Stopping = false;
-
+        uint32 m_NumThreads = 0;
     public:
         static Ref<ThreadPool> Create(const uint32& _Threads);
     };

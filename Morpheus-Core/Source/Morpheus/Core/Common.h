@@ -14,19 +14,31 @@
 #include <ostream>
 #include <map>
 #include <tuple>
+#include <set>
+#include <variant>
 
 #include "Morpheus/Utilities/MorpheusLogger.h"
 #include "Morpheus/Utilities/Instrumentor.h"
+
+
+#ifdef MORP_DEBUG
+#define MORP_LOGGING
+#endif
+#ifdef MORP_RELEASE
+#define MORP_LOGGING
+#endif
+#ifdef MORP_DIST
+#endif
 
 #ifdef MORP_PLATFORM_WINDOWS
 #endif
 
 #define MORP_CORE_ASSERTS
 
-#define MORP_ERROR true
+#define MORP_ERROR false
 
 #ifdef MORP_CORE_ASSERTS
-	#define MORP_CORE_ASSERT(x, ...) { if((x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); }}
+	#define MORP_CORE_ASSERT(x, ...) { if(!(x)) { MORP_CORE_ERROR(__VA_ARGS__); __debugbreak(); }}
 #else
 	#define MORP_CORE_ASSERT(x, ...)
 #endif
@@ -150,11 +162,17 @@ namespace Morpheus {
 	template<typename T>
 	using Optional = std::optional<T>;
 
+	template<typename T>
+	using Variant = std::variant<T>;
+
 	template<typename T, typename R>
 	using Pair = std::pair<T, R>;
 
 	template<typename T, typename R>
 	using UnorderedMap = std::unordered_map<T, R>;
+
+	template<typename T>
+	using Set = std::set<T>;
 
 	using String = std::string;
 	using Ostream = std::ostream;
@@ -165,10 +183,7 @@ namespace Morpheus {
 
 	template<typename Args>
 	constexpr String GetString(Args&& args)
-	{ 
-		String str = args;
-		return str;
-	}
+	{ String str = args; return str; }
 
 	typedef std::uint64_t uint64;
 	typedef std::uint32_t uint32;
@@ -191,11 +206,7 @@ namespace Morpheus {
 	typedef float8** pfloat8;
 
 	typedef float32 floatm;
-	typedef bool Boolean;
 
-	typedef std::nullptr_t undefined32;
-	typedef void* Memory32;
-	
 	template<typename Args>
 	constexpr String ReadAddress(Args&& args)
 	{
@@ -203,13 +214,6 @@ namespace Morpheus {
 		ReadStream << std::forward<Args>(args);
 		return ReadStream.str();
 	}
-
-	//template<typename... Args>
-	//constexpr String ReadAddress(Args&&... args)
-	//{ 
-	//	String s = ToString(std::to_address(std::forward<Args>(args)...));
-	//	return s;
-	//}
 
 }
 

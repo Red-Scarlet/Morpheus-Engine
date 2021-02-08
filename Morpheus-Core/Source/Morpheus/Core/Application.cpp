@@ -2,8 +2,8 @@
 #include "Application.h"
 
 #include "Morpheus/Utilities/DeltaTime.h"
+#include "Morpheus/ResourceManager/ResourceCommand.h"
 #include "Morpheus/Renderer/Renderer.h"
-
 #include <GLFW/glfw3.h>
 
 namespace Morpheus {
@@ -40,26 +40,37 @@ namespace Morpheus {
 			m_Window->SetEventCallback(MORP_BIND_EVENT_FN(Application::OnEvent));
 		}
 
+		{			
+			MORP_PROFILE_SCOPE("Applicaton::Application()->ResourceInit");
+			ResourceCommand::Init();
+		}
+
 		{
 			MORP_PROFILE_SCOPE("Applicaton::Application()->ThreadPoolInit");
-			m_ProcessorThreads = std::thread::hardware_concurrency() - 1;
-			m_ThreadPool = ThreadPool::Create(m_ProcessorThreads);
+			m_NumThreads = std::thread::hardware_concurrency() - 1;
+			m_ThreadPool = ThreadPool::Create(m_NumThreads);
 		}
-		
+
 		{
 			MORP_PROFILE_SCOPE("Applicaton::Application()->GraphicsInit");
 			m_Graphics = GraphicsContext::Create();
 			m_Graphics->Init();
 		}
 
-		{
-			MORP_PROFILE_SCOPE("Applicaton::Application()->ApplicationThreadsInit");
 
-			while (m_Units.size() != m_ProcessorThreads) {
-				m_Units.push_back(ApplicationUnit::Create(m_Units.size()));
-				m_Units[m_Units.size() - 1]->SetGraphicsContext(m_Graphics);
-				m_Units[m_Units.size() - 1]->Init();
+		{
+			MORP_PROFILE_SCOPE("Applicaton::Application()->CreateAppUnits");
+
+			for (uint32 i = 1; i < m_NumThreads + 1; i++) {
+				m_AppUnits.push_back(AppUnit::Create(i));
+				Ref<AppUnit> unit = m_AppUnits.back();
+				m_ThreadPool->Enqueue([unit] { unit->Run(); });
+				unit->Init();
 			}
+
+			std::stringstream ss;
+			ss << std::this_thread::get_id();
+			MORP_CORE_SPECIAL("Application #" + ToString(0) + " Running on TID: " + ss.str());
 		}
 
 		Renderer::Init();
@@ -74,8 +85,7 @@ namespace Morpheus {
 
 		MORP_CORE_INFO("[APPLICATION] Running...!");
 
-		for (Ref<ApplicationUnit>& unit : m_Units)
-			m_ThreadPool->Enqueue([unit] { unit->Run(); });
+		m_ThreadPool->Start();
 
 		while (m_Running)
 		{
@@ -93,19 +103,19 @@ namespace Morpheus {
 			m_Window->OnUpdate();
 		}
 
-		for (Ref<ApplicationUnit> unit : m_Units)
-			unit->Stop();
+		Renderer::Shutdown();
 
+		for (Ref<AppUnit> unit : m_AppUnits)
+			unit->Stop();
 		m_ThreadPool->Stop();
 	}
 
 	void Application::Stop()
 	{
 		MORP_PROFILE_FUNCTION();
-
 		m_Running = false;
-	
-		Renderer::Shutdown();
+
+		ResourceCommand::Shutdown();
 		m_Graphics->Shutdown();
 	}
 

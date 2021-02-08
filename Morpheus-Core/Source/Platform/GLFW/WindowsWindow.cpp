@@ -43,7 +43,7 @@ namespace Morpheus {
 			{
 				// TODO: glfwTerminate on system shutdown
 				int success = glfwInit();
-				MORP_CORE_ASSERT(!success, "Could not intialize GLFW!");
+				MORP_CORE_ASSERT(success, "Could not intialize GLFW!");
 				glfwSetErrorCallback(GLFWErrorCallback);
 				s_GLFWInitialized = true;
 			}

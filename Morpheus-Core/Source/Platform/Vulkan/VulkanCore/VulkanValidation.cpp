@@ -15,7 +15,7 @@ namespace Morpheus { namespace Vulkan {
 	VulkanValidation::VulkanValidation()
 	{
 		if (!CheckValidationSupport())
-			MORP_CORE_ASSERT(true, "Vulkan Validation Layers not available!");
+			VULKAN_CORE_ASSERT(MORP_ERROR, "Vulkan Validation Layers not available!");
 		VULKAN_CORE_WARN("[VULKAN] Validation Layer was Created!");
 	}
 
@@ -53,7 +53,7 @@ namespace Morpheus { namespace Vulkan {
 		PopulateDebugMessenger(createInfo);
 
 		VkResult result = CreateDebugMessenger(VulkanInstance::GetInstance()->GetVulkanInstance(), &createInfo, nullptr, &m_DebugMessenger);
-		MORP_CORE_ASSERT(result, "Vulkan Instance Error!");
+		VULKAN_CORE_ASSERT(result, "Vulkan Instance Error!");
 	}
 
 	void VulkanValidation::PopulateDebugMessenger(VkDebugUtilsMessengerCreateInfoEXT& CreateInfo)

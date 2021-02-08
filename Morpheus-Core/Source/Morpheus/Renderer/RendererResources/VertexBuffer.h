@@ -1,26 +1,23 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "Morpheus/Mathematics/Mathematics.h"
+#include "Morpheus/ResourceManager/ResourceTypes.h"
+#include "Morpheus/Renderer/RendererTypes.h"
 
 namespace Morpheus {
 
-	struct QuadVertex
+	class VertexBuffer
 	{
 	public:
-		Vector2 Position;
-		Vector2 TexCoord;
-		Vector3 Color;
-	};
+		VertexBuffer(float* _Vertices, const uint32& _Size);
+		virtual ~VertexBuffer();
+		operator Resource() const { return m_Resource; }
 
-	class VertexBuffer 
-	{
-	public:
-		virtual ~VertexBuffer() = default;
+	private:
+		Resource m_Resource;
 
 	public:
-		static Ref<VertexBuffer> Create(QuadVertex* _Data, const uint32& _Size);
-
+		static Ref<VertexBuffer> Create(float* _Vertices, const uint32& _Size);
 	};
 
 }

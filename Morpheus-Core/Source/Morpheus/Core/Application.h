@@ -1,10 +1,10 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "Morpheus/Core/ApplicationBase.h"
+#include "Morpheus/Core/Base.h"
 #include "Morpheus/Core/Window.h"
 #include "Morpheus/Core/LayerSystem.h"
-#include "Morpheus/Core/ApplicationUnit.h"
+#include "Morpheus/Core/AppUnit.h"
 
 #include "Morpheus/Events/Event.h"
 #include "Morpheus/Events/ApplicationEvent.h"
@@ -13,11 +13,20 @@
 #include "Morpheus/Utilities/DeltaTime.h"
 #include "Morpheus/Utilities/ThreadPool.h"
 
+#ifdef MORP_DIST
+int CALLBACK WinMain(
+	_In_ HINSTANCE hInstance,
+	_In_opt_ HINSTANCE hPrevInstance,
+	_In_ LPSTR     lpCmdLine,
+	_In_ int       nCmdShow
+);
+#else
 int main(int argc, char** argv);
+#endif
 
 namespace Morpheus {
 
-	class Application : public ApplicationBase
+	class Application : public Base
 	{
 	public:
 		Application();
@@ -44,19 +53,26 @@ namespace Morpheus {
 	private:
 		Scope<Window> m_Window;
 		Ref<GraphicsContext> m_Graphics;
-		Vector<Ref<ApplicationUnit>> m_Units;
 		Ref<ThreadPool> m_ThreadPool;
-
 		LayerContainer m_LayerContainer;
-		uint32 m_ProcessorThreads = 0;
+		uint32 m_NumThreads = 0;
 
 		bool m_Running = true;
 		bool m_Minimized = false;
 		float32 m_LastFrameTime = 0.0;
-
+		Vector<Ref<AppUnit>> m_AppUnits;
 	private:
 		static Application* s_Instance;
+		#ifdef MORP_DIST
+		friend int CALLBACK ::WinMain(
+			_In_ HINSTANCE hInstance,
+			_In_opt_ HINSTANCE hPrevInstance,
+			_In_ LPSTR     lpCmdLine,
+			_In_ int       nCmdShow
+		);
+		#else
 		friend int ::main(int argc, char** argv);
+		#endif
 	};
 
 }

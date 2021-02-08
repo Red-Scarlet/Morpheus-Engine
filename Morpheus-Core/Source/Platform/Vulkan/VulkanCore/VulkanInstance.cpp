@@ -2,7 +2,7 @@
 #include "VulkanInstance.h"
 #include "Morpheus/Core/Application.h"
 
-#include "Platform/Vulkan/VulkanCore/VulkanCache.h"
+#include "Platform/Vulkan/VulkanCache.h"
 
 // TODO: REMOVE
 #include <GLFW/glfw3.h>
@@ -100,7 +100,7 @@ namespace Morpheus { namespace Vulkan {
 		#endif
 		
 		VkResult result = vkCreateInstance(&CreateInfo, nullptr, &m_VulkanInstance);
-		MORP_CORE_ASSERT(result, "Vulkan Instance Error!");
+		VULKAN_CORE_ASSERT(result, "Vulkan Instance Error!");
 	}
 
 	void VulkanInstance::Shutdown()
@@ -108,9 +108,10 @@ namespace Morpheus { namespace Vulkan {
 		MORP_PROFILE_FUNCTION();
 
 		Ref<VulkanDevice::DeviceCache> d_Cache = VulkanCache<VulkanDevice>::Get(VULKAN_CACHE_DEVICE_TYPE);
-		d_Cache->Clear();
+		for (uint32 i = 0; i < d_Cache->GetCount(); i++)
+			VulkanDevice::Destroy(d_Cache->Get(i));
 
-		m_Surface.reset();
+		VulkanSurface::Destroy(m_Surface);
 		vkDestroyInstance(m_VulkanInstance, nullptr);
 	}
 

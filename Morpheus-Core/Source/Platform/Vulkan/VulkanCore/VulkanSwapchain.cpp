@@ -13,7 +13,6 @@ namespace Morpheus { namespace Vulkan {
 
 	VulkanSwapchain::~VulkanSwapchain()
 	{
-		DestroySwapchain();
 		VULKAN_CORE_WARN("[VULKAN] Swapchain was Destroyed!");
 	}
 
@@ -26,14 +25,14 @@ namespace Morpheus { namespace Vulkan {
 	{
 		for (const auto& AvailableFormat : AvailableFormats)
 			if (AvailableFormat.format == VK_FORMAT_B8G8R8A8_UNORM && AvailableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR)
-			return AvailableFormat;
+				return AvailableFormat;
 		return AvailableFormats[0];
 	}
 
 	VkPresentModeKHR VulkanSwapchain::ChooseSwapPresentMode(const Vector<VkPresentModeKHR>& AvailablePresentModes)
 	{
 		for (const auto& AvailablePresentMode : AvailablePresentModes)
-				if (AvailablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
+			if (AvailablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR)
 				return AvailablePresentMode;
 		return VK_PRESENT_MODE_FIFO_KHR;
 	}
@@ -91,7 +90,7 @@ namespace Morpheus { namespace Vulkan {
 		}
 
 		VkResult result = vkCreateSwapchainKHR(m_Device, &CreateInfo, nullptr, &m_Swapchain);
-		MORP_CORE_ASSERT(result, "Failed to create Swap Chain!");
+		VULKAN_CORE_ASSERT(result, "Failed to create Swap Chain!");
 
 		m_Format = SurfaceFormat.format;
 		m_Viewport = VkViewport({ 0.0f, 0.0f, (float32)m_Extent.width, (float32)m_Extent.height, 0, 1.0f });
@@ -121,7 +120,7 @@ namespace Morpheus { namespace Vulkan {
 			CreateInfo.subresourceRange.baseArrayLayer = 0;
 			CreateInfo.subresourceRange.layerCount = 1;
 			VkResult result = vkCreateImageView(m_Device, &CreateInfo, nullptr, &m_ImageViews[i]);
-			MORP_CORE_ASSERT(result, "Failed to create Imageview!");
+			VULKAN_CORE_ASSERT(result, "Failed to create Imageview!");
 		}
 
 	}
@@ -139,14 +138,19 @@ namespace Morpheus { namespace Vulkan {
 	{
 		MORP_PROFILE_FUNCTION();
 
-		for (VkImageView imageview : m_ImageViews)
-			vkDestroyImageView(m_Device, imageview, nullptr);
+		for (VkImageView view : m_ImageViews)
+			vkDestroyImageView(m_Device, view, nullptr);
 		vkDestroySwapchainKHR(m_Device, m_Swapchain, nullptr);
 	}
 
 	Ref<VulkanSwapchain> VulkanSwapchain::Create(const VkDevice& _Device, const VkSurfaceKHR& _Surface, const SwapchainSupportDetails& _SupportDetails, const QueueFamilyIndices& _Indices)
 	{
 		return CreateRef<VulkanSwapchain>(_Device, _Surface, _SupportDetails, _Indices);
+	}
+
+	void VulkanSwapchain::Destroy(const Ref<VulkanSwapchain>& _Swapchain)
+	{
+		_Swapchain->DestroySwapchain();
 	}
 
 }}

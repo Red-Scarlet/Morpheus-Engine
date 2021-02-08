@@ -23,7 +23,7 @@ namespace Morpheus { namespace Vulkan {
 
 	public:
 		static Ref<VulkanSurface> Create(const VkInstance& _Instance);
-
+		static void Destroy(const Ref<VulkanSurface>& _Surface);
 	};
 
 }}

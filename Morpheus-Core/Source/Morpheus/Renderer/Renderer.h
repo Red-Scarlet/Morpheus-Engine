@@ -1,23 +1,24 @@
 #pragma once
 
 #include "Morpheus/Core/Common.h"
-#include "RendererCore/RenderCommand.h"
 #include "Morpheus/Mathematics/Mathematics.h"
-
-#include "RendererResources/VertexBuffer.h"
-#include "RendererResources/IndexBuffer.h"
-#include "RendererResources/UniformBuffer.h"
-#include "RendererResources/TextureBuffer.h"
-
-#include "RendererBindables/FrameBuffer.h"
-#include "RendererBindables/VertexArray.h"
-#include "RendererBindables/Shader.h"
-
+#include "Morpheus/Renderer/RendererCore/RenderCommand.h"
+#include "Morpheus/ResourceManager/ResourceCommand.h"
 #include "Morpheus/Renderer/Camera.h"
 
-// TODO: Fix spelling mistake (Destroy)
-#define CraftSizeX 6
-#define CraftSizeY 1
+#include "Morpheus/Renderer/RendererComponents/RendererAllocationInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererDeallocationInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererResourceInfo.h"
+
+#include "Morpheus/Renderer/RendererComponents/RendererRenderBufferInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererRenderPipelineInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererRenderTaskInfo.h"
+#include "Morpheus/Renderer/RendererComponents/RendererVertexArrayInfo.h"
+
+#include "Morpheus/Renderer/RendererResources/VertexArray.h"
+#include "Morpheus/Renderer/RendererResources/VertexBuffer.h"
+#include "Morpheus/Renderer/RendererResources/IndexBuffer.h"
+
 
 namespace Morpheus {
 
@@ -28,132 +29,127 @@ namespace Morpheus {
 		{
 			MORP_PROFILE_FUNCTION();
 
+			ResourceCommand::RegisterComponent<RendererAllocationInfo>();
+			ResourceCommand::RegisterComponent<RendererDeallocationInfo>();
+			ResourceCommand::RegisterComponent<RendererResourceInfo>();
+
+			ResourceCommand::RegisterComponent<RendererRenderBufferInfo>();
+			ResourceCommand::RegisterComponent<RendererRenderPipelineInfo>();
+			ResourceCommand::RegisterComponent<RendererRenderTaskInfo>();
+			ResourceCommand::RegisterComponent<RendererVertexArrayInfo>();
+
 			RenderCommand::Init();
 			s_RenderData = new RenderData;
-	
-			QuadVertex Data[4] =
+
+			float Vertices[3 * 4] =
 			{
-				{ { 0.25f, 0.25f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-				{ { -0.25f, 0.25f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-				{ { -0.25f, -0.25f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
-				{ { 0.25f, -0.25f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f } }
+				0.25f, 0.25f, 0.0f,
+				-0.25f, 0.25f, 0.0f, 
+				-0.25f, -0.25f, 0.0f,
+				0.25f, -0.25f, 0.0f
 			};
-			Ref<VertexBuffer> VBO = VertexBuffer::Create(Data, sizeof(Data));
+			uint32 Indices[6] = { 0, 1, 2, 0, 2, 3 };
 
-			uint32 IndexBufferData[6] = { 0, 1, 2, 0, 2, 3 };
-			Ref<IndexBuffer> IBO = IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData));
+			s_RenderData->VAO = VertexArray::Create();
+			s_RenderData->VBO = VertexBuffer::Create(Vertices, sizeof(Vertices));
+			s_RenderData->IBO = IndexBuffer::Create(Indices, sizeof(Indices));
 
+			s_RenderData->VAO->AddVertexBuffer(s_RenderData->VBO);
+			s_RenderData->VAO->SetIndexBuffer(s_RenderData->IBO);
 
-			//RenderpassElement ColorElement;
-			//ColorElement.Attachment = 0;
-			//ColorElement.Layout = RenderpassAttachmentLayout::ATTACHMENT_COLOR_OPTIMAL;
-			//ColorElement.Load = RenderpassLoad::ATTACHMENT_CLEAR;
-			//ColorElement.Store = RenderpassStore::ATTACHMENT_STORE;
-			//ColorElement.Initial = RenderpassImage::ATTACHMENT_UNDEFINED;
-			//ColorElement.Final = RenderpassImage::ATTACHMENT_PRESENT;
-			//
-			//RenderpassLayout RenderpassLayout = { ColorElement };
-			//s_RenderData->Renderpass = Renderpass::Create(RenderpassLayout);
-			//s_RenderData->FrameBuffer = FrameBuffer::Create(s_RenderData->Renderpass);
-			//
-			//
-			//ShaderAttributeLayout ShaderLayoutData = {
-			//	{ ShaderAttributeType::Float2, "Position" },
-			//	{ ShaderAttributeType::Float2, "TexCoord" },
-			//	{ ShaderAttributeType::Float3, "Color" }
-			//};
-			//
-			//s_RenderData->Shader = Shader::Create(s_RenderData->Renderpass, ShaderLayoutData, "Assets/uniform.vert.spv", "Assets/uniform.frag.spv");
-			//
-			//QuadVertex Data[4] =
-			//{
-			//	{ { 0.25f, 0.25f }, { 1.0f, 0.0f }, { 1.0f, 0.0f, 0.0f } },
-			//	{ { -0.25f, 0.25f }, { 0.0f, 0.0f }, { 0.0f, 1.0f, 0.0f } },
-			//	{ { -0.25f, -0.25f }, { 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f } },
-			//	{ { 0.25f, -0.25f }, { 1.0f, 1.0f }, { 1.0f, 0.0f, 1.0f } }
-			//};
-			//
-			//uint32 IndexBufferData[6] = { 0, 1, 2, 0, 2, 3 };
-			//
-			//UniformAttributeLayout UniformLayoutData = {
-			//	{ UniformAttributeType::Mat4, "ProjectionMatrix" },
-			//	{ UniformAttributeType::Mat4, "ViewMatrix" },
-			//	{ UniformAttributeType::Mat4, "TransformMatrix" }
-			//};
-			//
-			//for (uint32 x = 0; x < CraftSizeX; x++) {
-			//	Vector<Ref<VertexArray>> yArrays;
-			//	Vector<Matrix4> mArrays;
-			//	for (uint32 y = 0; y < CraftSizeY; y++)
-			//	{
-			//		Ref<VertexArray> VAO = VertexArray::Create();
-			//		VAO->SetVertexBuffer(VertexBuffer::Create(Data, sizeof(Data)));
-			//		VAO->SetIndexBuffer(IndexBuffer::Create(IndexBufferData, sizeof(IndexBufferData)));
-			//		VAO->SetTextureBuffer(TextureBuffer::Create("Assets/Textures/texture.jpg"));
-			//		VAO->SetUniformBuffer(UniformBuffer::Create(UniformLayoutData));
-			//
-			//		Matrix4 Mat = glm::translate(Vector3(x * 0.5f, y * 0.5f, -1.00f));
-			//		mArrays.push_back(Mat);
-			//		yArrays.push_back(VAO);
-			//	}
-			//	s_RenderData->VertexArrays.push_back(yArrays);
-			//	s_RenderData->PositionMatrix.push_back(mArrays);
-			//}
+			SetupDeferred();
+		}
+
+		static void SetupDeferred()
+		{
+			// Concrete Values
+			RenderBufferLayout RenderBuffer_Layout = {
+				{ "BackBuffer",		RendererImageFormat::FORMAT_R8G8B8A8_UNORM,		RendererImageLayout::USAGE_PRESENT_ATTACHMENT,			RendererImageUsage::USAGE_COLOR_BIT },
+				{ "ColorBuffer",	RendererImageFormat::FORMAT_R8G8B8A8_UNORM,		RendererImageLayout::USAGE_PRESENT_ATTACHMENT,			RendererImageUsage::USAGE_COLOR_BIT },
+				{ "NormalBuffer",	RendererImageFormat::FORMAT_R8G8B8A8_UNORM,		RendererImageLayout::USAGE_PRESENT_ATTACHMENT,			RendererImageUsage::USAGE_COLOR_BIT },
+				{ "DepthBuffer",	RendererImageFormat::FORMAT_D32_SFLOAT,			RendererImageLayout::USAGE_DEPTH_STENCIL_ATTACHMENT,	RendererImageUsage::USAGE_DEPTH_STENCIL_BIT }
+			};
+
+			RenderTaskLayout Deferred_Subpass = {
+				{ "BackBuffer",		RenderBufferState::RENDER_OUT,		RendererImageLayout::USAGE_COLOR_ATTACHMENT },
+				{ "ColorBuffer",	RenderBufferState::RENDER_OUT,		RendererImageLayout::USAGE_COLOR_ATTACHMENT },
+				{ "NormalBuffer",	RenderBufferState::RENDER_OUT,		RendererImageLayout::USAGE_COLOR_ATTACHMENT },
+				{ "DepthBuffer",	RenderBufferState::RENDER_DEPTH,	RendererImageLayout::USAGE_DEPTH_STENCIL_ATTACHMENT },
+			};
+
+			RenderTaskLayout Lighting_Subpass = {
+				{ "ColorBuffer",	RenderBufferState::RENDER_IN,		RendererImageLayout::USAGE_SHADER_READ_ATTACHMENT },
+				{ "NormalBuffer",	RenderBufferState::RENDER_IN,		RendererImageLayout::USAGE_SHADER_READ_ATTACHMENT },
+				{ "DepthBuffer",	RenderBufferState::RENDER_IN,		RendererImageLayout::USAGE_DEPTH_STENCIL_READ_ATTACHMENT },
+
+				{ "BackBuffer",		RenderBufferState::RENDER_OUT,		RendererImageLayout::USAGE_COLOR_ATTACHMENT },
+				{ "ColorBuffer",	RenderBufferState::RENDER_OUT,		RendererImageLayout::USAGE_COLOR_ATTACHMENT },
+				{ "NormalBuffer",	RenderBufferState::RENDER_OUT,		RendererImageLayout::USAGE_COLOR_ATTACHMENT },
+				{ "DepthBuffer",	RenderBufferState::RENDER_DEPTH,	RendererImageLayout::USAGE_DEPTH_STENCIL_READ_ATTACHMENT }
+			};
+
+			RenderGraphLayout RenderGraph_Layout = {
+				{ "Deferred",	RenderTaskType::RENDER_GEOMERTY },
+				{ "Lighting",	RenderTaskType::RENDER_LIGHTING }
+			};
+
+			PipelineAttributeLayout DeferredPipeline_Layout = {
+				{ "Position", PipelineAttributeType::Float3 },
+				{ "UV", PipelineAttributeType::Float2 },
+				{ "Color", PipelineAttributeType::Float3 },
+				{ "Normal", PipelineAttributeType::Float3 },
+				{ "Tangent", PipelineAttributeType::Float3 }
+			};
+
+			PipelineAttributeLayout LightingPipeline_Layout = {
+			};
+
+			PipelineDescriptorLayout DescriptorLayout = {
+				{ 0, PipelineDescriptorType::DESCRIPTOR_TYPE_UNIFORM_BUFFER, PipelineDescriptorStage::DESCRIPTOR_VERTEX },
+				{ 1, PipelineDescriptorType::DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, PipelineDescriptorStage::DESCRIPTOR_FRAGMENT },
+				{ 2, PipelineDescriptorType::DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, PipelineDescriptorStage::DESCRIPTOR_FRAGMENT },
+				{ 3, PipelineDescriptorType::DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER, PipelineDescriptorStage::DESCRIPTOR_FRAGMENT },
+				{ 4, PipelineDescriptorType::DESCRIPTOR_TYPE_UNIFORM_BUFFER, PipelineDescriptorStage::DESCRIPTOR_FRAGMENT }
+			};
+
+			RenderPipelineStruct DeferredPipeline_Struct = {};
+			DeferredPipeline_Struct.AttributeLayout = DeferredPipeline_Layout;
+			DeferredPipeline_Struct.DescriptorLayout = DescriptorLayout;
+			DeferredPipeline_Struct.VertexFile = "Assets/Shaders/Deferred.vert.spv";
+			DeferredPipeline_Struct.FragmentFile = "Assets/Shaders/Deferred.frag.spv";
+
+			RenderPipelineStruct LightingPipeline_Struct = {};
+			LightingPipeline_Struct.AttributeLayout = LightingPipeline_Layout;
+			LightingPipeline_Struct.DescriptorLayout = DescriptorLayout;
+			LightingPipeline_Struct.VertexFile = "Assets/Shaders/Lighting.vert.spv";
+			LightingPipeline_Struct.FragmentFile = "Assets/Shaders/Lighting.frag.spv";
+
+			s_RenderData->RG = RenderGraph::Create(RenderGraph_Layout);
+			s_RenderData->RG->SetRenderBufferLayout(RenderBuffer_Layout);
+			s_RenderData->RG->AddRenderTaskLayout("Deferred", Deferred_Subpass);
+			s_RenderData->RG->AddRenderTaskLayout("Lighting", Lighting_Subpass);
+			s_RenderData->RG->AddRenderPipeline("Deferred", DeferredPipeline_Struct);
+			s_RenderData->RG->AddRenderPipeline("Lighting", LightingPipeline_Struct);
+
 		}
 
 		static void Shutdown()
 		{
 			MORP_PROFILE_FUNCTION();
+
+			delete s_RenderData;
 			RenderCommand::Shutdown();
 		}
-	
-		static void BeginScene(Camera& Camera)
-		{
-			MORP_PROFILE_FUNCTION();
 
-			//RenderCommand::SetClearColor({ 0.15f, 0.15f, 0.15f, 1.0f });
-			s_RenderData->ProjectionMatrix = Camera.GetProjectionMatrix();
-			s_RenderData->ViewMatrix = Camera.GetViewMatrix();
-		}
-	
 		static void EndScene()
 		{
 			MORP_PROFILE_FUNCTION();
 
-			//s_RenderData->FrameBuffer->Bind();
-			//
-			//for (uint32 x = 0; x < CraftSizeX; x++) 
-			//	for (uint32 y = 0; y < CraftSizeY; y++) {
-			//		s_RenderData->Shader->Bind();
-			//		s_RenderData->VertexArrays[x][y]->GetUniformBuffer()->SetMat4("ProjectionMatrix", s_RenderData->ProjectionMatrix);
-			//		s_RenderData->VertexArrays[x][y]->GetUniformBuffer()->SetMat4("ViewMatrix", s_RenderData->ViewMatrix);
-			//		s_RenderData->VertexArrays[x][y]->GetUniformBuffer()->SetMat4("TransformMatrix", s_RenderData->PositionMatrix[x][y]);
-			//		s_RenderData->VertexArrays[x][y]->Bind();
-			//		RenderCommand::DrawIndexed(s_RenderData->VertexArrays[x][y]);
-			//	}
-			//
-			////s_RenderData->Image = s_RenderData->FrameBuffer->GetImage();
-			//RenderCommand::Flush();
+			//RenderCommand::DrawIndexed(s_RenderData->VAO);
 		}
 	
 	private:
-		struct RenderData 
-		{
-		public:
-			Vector<Vector<Ref<VertexArray>>> VertexArrays;
-			Vector<Vector<Matrix4>> PositionMatrix;
-
-			Ref<Renderpass> Renderpass;
-			Ref<FrameBuffer> FrameBuffer;
-			Ref<Shader> Shader;
-	
-			Matrix4 ProjectionMatrix = Matrix4(1.00f);
-			Matrix4 ViewMatrix = Matrix4(1.00f);
-			Matrix4 TransformMatrix = Matrix4(1.00f);
-
-			float32 RotationValue = 0.00f;
-		};
-	
+		struct RenderData { Ref<VertexArray> VAO; Ref<VertexBuffer> VBO; Ref<IndexBuffer> IBO; Ref<RenderGraph> RG; };
 		static RenderData* s_RenderData;
 	
 	};

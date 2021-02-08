@@ -15,8 +15,7 @@ namespace Morpheus { namespace Vulkan {
 
 	VulkanSurface::~VulkanSurface()
 	{
-		DestroySurface();
-		VULKAN_CORE_WARN("[VULKAN] Swapchain Was Destroyed!");
+		VULKAN_CORE_WARN("[VULKAN] Surface Was Destroyed!");
 	}
 
 	void VulkanSurface::CreateSurface()
@@ -26,7 +25,7 @@ namespace Morpheus { namespace Vulkan {
 		Window& GLFW = Application::Get().GetWindow();
 		VkResult result = glfwCreateWindowSurface(m_Instance,
 			(GLFWwindow*)GLFW.GetNativeWindow(), nullptr, &m_Surface);
-		MORP_CORE_ASSERT(result, "Failed to create Window Surface!");
+		VULKAN_CORE_ASSERT(result, "Failed to create Window Surface!");
 	}
 
 	void VulkanSurface::DestroySurface()
@@ -39,6 +38,11 @@ namespace Morpheus { namespace Vulkan {
 	Ref<VulkanSurface> VulkanSurface::Create(const VkInstance& _Instance)
 	{
 		return CreateRef<VulkanSurface>(_Instance);
+	}
+
+	void VulkanSurface::Destroy(const Ref<VulkanSurface>& _Surface)
+	{
+		_Surface->DestroySurface();
 	}
 
 }}

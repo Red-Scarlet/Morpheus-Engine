@@ -1,9 +1,6 @@
 #include "Morppch.h"
 #include "VulkanDevice.h"
-
 #include "VulkanInstance.h"
-
-#include <sstream>
 
 namespace Morpheus { namespace Vulkan {
 
@@ -17,7 +14,6 @@ namespace Morpheus { namespace Vulkan {
 
 	VulkanDevice::~VulkanDevice()
 	{
-		DestroyLogicalDevice();
 		VULKAN_CORE_WARN("[VULKAN] Device Was Destroyed!");
 	}
 
@@ -27,18 +23,6 @@ namespace Morpheus { namespace Vulkan {
 			m_Swapchain = VulkanSwapchain::Create(m_lDevice, VulkanInstance::GetInstance()->GetSurface()->GetSurface(),
 				m_SwapchainSupport, m_Indices);
 		m_Swapchain->Reset();
-	}
-
-	void VulkanDevice::SayHelloWorldOnThread()
-	{
-		//VULKAN_CORE_WARN("[VULKAN] Device Says Hello!");
-		//
-		//std::stringstream ss;
-		//ss << std::this_thread::get_id();
-		//
-		//VULKAN_CORE_WARN("[VULKAN] Device On Thread: " + ss.str());
-		//VULKAN_CORE_WARN("[VULKAN] Device On Thread: " + ToString(m_Swapchain->GetImageCount()));
-
 	}
 
 	uint32 VulkanDevice::FindMemoryType(const uint32& _TypeFilter, const VkMemoryPropertyFlags& _Properties)
@@ -56,7 +40,21 @@ namespace Morpheus { namespace Vulkan {
 				return Index;
 			}
 
-		MORP_CORE_ASSERT(true, "[VULKAN] Failed to find suitable memory type!");
+		VULKAN_CORE_ASSERT(true, "[VULKAN] Failed to find suitable memory type!");
+	}
+
+	VkFormat VulkanDevice::FindFormatType(const Vector<VkFormat>& _Formats, const VkImageTiling& _Tiling, const VkFormatFeatureFlags& _Features)
+	{
+		for (VkFormat format : _Formats) {
+			VkFormatProperties props;
+			vkGetPhysicalDeviceFormatProperties(m_pDevice, format, &props);
+			if (_Tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & _Features) == _Features) 
+				return format;
+			else if (_Tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & _Features) == _Features) 
+				return format;
+		}
+
+		VULKAN_CORE_ASSERT(MORP_ERROR, "[VULKAN] Could not find support format!");
 	}
 
 	const uint32& VulkanDevice::GetQueueIndices(const QueueType& _QueueType)
@@ -88,7 +86,7 @@ namespace Morpheus { namespace Vulkan {
 
 		uint32 DeviceCount = 0;
 		vkEnumeratePhysicalDevices(m_Instance, &DeviceCount, nullptr);
-		MORP_CORE_ASSERT(DeviceCount == 0, "[VULKAN] Failed to find GPUs with Vulkan support!");
+		VULKAN_CORE_ASSERT(DeviceCount == 0, "[VULKAN] Failed to find GPUs with Vulkan support!");
 
 		Vector<VkPhysicalDevice> Devices(DeviceCount);
 		vkEnumeratePhysicalDevices(m_Instance, &DeviceCount, Devices.data());
@@ -98,7 +96,7 @@ namespace Morpheus { namespace Vulkan {
 				m_pDevice = Device; break;
 			}
 
-		MORP_CORE_ASSERT(m_pDevice == VK_NULL_HANDLE, "[VULKAN] Failed to find a suitable GPU!");
+		VULKAN_CORE_ASSERT(m_pDevice == VK_NULL_HANDLE, "[VULKAN] Failed to find a suitable GPU!");
 	}
 
 	bool VulkanDevice::IsDeviceSuitable(const VkPhysicalDevice& _Device)
@@ -195,7 +193,7 @@ namespace Morpheus { namespace Vulkan {
 		MORP_PROFILE_FUNCTION();
 
 		Vector<VkDeviceQueueCreateInfo> QueueCreateInfos;
-		std::set<uint32> UniqueQueueFamilies = { m_Indices.GraphicsFamily.value(), m_Indices.PresentFamily.value(), m_Indices.TransferFamily.value() };
+		Set<uint32> UniqueQueueFamilies = { m_Indices.GraphicsFamily.value(), m_Indices.PresentFamily.value(), m_Indices.TransferFamily.value() };
 
 		float32 QueuePriority = 1.00f;
 		for (uint32 QueueFamily : UniqueQueueFamilies) {
@@ -225,7 +223,7 @@ namespace Morpheus { namespace Vulkan {
 		}
 
 		VkResult result = vkCreateDevice(m_pDevice, &CreateInfo, nullptr, &m_lDevice);
-		MORP_CORE_ASSERT(result, "Failed to create Logical Device!");
+		VULKAN_CORE_ASSERT(result, "Failed to create Logical Device!");
 
 
 		m_Queues[QueueType::VULKAN_QUEUE_GRAPHICS] = VulkanQueue::Create(m_lDevice, 0, m_Indices.GraphicsFamily.value());
@@ -237,8 +235,7 @@ namespace Morpheus { namespace Vulkan {
 	{
 		MORP_PROFILE_FUNCTION();
 
-		m_Swapchain.reset();
-
+		VulkanSwapchain::Destroy(m_Swapchain);
 		vkDeviceWaitIdle(m_lDevice);
 		vkDestroyDevice(m_lDevice, nullptr);
 	}
@@ -251,9 +248,9 @@ namespace Morpheus { namespace Vulkan {
 		return s_Device;
 	}
 
-	Ref<VulkanDevice> VulkanDevice::Destroy()
+	void VulkanDevice::Destroy(const Ref<VulkanDevice>& _Device)
 	{
-		return nullptr;
+		_Device->DestroyLogicalDevice();
 	}
 
 }}

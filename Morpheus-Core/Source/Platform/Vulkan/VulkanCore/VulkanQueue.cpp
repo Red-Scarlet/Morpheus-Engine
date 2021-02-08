@@ -24,10 +24,12 @@ namespace Morpheus { namespace Vulkan {
 	void VulkanQueue::Submit(const VkSubmitInfo* _SubmitInfo, const VkFence& _Fence, const uint32& _Count)
 	{
 		MORP_PROFILE_FUNCTION();
-	
+
 		m_LockMutex.lock();
 		vkQueueSubmit(m_Queue, _Count, _SubmitInfo, _Fence);
 		m_LockMutex.unlock();
+
+		Wait();
 	}
 
 	void VulkanQueue::Present(const VkPresentInfoKHR* _PresentInto)

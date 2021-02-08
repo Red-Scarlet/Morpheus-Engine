@@ -1,0 +1,18 @@
+﻿  Application.cpp
+  ApplicationUnit.cpp
+  ImGuiLayer.cpp
+  WindowsInput.cpp
+  VulkanContext.cpp
+  VulkanInstance.cpp
+  VulkanSurface.cpp
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Platform\GLFW\WindowsInput.h(1,9): warning C4068: unknown pragma (compiling source file Source\Platform\GLFW\WindowsInput.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Core\Application.cpp(59,61): warning C4267: 'argument': conversion from 'size_t' to 'const Morpheus::uint32', possible loss of data
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Platform\Vulkan\VulkanCore\VulkanInstance.cpp(89,55): warning C4267: '=': conversion from 'size_t' to 'uint32_t', possible loss of data
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Utilities\ThreadPool.h(42,5): warning C4996: 'std::result_of<Morpheus::Application::Run::<lambda_bedafa76fa6608a29331c6c19cd5b116> (void)>': warning STL4014: std::result_of and std::result_of_t are deprecated in C++17. They are superseded by std::invoke_result and std::invoke_result_t. You can define _SILENCE_CXX17_RESULT_OF_DEPRECATION_WARNING or _SILENCE_ALL_CXX17_DEPRECATION_WARNINGS to acknowledge that you have received this warning. (compiling source file Source\Morpheus\Core\Application.cpp)
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Tools\MSVC\14.25.28610\include\type_traits(1716,1): message : see declaration of 'std::result_of<_Callable(_Args...)>' (compiling source file Source\Morpheus\Core\Application.cpp)
+B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\Source\Morpheus\Core\Application.cpp(78): message : see reference to function template instantiation 'std::future<void> Morpheus::ThreadPool::Enqueue<Morpheus::Application::Run::<lambda_bedafa76fa6608a29331c6c19cd5b116>,>(F &&)' being compiled
+          with
+          [
+              F=Morpheus::Application::Run::<lambda_bedafa76fa6608a29331c6c19cd5b116>
+          ]
+  Morpheus-Core.vcxproj -> B:\Projects\Visual Studio\Morpheus-Engine\Morpheus-Core\..\Morpheus-Bin\Dist-windows-x86_64\Morpheus-Core\Morpheus-Core.lib

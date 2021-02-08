@@ -18,7 +18,7 @@ namespace Morpheus { namespace Vulkan {
 	public:
 		VulkanSwapchain(const VkDevice& _Device, const VkSurfaceKHR& _Surface, 
 			const SwapchainSupportDetails& _SupportDetails, const QueueFamilyIndices& _Indices);
-		~VulkanSwapchain();
+		virtual ~VulkanSwapchain();
 
 		void Reset();
 		const uint32& GetImageCount() const { return m_ImageCount; }
@@ -31,7 +31,6 @@ namespace Morpheus { namespace Vulkan {
 		void CreateSwapchain();
 		void CreateImageViews();
 		void CreateImages();
-
 		void DestroySwapchain();
 
 	private:
@@ -53,6 +52,7 @@ namespace Morpheus { namespace Vulkan {
 	public:
 		static Ref<VulkanSwapchain> Create(const VkDevice& _Device, const VkSurfaceKHR& _Surface,
 			const SwapchainSupportDetails& _SupportDetails, const QueueFamilyIndices& _Indices);
+		static void Destroy(const Ref<VulkanSwapchain>& _Swapchain);
 	};
 
 }}

@@ -9,12 +9,8 @@ namespace Morpheus { namespace Vulkan {
 	class VulkanCommandBuffer
 	{
 	public:
-		friend class VulkanExecutionStack;
-		friend class CommandExecuteCommandBuffers;
-
-	public:
 		VulkanCommandBuffer(const VkCommandBuffer& _Buffer);
-		virtual ~VulkanCommandBuffer() = default;
+		virtual ~VulkanCommandBuffer() {}
 
 	public:
 		void ResetBuffer();
@@ -33,7 +29,6 @@ namespace Morpheus { namespace Vulkan {
 
 		void SetViewport(const VkViewport& _Viewport);
 		void SetScissor(const VkRect2D& _Scissor);
-		void SetClearColor(const Vector4& _ClearColor);
 
 		void BeginRenderpass(const VkRenderPass& _Renderpass, const VkFramebuffer& _FrameBuffer, const VkRect2D& _Scissor);
 		void EndRenderpass();
@@ -41,7 +36,7 @@ namespace Morpheus { namespace Vulkan {
 		void BindPipeline(const VkPipeline& _Pipeline);
 		void PushConstant(const VkPipelineLayout& _Layout, const uint32& Size, const void* _Data);
 
-		void DrawIndexed(const uint32& _IndexCount); // VBO, IBO, DESCRIPTORSET, PIPELINELAYOUT;
+		void DrawIndexed(const uint32& _IndexCount);
 		void BindVertexBuffer(const VkBuffer& _VertexBuffer);
 		void BindIndexBuffer(const VkBuffer& _IndexBuffer);
 		void BindDescriptorSet(const VkPipelineLayout& _Layout, const VkDescriptorSet& _DescriptorSet);
@@ -51,16 +46,15 @@ namespace Morpheus { namespace Vulkan {
 	private:
 		VkCommandBuffer m_Buffer;
 
-		// Non-Command Data
-		Vector4 m_ClearColor = { 0.0f, 0.0f, 0.0f, 0.0f };
+	public:
+		static Ref<VulkanCommandBuffer> Create(const VkCommandBuffer& _Buffer);
 	};
 
-	class VulkanInstruction
+	class IVulkanCommand
 	{
 	public:
-		VulkanInstruction() = default;
-		virtual void Execute(const Ref<VulkanCommandBuffer>& _Buffer) = 0;
-		virtual const Ref<VulkanCommandBuffer>& Retrieve() const = 0;
+		IVulkanCommand() = default;
+		virtual bool Execute(const Ref<VulkanCommandBuffer>& _Buffer) = 0;
 	};
 
 }}

@@ -128,19 +128,11 @@ namespace Morpheus { namespace Vulkan {
 		VULKAN_CORE_DEBUG_CMD("SetScissor", "");
 	}
 
-	void VulkanCommandBuffer::SetClearColor(const Vector4& _ClearColor)
-	{
-		MORP_PROFILE_FUNCTION();
-
-		m_ClearColor = _ClearColor;
-		VULKAN_CORE_DEBUG_CMD("SetClearColor", "");
-	}
-
 	void VulkanCommandBuffer::BeginRenderpass(const VkRenderPass& _Renderpass, const VkFramebuffer& _FrameBuffer, const VkRect2D& _Scissor)
 	{
 		MORP_PROFILE_FUNCTION();
 
-		VkClearValue ColorValue = VkClearValue({ m_ClearColor.x, m_ClearColor.y, m_ClearColor.z, m_ClearColor.w });
+		VkClearValue ColorValue = VkClearValue({ 0.0f, 0.0f, 0.0f, 0.0f });
 
 		VkRenderPassBeginInfo BeginInfo = {};
 		BeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -216,8 +208,12 @@ namespace Morpheus { namespace Vulkan {
 	{
 		MORP_PROFILE_FUNCTION();
 
-		if(_Commands.size() != 0)
-			vkCmdExecuteCommands(m_Buffer, _Commands.size(), _Commands.data());
+		if(_Commands.size() != 0) vkCmdExecuteCommands(m_Buffer, _Commands.size(), _Commands.data());
 		VULKAN_CORE_DEBUG_CMD("ExecuteCommandBuffers", ToString(_Commands.size()));
+	}
+
+	Ref<VulkanCommandBuffer> VulkanCommandBuffer::Create(const VkCommandBuffer& _Buffer)
+	{
+		return CreateRef<VulkanCommandBuffer>(_Buffer);
 	}
 }}
